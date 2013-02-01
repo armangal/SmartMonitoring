@@ -3,7 +3,6 @@
 #################
 
 *.pydevproject
-.project
 .metadata
 bin/
 tmp/
@@ -13,7 +12,7 @@ tmp/
 *~.nib
 local.properties
 .loadpath
-
+.war\WEB-INF\classes
 # External tool builders
 .externalToolBuilders/
 
