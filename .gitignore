@@ -160,3 +160,4 @@ pip-log.txt
 .DS_Store
 /gwt-unitCache
 /war\WEB-INF\classes
+/test-classes
