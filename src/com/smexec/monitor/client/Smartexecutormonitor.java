@@ -1,10 +1,8 @@
 package com.smexec.monitor.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -19,7 +17,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.RefreshResult;
 
@@ -43,8 +40,13 @@ public class Smartexecutormonitor
             return true;
         }
     };
+    
+    
+    public Smartexecutormonitor() {
+        monitors.setBorderWidth(1);
+    }
 
-    private Map<String, LineChart> chartsMap = new HashMap<String, LineChart>();
+    private Map<String, PoolWidget> poolsMap = new HashMap<String, PoolWidget>();
 
     /**
      * Create a remote service proxy to talk to the server-side Greeting service.
@@ -75,16 +77,15 @@ public class Smartexecutormonitor
 
                             @Override
                             public void execute() {
-                                LineChart w = chartsMap.get(pf.getPoolName());
+                                PoolWidget w = poolsMap.get(pf.getPoolName());
                                 if (w == null) {
-                                    w = new LineChart(pf.getPoolName(), pf.getChartFeeds());
+                                    w = new PoolWidget(pf.getPoolName());
                                     monitors.setWidget(row, col++, w);
 
-                                } else {
-                                    w.updateChart(pf.getChartFeeds());
                                 }
-                                w.update();
-                                if (col % 3 == 0) {
+
+                                w.refresh(pf);
+                                if (col % 2 == 0) {
                                     row++;
                                     col = 0;
                                 }
@@ -105,7 +106,7 @@ public class Smartexecutormonitor
 
     private void cleanMonitors() {
         monitors.clear();
-        chartsMap.clear();
+        poolsMap.clear();
     }
 
     /**
@@ -154,12 +155,4 @@ public class Smartexecutormonitor
 
     }
 
-    private List<ChartFeed> getRandomList() {
-        List<ChartFeed> list = new ArrayList<ChartFeed>();
-        Random r = new Random();
-        for (int i = 0; i < 100; i++) {
-            list.add(new ChartFeed(r.nextInt(100), r.nextInt(100) + 700, r.nextInt(100) + 400));
-        }
-        return list;
-    }
 }

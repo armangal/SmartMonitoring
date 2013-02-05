@@ -11,10 +11,12 @@ import javax.management.MBeanServerConnection;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectInstance;
+import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dev.util.collect.HashMap;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.smexec.monitor.client.MonitoringService;
@@ -88,24 +90,35 @@ public class MonitoringServiceImpl
             Set<ObjectInstance> names = new HashSet<ObjectInstance>(mbsc.queryMBeans(null, null));
 
             for (ObjectInstance on : names) {
-                if ("SmartExecutor.Pools".equals(on.getObjectName().getKeyProperty("type"))) {
-                    System.out.println(on.getObjectName().getKeyProperty("name"));
-
-                    String chunks = (String) mbsc.getAttribute(on.getObjectName(), "Chunks");
-                    System.out.println(chunks);
+                ObjectName objectName = on.getObjectName();
+                if ("SmartExecutor.Pools".equals(objectName.getKeyProperty("type"))) {
+                    String chunks = (String) mbsc.getAttribute(objectName, "Chunks");
                     chunks = chunks.replace("[", "");
                     String[] split = chunks.split("]");
                     PoolsFeed pf = new PoolsFeed();
-                    pf.setPoolName(on.getObjectName().getKeyProperty("name"));
+                    pf.setPoolName(objectName.getKeyProperty("name"));
 
-                    List<ChartFeed> l = new ArrayList<ChartFeed>();
+                    ArrayList<ChartFeed> l = new ArrayList<ChartFeed>();
                     for (int i = 0; i < split.length; i++) {
                         String[] values = split[i].split(",");
                         l.add(new ChartFeed(Long.valueOf(values[2]), Long.valueOf(values[0]), Long.valueOf(values[1])));
                     }
                     pf.setChartFeeds(l);
+                    pf.setActiveThreads(getLong(mbsc, objectName, "ActiveCount"));
+                    pf.setAvgGenTime(getLong(mbsc, objectName, "AvgTime"));
+                    pf.setCompleted(getLong(mbsc, objectName, "Completed"));
+                    pf.setExecuted(getLong(mbsc, objectName, "Executed"));
+                    pf.setFailed(getLong(mbsc, objectName, "Failed"));
+                    pf.setLargestPoolSize(getLong(mbsc, objectName, "LargestPoolSize"));
+                    pf.setMaxGenTime(getLong(mbsc, objectName, "MaxTime"));
+                    pf.setMinGenTime(getLong(mbsc, objectName, "MinTime"));
+                    pf.setPoolSize(getLong(mbsc, objectName, "PoolSize"));
+                    pf.setRejected(getLong(mbsc, objectName, "Rejected"));
+                    pf.setSubmitted(getLong(mbsc, objectName, "Submitted"));
+                    pf.setTotoalGenTime(getLong(mbsc, objectName, "TotalTime"));
 
                     poolFeeds.add(pf);
+                    System.out.println(pf);
                 }
             }
 
@@ -113,6 +126,17 @@ public class MonitoringServiceImpl
             e.printStackTrace();
         }
         return result;
+    }
+
+    private long getLong(MBeanServerConnection mbsc, ObjectName on, String name) {
+        try {
+            Object property = mbsc.getAttribute(on, name);
+            return Long.valueOf(property.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1L;
+
+        }
     }
 
 }
