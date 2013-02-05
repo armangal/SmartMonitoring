@@ -1,14 +1,19 @@
 package com.smexec.monitor.client;
 
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.smexec.monitor.shared.PoolsFeed;
 
 public class PoolWidget
     extends Composite {
 
-    private LineChart lineChart = new LineChart();
+    private NumberFormat formatLong = NumberFormat.getDecimalFormat();
+
+    private LineChart timeChart = new LineChart();
+
+    private LineChart tasksChart = new LineChart();
 
     private Label poolName = new Label();;
     private Label avgGenTime = new Label();;
@@ -24,50 +29,52 @@ public class PoolWidget
     private Label largestPoolSize = new Label();;
     private Label poolSize = new Label();;
 
-    private FlexTable ft = new FlexTable();
+    private FlowPanel ft = new FlowPanel();
 
     public PoolWidget(String poolName) {
         this.poolName.setText("Poll Name:" + poolName);
-        int i = 0;
-        ft.setWidget(i, 0, lineChart);
-        ft.getFlexCellFormatter().setRowSpan(0, 0, 4);
-        ft.setWidget(i++, 1, this.poolName);
-        ft.setWidget(i++, 0, this.submitted);
-        ft.setWidget(i++, 0, this.executed);
-        ft.setWidget(i++, 0, this.completed);
-        ft.setWidget(i++, 0, this.rejected);
-        ft.setWidget(i++, 0, this.failed);
+        this.poolName.setStylePrimaryName("poolName");
+        ft.add(this.poolName);
+        ft.add(timeChart);
+        ft.add(tasksChart);
 
-        ft.setWidget(i++, 0, this.maxGenTime);
-        ft.setWidget(i++, 0, this.avgGenTime);
-        ft.setWidget(i++, 0, this.minGenTime);
-        ft.setWidget(i++, 0, this.totoalGenTime);
+        ft.add(this.submitted);
+        ft.add(this.executed);
+        ft.add(this.completed);
+        ft.add(this.rejected);
+        ft.add(this.failed);
 
-        ft.setWidget(i++, 0, this.activeThreads);
-        ft.setWidget(i++, 0, this.poolSize);
-        ft.setWidget(i++, 0, this.largestPoolSize);
+        ft.add(this.maxGenTime);
+        ft.add(this.avgGenTime);
+        ft.add(this.minGenTime);
+        ft.add(this.totoalGenTime);
+
+        ft.add(this.activeThreads);
+        ft.add(this.poolSize);
+        ft.add(this.largestPoolSize);
 
         initWidget(ft);
-        ft.setBorderWidth(1);
     }
 
     public void refresh(PoolsFeed pf) {
-        lineChart.updateChart(pf.getChartFeeds());
-        lineChart.update();
-        submitted.setText("Submitted:" + pf.getSubmitted());
-        executed.setText("Executed:" + pf.getExecuted());
-        completed.setText("Completed:" + pf.getCompleted());
-        rejected.setText("Rejected:" + pf.getRejected());
-        failed.setText("Failed:" + pf.getFailed());
+//        if (GWT.isScript()) {
+            timeChart.updateChart(pf.getChartFeeds());
+            timeChart.update();
+//        }
+        submitted.setText("Submitted:" + formatLong.format(pf.getSubmitted()));
+        executed.setText("Executed:" + formatLong.format(pf.getExecuted()));
+        completed.setText("Completed:" + formatLong.format(pf.getCompleted()));
+        rejected.setText("Rejected:" + formatLong.format(pf.getRejected()));
+        failed.setText("Failed:" + formatLong.format(pf.getFailed()));
 
-        maxGenTime.setText("Max Time:" + pf.getMaxGenTime());
-        avgGenTime.setText("Avg Time:" + pf.getAvgGenTime());
-        minGenTime.setText("Min Time:" + pf.getMinGenTime());
-        totoalGenTime.setText("Total Time:" + pf.getTotoalGenTime());
+        maxGenTime.setText("Max Time:" + formatLong.format(pf.getMaxGenTime()));
+        avgGenTime.setText("Avg Time:" + formatLong.format(pf.getAvgGenTime()));
+        minGenTime.setText("Min Time:" + formatLong.format(pf.getMinGenTime()));
+        totoalGenTime.setText("Total Time:" + formatLong.format(pf.getTotoalGenTime()));
 
-        activeThreads.setText("Active Threads:" + pf.getActiveThreads());
-        poolSize.setText("Pool Size:" + pf.getPoolSize());
-        largestPoolSize.setText("Largest Pool Size:" + pf.getLargestPoolSize());
+        activeThreads.setText("Active Threads:" + formatLong.format(pf.getActiveThreads()));
+        poolSize.setText("Pool Size:" + formatLong.format(pf.getPoolSize()));
+        largestPoolSize.setText("Largest Pool Size:" + formatLong.format(pf.getLargestPoolSize()));
 
     }
 

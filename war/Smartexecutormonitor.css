@@ -24,8 +24,9 @@ h1 {
   margin: 5px;
 }
 
-.serverResponseLabelError {
-  color: red;
+.poolName {
+  color: blue;
+  font-weight: bold;
 }
 
 /** Set ids using widget.getElement().setId("idOfElement") */

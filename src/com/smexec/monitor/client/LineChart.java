@@ -13,6 +13,8 @@ public class LineChart
         MIN, MAX, AVG
     }
 
+    final static int X_ELEMENTS = 50;
+
     final int MAX_CURVES = 3;
     int[] insertionPoint = new int[MAX_CURVES];
     int insertionCurve = 0;
@@ -37,7 +39,7 @@ public class LineChart
 
         // lock in a simple 0..100 range on each axis
         getXAxis().setAxisMin(0);
-        getXAxis().setAxisMax(100);
+        getXAxis().setAxisMax(X_ELEMENTS);
         getXAxis().setTickCount(5);
         getXAxis().setHasGridlines(false);
         getYAxis().setAxisMin(0);
@@ -67,7 +69,7 @@ public class LineChart
         getCurve().getSymbol().setBorderWidth(1);
         getCurve().getSymbol().setSymbolType(SymbolType.LINE);
 
-        int size = GWT.isClient() ? chartFeeds.size() : 10;
+        int size = GWT.isClient() ? (chartFeeds.size() > X_ELEMENTS ? X_ELEMENTS : chartFeeds.size()) : 10;
         for (int i = 0; i < size; i++) {
             double value = getValue(chartFeeds.get(i), lineType);
             if (value > max)

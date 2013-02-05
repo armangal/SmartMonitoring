@@ -81,7 +81,7 @@ public class Smartexecutormonitor
                                 if (w == null) {
                                     w = new PoolWidget(pf.getPoolName());
                                     monitors.setWidget(row, col++, w);
-
+                                    poolsMap.put(pf.getPoolName(), w);
                                 }
 
                                 w.refresh(pf);
