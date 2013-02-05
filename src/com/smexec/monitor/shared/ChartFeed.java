@@ -1,34 +1,51 @@
 package com.smexec.monitor.shared;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class ChartFeed
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    long min;
-    long max;
-    long avg;
+    private long values[][];
+    private int valuesLenght;
+    private int valuesAmount;
 
     public ChartFeed() {}
 
-    public ChartFeed(long min, long max, long avg) {
-        super();
-        this.min = min;
-        this.max = max;
-        this.avg = avg;
+    public ChartFeed(int valuesLenght, int valuesAmount) {
+        values = new long[valuesAmount][valuesLenght];
+        this.valuesAmount = valuesAmount;
+        this.valuesLenght = valuesLenght;
     }
 
-    public long getMin() {
-        return min;
+    public long[][] getValues() {
+        return values;
     }
 
-    public long getMax() {
-        return max;
+    public long getValues(int x, int y) {
+        return values[x][y];
     }
 
-    public long getAvg() {
-        return avg;
+    public long getLastValues(int x) {
+        return values[x][Math.max(valuesLenght - 2, 0)];
+    }
+
+    public int getValuesAmount() {
+        return valuesAmount;
+    }
+
+    public int getValuesLenght() {
+        return valuesLenght;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ChartFeed [values=");
+        builder.append(Arrays.toString(values));
+        builder.append("]");
+        return builder.toString();
     }
 
 }

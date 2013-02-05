@@ -1,6 +1,5 @@
 package com.smexec.monitor.server;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,7 +16,6 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dev.util.collect.HashMap;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.smexec.monitor.client.MonitoringService;
@@ -93,18 +91,39 @@ public class MonitoringServiceImpl
             for (ObjectInstance on : names) {
                 ObjectName objectName = on.getObjectName();
                 if ("SmartExecutor.Pools".equals(objectName.getKeyProperty("type"))) {
-                    String chunks = (String) mbsc.getAttribute(objectName, "Chunks");
+                    PoolsFeed pf = new PoolsFeed();
+                    String poolName = objectName.getKeyProperty("name");
+                    pf.setPoolName(poolName);
+
+                    String chunks = (String) mbsc.getAttribute(objectName, "TimeChunks");
                     chunks = chunks.replace("[", "");
                     String[] split = chunks.split("]");
-                    PoolsFeed pf = new PoolsFeed();
-                    pf.setPoolName(objectName.getKeyProperty("name"));
 
-                    ArrayList<ChartFeed> l = new ArrayList<ChartFeed>();
+                    ChartFeed timesChartFeed = new ChartFeed(split.length, 3);
                     for (int i = 0; i < split.length; i++) {
                         String[] values = split[i].split(",");
-                        l.add(new ChartFeed(Long.valueOf(values[2]), Long.valueOf(values[0]), Long.valueOf(values[1])));
+                        timesChartFeed.getValues()[0][i] = Long.valueOf(values[0]);
+                        timesChartFeed.getValues()[1][i] = Long.valueOf(values[1]);
+                        timesChartFeed.getValues()[2][i] = Long.valueOf(values[2]);
                     }
-                    pf.setChartFeeds(l);
+                    pf.setTimeChartFeeds(timesChartFeed);
+                    // /////////////////////////////////////////
+                    chunks = (String) mbsc.getAttribute(objectName, "TasksChunks");
+                    chunks = chunks.replace("[", "");
+                    split = chunks.split("]");
+
+                    ChartFeed tasksChartFeed = new ChartFeed(split.length, 5);
+                    for (int i = 0; i < split.length; i++) {
+                        String[] values = split[i].split(",");
+                        tasksChartFeed.getValues()[0][i] = Long.valueOf(values[0]);
+                        tasksChartFeed.getValues()[1][i] = Long.valueOf(values[1]);
+                        tasksChartFeed.getValues()[2][i] = Long.valueOf(values[2]);
+                        tasksChartFeed.getValues()[3][i] = Long.valueOf(values[3]);
+                        tasksChartFeed.getValues()[4][i] = Long.valueOf(values[4]);
+                    }
+                    pf.setTasksChartFeeds(tasksChartFeed);
+
+                    // //////////////////////////////////////////////////////////
                     pf.setActiveThreads(getLong(mbsc, objectName, "ActiveCount"));
                     pf.setAvgGenTime(getLong(mbsc, objectName, "AvgTime"));
                     pf.setCompleted(getLong(mbsc, objectName, "Completed"));

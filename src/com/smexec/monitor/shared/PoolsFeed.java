@@ -1,8 +1,6 @@
 package com.smexec.monitor.shared;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PoolsFeed
     implements Serializable {
@@ -10,7 +8,8 @@ public class PoolsFeed
     private static final long serialVersionUID = 1L;
 
     private String poolName;
-    private ArrayList<ChartFeed> chartFeeds;
+    private ChartFeed timeChartFeeds;
+    private ChartFeed tasksChartFeeds;
     private long avgGenTime;
     private long maxGenTime;
     private long minGenTime;
@@ -130,13 +129,24 @@ public class PoolsFeed
         this.poolName = poolName;
     }
 
-    public List<ChartFeed> getChartFeeds() {
-        return chartFeeds;
+    public ChartFeed getTimeChartFeeds() {
+        return timeChartFeeds;
     }
 
-    public void setChartFeeds(ArrayList<ChartFeed> chartFeeds) {
-        this.chartFeeds = chartFeeds;
+    public void setTimeChartFeeds(ChartFeed timeChartFeeds) {
+        this.timeChartFeeds = timeChartFeeds;
     }
+    
+    
+    public ChartFeed getTasksChartFeeds() {
+        return tasksChartFeeds;
+    }
+    
+    
+    public void setTasksChartFeeds(ChartFeed tasksChartFeeds) {
+        this.tasksChartFeeds = tasksChartFeeds;
+    }
+    
 
     @Override
     public String toString() {
@@ -144,7 +154,7 @@ public class PoolsFeed
         builder.append("PoolsFeed [poolName=");
         builder.append(poolName);
         builder.append(", chartFeeds=");
-        builder.append(chartFeeds);
+        builder.append(timeChartFeeds);
         builder.append(", avgGenTime=");
         builder.append(avgGenTime);
         builder.append(", maxGenTime=");

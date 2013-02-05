@@ -4,6 +4,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.smexec.monitor.client.LineChart.LineType;
 import com.smexec.monitor.shared.PoolsFeed;
 
 public class PoolWidget
@@ -34,48 +35,70 @@ public class PoolWidget
     public PoolWidget(String poolName) {
         this.poolName.setText("Poll Name:" + poolName);
         this.poolName.setStylePrimaryName("poolName");
+        ft.setStyleName("poolWidget");
         ft.add(this.poolName);
-        ft.add(timeChart);
-        ft.add(tasksChart);
+        FlowPanel charts = new FlowPanel();
+        charts.setStyleName("poolCharts");
 
-        ft.add(this.submitted);
-        ft.add(this.executed);
-        ft.add(this.completed);
-        ft.add(this.rejected);
-        ft.add(this.failed);
+        charts.add(timeChart);
+        charts.add(tasksChart);
+        ft.add(charts);
 
-        ft.add(this.maxGenTime);
-        ft.add(this.avgGenTime);
-        ft.add(this.minGenTime);
-        ft.add(this.totoalGenTime);
+        FlowPanel tasks = new FlowPanel();
+        tasks.setStyleName("poolTasks");
+        tasks.add(this.submitted);
+        tasks.add(this.executed);
+        tasks.add(this.completed);
+        tasks.add(this.rejected);
+        tasks.add(this.failed);
+        ft.add(tasks);
 
-        ft.add(this.activeThreads);
-        ft.add(this.poolSize);
-        ft.add(this.largestPoolSize);
+        FlowPanel times = new FlowPanel();
+        times.setStyleName("poolTimes");
+        times.add(this.maxGenTime);
+        times.add(this.avgGenTime);
+        times.add(this.minGenTime);
+        times.add(this.totoalGenTime);
+        ft.add(times);
+
+        FlowPanel threads = new FlowPanel();
+        threads.setStyleName("poolThreads");
+        threads.add(this.activeThreads);
+        threads.add(this.poolSize);
+        threads.add(this.largestPoolSize);
+        ft.add(threads);
 
         initWidget(ft);
     }
 
     public void refresh(PoolsFeed pf) {
-//        if (GWT.isScript()) {
-            timeChart.updateChart(pf.getChartFeeds());
-            timeChart.update();
-//        }
-        submitted.setText("Submitted:" + formatLong.format(pf.getSubmitted()));
-        executed.setText("Executed:" + formatLong.format(pf.getExecuted()));
-        completed.setText("Completed:" + formatLong.format(pf.getCompleted()));
-        rejected.setText("Rejected:" + formatLong.format(pf.getRejected()));
-        failed.setText("Failed:" + formatLong.format(pf.getFailed()));
+        timeChart.setVisible(false);
+        tasksChart.setVisible(false);
+        timeChart.updateChart(pf.getTimeChartFeeds(), new LineType[] {LineType.MAX, LineType.AVG, LineType.MIN});
+        timeChart.update();
+        
+        tasksChart.updateChart(pf.getTasksChartFeeds(), new LineType[] {LineType.SUBMITED, LineType.EXECUTED, LineType.FAILED, LineType.REJECTED,
+                                                                        LineType.COMPLETED});
+        tasksChart.update();
 
-        maxGenTime.setText("Max Time:" + formatLong.format(pf.getMaxGenTime()));
-        avgGenTime.setText("Avg Time:" + formatLong.format(pf.getAvgGenTime()));
-        minGenTime.setText("Min Time:" + formatLong.format(pf.getMinGenTime()));
+        submitted.setText("Submitted:" + formatLong.format(pf.getSubmitted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex()) + ")");
+        executed.setText("Executed:" + formatLong.format(pf.getExecuted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
+        completed.setText("Completed:" + formatLong.format(pf.getCompleted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex())
+                          + ")");
+        rejected.setText("Rejected:" + formatLong.format(pf.getRejected()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.REJECTED.getIndex()) + ")");
+        failed.setText("Failed:" + formatLong.format(pf.getFailed()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.FAILED.getIndex()) + ")");
+
+        maxGenTime.setText("Max Time:" + formatLong.format(pf.getMaxGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.MAX.getIndex()) + ")");
+        avgGenTime.setText("Avg Time:" + formatLong.format(pf.getAvgGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ")");
+        minGenTime.setText("Min Time:" + formatLong.format(pf.getMinGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
         totoalGenTime.setText("Total Time:" + formatLong.format(pf.getTotoalGenTime()));
 
         activeThreads.setText("Active Threads:" + formatLong.format(pf.getActiveThreads()));
         poolSize.setText("Pool Size:" + formatLong.format(pf.getPoolSize()));
         largestPoolSize.setText("Largest Pool Size:" + formatLong.format(pf.getLargestPoolSize()));
 
+        timeChart.setVisible(true);
+        tasksChart.setVisible(true);
     }
 
     @Override

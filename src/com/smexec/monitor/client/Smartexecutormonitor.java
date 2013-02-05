@@ -40,10 +40,9 @@ public class Smartexecutormonitor
             return true;
         }
     };
-    
-    
+
     public Smartexecutormonitor() {
-        monitors.setBorderWidth(1);
+//        monitors.setBorderWidth(1);
     }
 
     private Map<String, PoolWidget> poolsMap = new HashMap<String, PoolWidget>();
@@ -77,7 +76,12 @@ public class Smartexecutormonitor
 
                             @Override
                             public void execute() {
-                                PoolWidget w = poolsMap.get(pf.getPoolName());
+                                String poolName = pf.getPoolName();
+                                if (!poolName.equals("Custom1(CM1)") && !GWT.isScript()) {
+                                    return;
+                                }
+
+                                PoolWidget w = poolsMap.get(poolName);
                                 if (w == null) {
                                     w = new PoolWidget(pf.getPoolName());
                                     monitors.setWidget(row, col++, w);
