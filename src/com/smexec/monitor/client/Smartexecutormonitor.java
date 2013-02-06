@@ -27,6 +27,8 @@ public class Smartexecutormonitor
     implements EntryPoint {
 
     final Button connectButton = new Button("Connect");
+    final Button refresh = new Button("Stop Refresh");
+    boolean continueRefresh = true;
     final TextBox addressField = new TextBox();
     final HorizontalPanel hp = new HorizontalPanel();
     final FlexTable servers = new FlexTable();
@@ -37,12 +39,12 @@ public class Smartexecutormonitor
         @Override
         public boolean execute() {
             refresh();
-            return true;
+            return continueRefresh;
         }
     };
 
     public Smartexecutormonitor() {
-//        monitors.setBorderWidth(1);
+        // monitors.setBorderWidth(1);
     }
 
     private Map<String, PoolWidget> poolsMap = new HashMap<String, PoolWidget>();
@@ -120,20 +122,19 @@ public class Smartexecutormonitor
         addressField.setText("localhost:9010");
         hp.add(addressField);
         hp.add(connectButton);
+        hp.add(refresh);
+        refresh.getElement().setAttribute("state", "1");
+
         RootPanel.get().add(hp);
 
         RootPanel.get().add(servers);
+        servers.setBorderWidth(1);
         RootPanel.get().add(monitors);
 
         connectButton.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-                RootPanel.get().clear();
-                RootPanel.get().add(hp);
-                RootPanel.get().add(servers);
-                RootPanel.get().add(monitors);
-
                 service.connect(addressField.getText(), new AsyncCallback<List<String>>() {
 
                     @Override
@@ -145,7 +146,7 @@ public class Smartexecutormonitor
                         }
 
                         refresh();
-                        Scheduler.get().scheduleFixedPeriod(refreshCommand, 10000);
+                        Scheduler.get().scheduleFixedDelay(refreshCommand, 10000);
 
                     }
 
@@ -154,6 +155,26 @@ public class Smartexecutormonitor
                         servers.clear();
                     }
                 });
+            }
+        });
+
+        refresh.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                String attribute = refresh.getElement().getAttribute("state");
+                if ("1".equals(attribute)) {
+                    refresh.getElement().setAttribute("state", "2");
+                    continueRefresh = false;
+                    refresh.setText("Start Refresh");
+                } else {
+                    refresh.getElement().setAttribute("state", "1");
+                    continueRefresh = true;
+                    refresh();
+                    Scheduler.get().scheduleFixedDelay(refreshCommand, 10000);
+                    refresh.setText("Stop Refresh");
+                }
+
             }
         });
 
