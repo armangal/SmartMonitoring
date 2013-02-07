@@ -1,10 +1,11 @@
-package com.smexec.monitor.client;
+package com.smexec.monitor.client.threads;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.smexec.monitor.client.LineChart.LineType;
+import com.smexec.monitor.client.widgets.LineChart;
+import com.smexec.monitor.client.widgets.LineChart.LineType;
 import com.smexec.monitor.shared.PoolsFeed;
 
 public class PoolWidget
@@ -28,6 +29,7 @@ public class PoolWidget
     private Label totoalGenTime = new Label();;
     private Label activeThreads = new Label();;
     private Label largestPoolSize = new Label();;
+    private Label hosts = new Label();;
     private Label poolSize = new Label();;
 
     private FlowPanel ft = new FlowPanel();
@@ -66,6 +68,7 @@ public class PoolWidget
         threads.add(this.activeThreads);
         threads.add(this.poolSize);
         threads.add(this.largestPoolSize);
+        threads.add(this.hosts);
         ft.add(threads);
 
         initWidget(ft);
@@ -76,12 +79,13 @@ public class PoolWidget
         tasksChart.setVisible(false);
         timeChart.updateChart(pf.getTimeChartFeeds(), new LineType[] {LineType.MAX, LineType.AVG, LineType.MIN});
         timeChart.update();
-        
+
         tasksChart.updateChart(pf.getTasksChartFeeds(), new LineType[] {LineType.SUBMITED, LineType.EXECUTED, LineType.FAILED, LineType.REJECTED,
                                                                         LineType.COMPLETED});
         tasksChart.update();
 
-        submitted.setText("Submitted:" + formatLong.format(pf.getSubmitted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex()) + ")");
+        submitted.setText("Submitted:" + formatLong.format(pf.getSubmitted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex())
+                          + ")");
         executed.setText("Executed:" + formatLong.format(pf.getExecuted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
         completed.setText("Completed:" + formatLong.format(pf.getCompleted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex())
                           + ")");
@@ -96,6 +100,7 @@ public class PoolWidget
         activeThreads.setText("Active Threads:" + formatLong.format(pf.getActiveThreads()));
         poolSize.setText("Pool Size:" + formatLong.format(pf.getPoolSize()));
         largestPoolSize.setText("Largest Pool Size:" + formatLong.format(pf.getLargestPoolSize()));
+        hosts.setText("Hosts:" + formatLong.format(pf.getHosts()));
 
         timeChart.setVisible(true);
         tasksChart.setVisible(true);

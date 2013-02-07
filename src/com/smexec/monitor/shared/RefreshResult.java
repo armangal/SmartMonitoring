@@ -1,31 +1,35 @@
 package com.smexec.monitor.shared;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
 
 public class RefreshResult
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<PoolsFeed> poolsFeeds;
+    private HashMap<String, PoolsFeed> poolFeedMap;
 
-    private List<String> servers;
+    private ConnectedServers connectedServers;
 
     public RefreshResult() {}
 
-    public RefreshResult(List<PoolsFeed> poolsFeeds, List<String> servers) {
+    public RefreshResult(HashMap<String, PoolsFeed> poolFeedMap, ConnectedServers connectedServers) {
         super();
-        this.poolsFeeds = poolsFeeds;
-        this.servers = servers;
+        this.poolFeedMap = poolFeedMap;
+        this.connectedServers = connectedServers;
     }
 
-    public List<PoolsFeed> getPoolsFeeds() {
-        return poolsFeeds;
+    public HashMap<String, PoolsFeed> getPoolFeedMap() {
+        return poolFeedMap;
     }
 
-    public List<String> getServers() {
-        return servers;
+    public ConnectedServers getConnectedServers() {
+        return connectedServers;
     }
-
+    
+    
+    public void setPoolFeedMap(HashMap<String, PoolsFeed> poolFeedMap) {
+        this.poolFeedMap = poolFeedMap;
+    }
 }

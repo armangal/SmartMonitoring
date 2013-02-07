@@ -5,6 +5,19 @@ h1 {
 	font-weight: bold;
 	color: #777777;
 	text-align: center;
+	margin: 0px;
+}
+
+body {
+	margin: 0px !important;
+}
+
+.mainPanel {
+	width: 1200px;
+	height: 600px;
+	border: solid #EE8318 thin;
+	margin: 0px;
+	padding: 0px;
 }
 
 .poolWidget {
@@ -61,4 +74,71 @@ h1 {
 	top: 200px;
 	height: 70px;
 	left: 220px;
+}
+
+.monitoringWidget {
+	border: solid orange thin;
+	margin: 2px;
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	width: 97%;
+	padding: 2px;
+}
+
+.tournamentsWidget {
+	width: 50%;
+	position: relative;
+	float: left;
+}
+
+.tournamentsWidget .table {
+	height: 150px;
+}
+
+.serevrsWidget {
+	width: 50%;
+	position: relative;
+	float: left;
+}
+
+.serevrsWidget .table {
+	height: 80px;
+}
+
+.memoryWidget {
+	width: 50%;
+	position: relative;
+	float: right;
+}
+
+.memoryWidget .table {
+	height: 100px;
+}
+
+.playersWidget {
+	width: 50%;
+	position: relative;
+	float: right;
+}
+
+.playersWidget .table {
+	height: 300px;
+}
+
+.alertsWidget {
+	width: 50%;
+	position: relative;
+	float: right;
+}
+.alertsWidget .table {
+	height: 80px;
+}
+
+.threadPoolsWidget {
+	width: 50%;
+	position: relative;
+	float: left;
+}
+.threadPoolsWidget .table {
+	height: 250px;
 }

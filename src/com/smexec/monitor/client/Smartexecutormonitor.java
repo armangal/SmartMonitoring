@@ -1,9 +1,5 @@
 package com.smexec.monitor.client;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -12,12 +8,16 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.smexec.monitor.shared.PoolsFeed;
+import com.smexec.monitor.client.alerts.AlertsWidget;
+import com.smexec.monitor.client.memory.MemoryWidget;
+import com.smexec.monitor.client.players.PlayersWidget;
+import com.smexec.monitor.client.servers.ServersWidget;
+import com.smexec.monitor.client.threads.ThreadPoolsWidget;
+import com.smexec.monitor.client.tournaments.TournamentsWidget;
+import com.smexec.monitor.shared.ConnectedServers;
 import com.smexec.monitor.shared.RefreshResult;
 
 /**
@@ -26,13 +26,17 @@ import com.smexec.monitor.shared.RefreshResult;
 public class Smartexecutormonitor
     implements EntryPoint {
 
-    final Button connectButton = new Button("Connect");
-    final Button refresh = new Button("Stop Refresh");
-    boolean continueRefresh = true;
-    final TextBox addressField = new TextBox();
-    final HorizontalPanel hp = new HorizontalPanel();
-    final FlexTable servers = new FlexTable();
-    final FlexTable monitors = new FlexTable();
+    final FlowPanel mainPanel = new FlowPanel();
+
+    final Button refresh = new Button("Start Refresh");
+    boolean continueRefresh = false;
+
+    private AlertsWidget alertsWidget = new AlertsWidget();
+    private MemoryWidget memoryWidget = new MemoryWidget();
+    private PlayersWidget playersWidget = new PlayersWidget();
+    private ServersWidget serversWidget = new ServersWidget();
+    private TournamentsWidget tournamentsWidget = new TournamentsWidget();
+    private ThreadPoolsWidget poolsWidget = new ThreadPoolsWidget();
 
     private RepeatingCommand refreshCommand = new RepeatingCommand() {
 
@@ -43,11 +47,7 @@ public class Smartexecutormonitor
         }
     };
 
-    public Smartexecutormonitor() {
-        // monitors.setBorderWidth(1);
-    }
-
-    private Map<String, PoolWidget> poolsMap = new HashMap<String, PoolWidget>();
+    public Smartexecutormonitor() {}
 
     /**
      * Create a remote service proxy to talk to the server-side Greeting service.
@@ -55,108 +55,55 @@ public class Smartexecutormonitor
     private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
 
     private void refresh() {
-        if (servers.getRowCount() > 0) {
 
-            service.refresh(new AsyncCallback<RefreshResult>() {
+        service.refresh(new AsyncCallback<RefreshResult>() {
 
-                int col = 0;
-                int row = 0;
-
-                @Override
-                public void onSuccess(RefreshResult result) {
-                    servers.clear();
-                    int i = 0;
-                    for (String server : result.getServers()) {
-                        servers.setWidget(i++, 0, new Label(server));
-                    }
-                    if (result.getServers() == null || result.getServers().isEmpty()) {
+            @Override
+            public void onSuccess(RefreshResult result) {
+                ConnectedServers cs = result.getConnectedServers();
+                if (cs != null) {
+                    serversWidget.update(cs.getServers());
+                    memoryWidget.update(cs.getServers());
+                    if (cs.getServers() == null || cs.getServers().isEmpty()) {
                         cleanMonitors();
                     }
-
-                    for (final PoolsFeed pf : result.getPoolsFeeds()) {
-                        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-
-                            @Override
-                            public void execute() {
-                                String poolName = pf.getPoolName();
-                                if (!poolName.equals("Custom1(CM1)") && !GWT.isScript()) {
-                                    return;
-                                }
-
-                                PoolWidget w = poolsMap.get(poolName);
-                                if (w == null) {
-                                    w = new PoolWidget(pf.getPoolName());
-                                    monitors.setWidget(row, col++, w);
-                                    poolsMap.put(pf.getPoolName(), w);
-                                }
-
-                                w.refresh(pf);
-                                if (col % 2 == 0) {
-                                    row++;
-                                    col = 0;
-                                }
-
-                            }
-                        });
-                    }
-
+                    
+                    poolsWidget.refresh(result.getPoolFeedMap());
                 }
 
-                @Override
-                public void onFailure(Throwable caught) {
+            }
 
-                }
-            });
-        }
+            @Override
+            public void onFailure(Throwable caught) {
+
+            }
+        });
     }
 
     private void cleanMonitors() {
-        monitors.clear();
-        poolsMap.clear();
+
     }
 
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        addressField.setText("localhost:9010");
-        hp.add(addressField);
-        hp.add(connectButton);
-        hp.add(refresh);
-        refresh.getElement().setAttribute("state", "1");
+        RootPanel.get().add(mainPanel);
+        mainPanel.setStyleName("mainPanel");
+        mainPanel.add(new HTML("<h1>Smart Executor Monitoring</h1>"));
 
-        RootPanel.get().add(hp);
+        mainPanel.add(tournamentsWidget);
+        mainPanel.add(playersWidget);
+        mainPanel.add(poolsWidget);
+        mainPanel.add(memoryWidget);
+        mainPanel.add(serversWidget);
+        mainPanel.add(alertsWidget);
 
-        RootPanel.get().add(servers);
-        servers.setBorderWidth(1);
-        RootPanel.get().add(monitors);
+        refresh.getElement().setAttribute("state", "2");
 
-        connectButton.addClickHandler(new ClickHandler() {
+        RootPanel.get().add(refresh);
 
-            @Override
-            public void onClick(ClickEvent event) {
-                service.connect(addressField.getText(), new AsyncCallback<List<String>>() {
-
-                    @Override
-                    public void onSuccess(List<String> result) {
-                        servers.clear();
-                        int i = 0;
-                        for (String server : result) {
-                            servers.setWidget(i++, 0, new Label(server));
-                        }
-
-                        refresh();
-                        Scheduler.get().scheduleFixedDelay(refreshCommand, 10000);
-
-                    }
-
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        servers.clear();
-                    }
-                });
-            }
-        });
+        // mainPanel.add(monitors);
 
         refresh.addClickHandler(new ClickHandler() {
 
@@ -179,5 +126,4 @@ public class Smartexecutormonitor
         });
 
     }
-
 }

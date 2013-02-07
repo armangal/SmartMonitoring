@@ -22,6 +22,7 @@ public class PoolsFeed
     private long activeThreads;
     private long largestPoolSize;
     private long poolSize;
+    private int hosts = 1; // monitoring X servers at the same time
 
     public long getAvgGenTime() {
         return avgGenTime;
@@ -136,25 +137,28 @@ public class PoolsFeed
     public void setTimeChartFeeds(ChartFeed timeChartFeeds) {
         this.timeChartFeeds = timeChartFeeds;
     }
-    
-    
+
     public ChartFeed getTasksChartFeeds() {
         return tasksChartFeeds;
     }
-    
-    
+
     public void setTasksChartFeeds(ChartFeed tasksChartFeeds) {
         this.tasksChartFeeds = tasksChartFeeds;
     }
-    
+
+    public int getHosts() {
+        return hosts;
+    }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("PoolsFeed [poolName=");
         builder.append(poolName);
-        builder.append(", chartFeeds=");
+        builder.append(", timeChartFeeds=");
         builder.append(timeChartFeeds);
+        builder.append(", tasksChartFeeds=");
+        builder.append(tasksChartFeeds);
         builder.append(", avgGenTime=");
         builder.append(avgGenTime);
         builder.append(", maxGenTime=");
@@ -179,8 +183,52 @@ public class PoolsFeed
         builder.append(largestPoolSize);
         builder.append(", poolSize=");
         builder.append(poolSize);
+        builder.append(", hosts=");
+        builder.append(hosts);
         builder.append("]");
         return builder.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((poolName == null) ? 0 : poolName.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PoolsFeed other = (PoolsFeed) obj;
+        if (poolName == null) {
+            if (other.poolName != null)
+                return false;
+        } else if (!poolName.equals(other.poolName))
+            return false;
+        return true;
+    }
+
+    public void merge(PoolsFeed pf) {
+        this.avgGenTime = (this.avgGenTime * this.hosts + pf.getAvgGenTime()) / (this.hosts + 1);
+        this.maxGenTime = (this.maxGenTime * this.hosts + pf.getMaxGenTime()) / (this.hosts + 1);
+        this.minGenTime = (this.maxGenTime * this.hosts + pf.getMaxGenTime()) / (this.hosts + 1);
+        this.executed += pf.getExecuted();
+
+        this.submitted += pf.getSubmitted();
+        this.rejected += pf.getRejected();
+        this.completed = pf.getCompleted();
+        this.failed += pf.getFailed();
+        this.totoalGenTime += pf.getTotoalGenTime();
+        this.activeThreads = (this.activeThreads * this.hosts + pf.getActiveThreads()) / (this.hosts + 1);
+        this.largestPoolSize = (this.largestPoolSize * this.hosts + pf.getLargestPoolSize()) / (this.hosts + 1);
+        this.poolSize = (this.poolSize * this.hosts + pf.getPoolSize()) / (this.hosts + 1);
+
+        this.hosts++;
+    }
 }
