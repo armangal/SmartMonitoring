@@ -32,6 +32,7 @@ public class JMXConnectorThread
             ServersConfig serversConfig = (ServersConfig) context.createUnmarshaller().unmarshal(configXML);
 
             System.out.println("Initilized:" + serversConfig);
+            ConnectedServersState.setServersConfig(serversConfig);
 
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {

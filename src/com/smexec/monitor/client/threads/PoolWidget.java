@@ -3,6 +3,7 @@ package com.smexec.monitor.client.threads;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.smexec.monitor.client.widgets.LineChart;
 import com.smexec.monitor.client.widgets.LineChart.LineType;
@@ -14,64 +15,64 @@ public class PoolWidget
     private NumberFormat formatLong = NumberFormat.getDecimalFormat();
 
     private LineChart timeChart = new LineChart();
+    private HTML timesData = new HTML();
 
     private LineChart tasksChart = new LineChart();
+    private HTML tasksData = new HTML();
+    private HTML tasksData2 = new HTML();
 
-    private Label poolName = new Label();;
+    private HTML poolName = new HTML();;
+
     private Label avgGenTime = new Label();;
     private Label maxGenTime = new Label();;
     private Label minGenTime = new Label();;
+    private Label totoalGenTime = new Label();;
+
     private Label executed = new Label();;
     private Label submitted = new Label();;
     private Label rejected = new Label();;
     private Label completed = new Label();;
     private Label failed = new Label();;
-    private Label totoalGenTime = new Label();;
     private Label activeThreads = new Label();;
     private Label largestPoolSize = new Label();;
     private Label hosts = new Label();;
     private Label poolSize = new Label();;
 
-    private FlowPanel ft = new FlowPanel();
+    private FlowPanel fp = new FlowPanel();
+
+    private String pn;
 
     public PoolWidget(String poolName) {
-        this.poolName.setText("Poll Name:" + poolName);
+        this.pn = poolName;
         this.poolName.setStylePrimaryName("poolName");
-        ft.setStyleName("poolWidget");
-        ft.add(this.poolName);
-        FlowPanel charts = new FlowPanel();
-        charts.setStyleName("poolCharts");
-
-        charts.add(timeChart);
-        charts.add(tasksChart);
-        ft.add(charts);
-
-        FlowPanel tasks = new FlowPanel();
-        tasks.setStyleName("poolTasks");
-        tasks.add(this.submitted);
-        tasks.add(this.executed);
-        tasks.add(this.completed);
-        tasks.add(this.rejected);
-        tasks.add(this.failed);
-        ft.add(tasks);
-
-        FlowPanel times = new FlowPanel();
-        times.setStyleName("poolTimes");
-        times.add(this.maxGenTime);
-        times.add(this.avgGenTime);
-        times.add(this.minGenTime);
-        times.add(this.totoalGenTime);
-        ft.add(times);
+        fp.setStyleName("poolWidget");
 
         FlowPanel threads = new FlowPanel();
         threads.setStyleName("poolThreads");
-        threads.add(this.activeThreads);
-        threads.add(this.poolSize);
-        threads.add(this.largestPoolSize);
-        threads.add(this.hosts);
-        ft.add(threads);
+        threads.add(this.poolName);
+        // threads.add(this.activeThreads);
+        // threads.add(this.poolSize);
+        // threads.add(this.largestPoolSize);
+        // threads.add(this.hosts);
+        fp.add(threads);
 
-        initWidget(ft);
+        FlowPanel timePanel = new FlowPanel();
+        timePanel.setStyleName("poolCharts");
+        timePanel.add(timeChart);
+        timePanel.add(timesData);
+        timesData.setStyleName("poolTimes");
+        fp.add(timePanel);
+
+        FlowPanel taskPanel = new FlowPanel();
+        taskPanel.setStyleName("poolCharts");
+        taskPanel.add(tasksChart);
+        taskPanel.add(tasksData);
+        tasksData.setStyleName("poolTasks");
+        taskPanel.add(tasksData2);
+        tasksData2.setStyleName("poolTasks");
+        fp.add(taskPanel);
+
+        initWidget(fp);
     }
 
     public void refresh(PoolsFeed pf) {
@@ -84,23 +85,50 @@ public class PoolWidget
                                                                         LineType.COMPLETED});
         tasksChart.update();
 
-        submitted.setText("Submitted:" + formatLong.format(pf.getSubmitted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex())
-                          + ")");
-        executed.setText("Executed:" + formatLong.format(pf.getExecuted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
-        completed.setText("Completed:" + formatLong.format(pf.getCompleted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex())
-                          + ")");
-        rejected.setText("Rejected:" + formatLong.format(pf.getRejected()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.REJECTED.getIndex()) + ")");
-        failed.setText("Failed:" + formatLong.format(pf.getFailed()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.FAILED.getIndex()) + ")");
+        // submitted.setText("Submitted:" + formatLong.format(pf.getSubmitted()) + " (" +
+        // pf.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex())
+        // + ")");
+        // executed.setText("Executed:" + formatLong.format(pf.getExecuted()) + " (" +
+        // pf.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
+        // completed.setText("Completed:" + formatLong.format(pf.getCompleted()) + " (" +
+        // pf.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex())
+        // + ")");
+        // rejected.setText("Rejected:" + formatLong.format(pf.getRejected()) + " (" +
+        // pf.getTasksChartFeeds().getLastValues(LineType.REJECTED.getIndex()) + ")");
+        // failed.setText("Failed:" + formatLong.format(pf.getFailed()) + " (" +
+        // pf.getTasksChartFeeds().getLastValues(LineType.FAILED.getIndex()) + ")");
 
-        maxGenTime.setText("Max Time:" + formatLong.format(pf.getMaxGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.MAX.getIndex()) + ")");
-        avgGenTime.setText("Avg Time:" + formatLong.format(pf.getAvgGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ")");
-        minGenTime.setText("Min Time:" + formatLong.format(pf.getMinGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
-        totoalGenTime.setText("Total Time:" + formatLong.format(pf.getTotoalGenTime()));
+        StringBuilder sb = new StringBuilder();
+        sb.append(formatLong.format(pf.getSubmitted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex()) + ")");
+        sb.append(" | ").append(formatLong.format(pf.getExecuted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
+        sb.append(" | ").append(formatLong.format(pf.getCompleted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex()) + ")");
 
-        activeThreads.setText("Active Threads:" + formatLong.format(pf.getActiveThreads()));
-        poolSize.setText("Pool Size:" + formatLong.format(pf.getPoolSize()));
-        largestPoolSize.setText("Largest Pool Size:" + formatLong.format(pf.getLargestPoolSize()));
-        hosts.setText("Hosts:" + formatLong.format(pf.getHosts()));
+        tasksData.setHTML(sb.toString());
+
+        sb.setLength(0);
+        sb.append(formatLong.format(pf.getRejected()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.REJECTED.getIndex()) + ")");
+        sb.append(" | ").append(formatLong.format(pf.getFailed()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.FAILED.getIndex()) + ")");
+        tasksData2.setHTML(sb.toString());
+
+        // maxGenTime.setText("Max Time:" + formatLong.format(pf.getMaxGenTime()) + " (" +
+        // pf.getTimeChartFeeds().getLastValues(LineType.MAX.getIndex()) + ")");
+        // avgGenTime.setText("Avg Time:" + formatLong.format(pf.getAvgGenTime()) + " (" +
+        // pf.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ")");
+        // minGenTime.setText("Min Time:" + formatLong.format(pf.getMinGenTime()) + " (" +
+        // pf.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
+        // totoalGenTime.setText("Total Time:" + formatLong.format(pf.getTotoalGenTime()));
+
+        timesData.setHTML("" + formatLong.format(pf.getMaxGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.MAX.getIndex()) + ") | "
+                          + formatLong.format(pf.getAvgGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ") | "
+                          + formatLong.format(pf.getMinGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
+
+//        activeThreads.setText("Active Threads:" + formatLong.format(pf.getActiveThreads()));
+//        poolSize.setText("Pool Size:" + formatLong.format(pf.getPoolSize()));
+//        largestPoolSize.setText("Largest Pool Size:" + formatLong.format(pf.getLargestPoolSize()));
+//        hosts.setText("Hosts:" + formatLong.format(pf.getHosts()));
+
+        poolName.setHTML(pn + " | " + formatLong.format(pf.getActiveThreads()) + " | " + formatLong.format(pf.getPoolSize()) + " | "
+                         + formatLong.format(pf.getLargestPoolSize()) + " | Hosts:" + formatLong.format(pf.getHosts()));
 
         timeChart.setVisible(true);
         tasksChart.setVisible(true);

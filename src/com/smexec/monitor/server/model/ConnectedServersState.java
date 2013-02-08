@@ -11,7 +11,15 @@ public final class ConnectedServersState {
 
     public static ConcurrentHashMap<Integer, ServerStataus> map = new ConcurrentHashMap<Integer, ServerStataus>();
 
+    /**
+     * Result ready to be used by clients
+     */
     private static RefreshResult result = new RefreshResult();
+
+    /**
+     * current most up-to-date configurations
+     */
+    private static ServersConfig serversConfig;
 
     public static synchronized RefreshResult getRefreshResult() {
         return result;
@@ -32,7 +40,10 @@ public final class ConnectedServersState {
             }
         }
 
-        result = new RefreshResult(poolFeedMap, servers);
+        result = new RefreshResult(poolFeedMap, servers, serversConfig.getName());
     }
 
+    public static void setServersConfig(ServersConfig serversConfig) {
+        ConnectedServersState.serversConfig = serversConfig;
+    }
 }

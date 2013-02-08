@@ -79,7 +79,7 @@ public class StateUpdaterThread
                 String[] split = chunks.split("]");
 
                 ChartFeed timesChartFeed = new ChartFeed(split.length, 3);
-                for (int i = 0; i < split.length; i++) {
+                for (int i = 1; i < split.length; i++) {
                     String[] values = split[i].split(",");
                     timesChartFeed.getValues()[0][i] = Long.valueOf(values[0]);
                     timesChartFeed.getValues()[1][i] = Long.valueOf(values[1]);
@@ -92,7 +92,7 @@ public class StateUpdaterThread
                 split = chunks.split("]");
 
                 ChartFeed tasksChartFeed = new ChartFeed(split.length, 5);
-                for (int i = 0; i < split.length; i++) {
+                for (int i = 1; i < split.length; i++) {
                     String[] values = split[i].split(",");
                     tasksChartFeed.getValues()[0][i] = Long.valueOf(values[0]);
                     tasksChartFeed.getValues()[1][i] = Long.valueOf(values[1]);

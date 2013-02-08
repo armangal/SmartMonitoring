@@ -18,6 +18,8 @@ public class ServersConfig {
     @XmlElementWrapper
     private List<ServerConfig> servers;
 
+    private String name;
+
     public ServersConfig() {}
 
     public List<ServerConfig> getServers() {
@@ -28,11 +30,17 @@ public class ServersConfig {
         this.servers = servers;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("ServersConfig [servers=");
         builder.append(servers);
+        builder.append(", name=");
+        builder.append(name);
         builder.append("]");
         return builder.toString();
     }

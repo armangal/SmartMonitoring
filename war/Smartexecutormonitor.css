@@ -1,5 +1,16 @@
 /** Add css rules here for your application. */
 /** Example rules used by the template application (remove for your app) */
+html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,aside,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,audio,video
+	{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+
 h1 {
 	font-size: 2em;
 	font-weight: bold;
@@ -13,76 +24,27 @@ body {
 }
 
 .mainPanel {
-	width: 1200px;
-	height: 600px;
+	width: 1260px;
+	height: 710px;
 	border: solid #EE8318 thin;
-	margin: 0px;
+	margin: auto;
 	padding: 0px;
-}
-
-.poolWidget {
-	border: dashed thin #990033;
-	padding: 10px;
-	width: 360px;
-	height: 260px;
-	position: relative;
-	background-color: #F5ECCE;
-}
-
-.poolName {
-	color: blue;
-	font-weight: bold;
-	padding-bottom: 5px;
-	padding-top: 5px;
-}
-
-.chart {
-	
-}
-
-.poolCharts {
-	border: solid #EE8318 thin;
-	margin: 2px;
-	width: 200px;
-}
-
-.poolTasks {
-	border: solid blue thin;
-	margin: 2px;
-	width: 150px;
-	position: absolute;
-	top: 100px;
-	height: 100px;
-	left: 220px;
-}
-
-.poolTimes {
-	border: solid green thin;
-	margin: 2px;
-	width: 150px;
-	position: absolute;
-	top: 0;
-	height: 100px;
-	left: 220px;
-}
-
-.poolThreads {
-	border: solid orange thin;
-	margin: 2px;
-	width: 150px;
-	position: absolute;
-	top: 200px;
-	height: 70px;
-	left: 220px;
 }
 
 .monitoringWidget {
 	border: solid orange thin;
-	margin: 2px;
+	margin: 0px 0px 2px 2px;
 	border-radius: 8px;
 	-moz-border-radius: 8px;
 	width: 97%;
 	padding: 2px;
+}
+
+.monitoringWidgetLable {
+	font-style: italic;
+	font-weight: bold;
+	color: #819FF7;
+	font-variant: small-caps;
 }
 
 .tournamentsWidget {
@@ -92,7 +54,7 @@ body {
 }
 
 .tournamentsWidget .table {
-	height: 150px;
+	height: 100px;
 }
 
 .serevrsWidget {
@@ -130,6 +92,7 @@ body {
 	position: relative;
 	float: right;
 }
+
 .alertsWidget .table {
 	height: 80px;
 }
@@ -139,6 +102,88 @@ body {
 	position: relative;
 	float: left;
 }
+
 .threadPoolsWidget .table {
-	height: 250px;
+	height: 515px;
+}
+
+.poolWidget {
+	border: dashed thin #990033;
+	padding: 5px;
+	position: relative;
+	background-color: #F5ECCE;
+	height: 300px;
+}
+
+.poolName {
+	color: blue;
+	font-weight: bold;
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+.poolCharts {
+	border: solid #EE8318 thin;
+	margin: 3px;
+	float: right;
+	padding: 8px;
+	height: 150px;
+	width: 45%;
+}
+
+.poolTimes {
+	
+}
+
+.poolTasks {
+	
+}
+
+.poolThreads { /*border: solid orange thin;*/
+	
+}
+/*Tables*/
+#infoTable {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	background: #fff;
+	width: 95%;
+	border-collapse: collapse;
+	text-align: left;
+	margin: 5px;
+}
+
+#infoTable #th {
+	font-size: 14px;
+	font-weight: bold;
+	color: #039;
+	border-bottom: 2px solid #6678b1;
+	padding: 10px 8px;
+}
+
+#infoTable #offline {
+	background-color: #FF9999;
+}
+
+#infoTable td {
+	color: #669;
+	padding: 0px 8px 0;
+	border-bottom: 1px solid #ccc;
+}
+
+#infoTable tr:hover td {
+	color: #339;
+	background: #eff2ff;
+}
+
+#infoTable #memoryVeryHigh {
+	background-color: #FF33CC;
+}
+
+#infoTable #memoryHigh {
+	background-color: #FF6699;
+}
+
+#infoTable #memoryWarn {
+	background-color: #FFCC66;
 }

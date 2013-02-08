@@ -12,12 +12,15 @@ public class RefreshResult
 
     private ConnectedServers connectedServers;
 
+    private String title;
+
     public RefreshResult() {}
 
-    public RefreshResult(HashMap<String, PoolsFeed> poolFeedMap, ConnectedServers connectedServers) {
+    public RefreshResult(HashMap<String, PoolsFeed> poolFeedMap, ConnectedServers connectedServers, String title) {
         super();
         this.poolFeedMap = poolFeedMap;
         this.connectedServers = connectedServers;
+        this.title = title;
     }
 
     public HashMap<String, PoolsFeed> getPoolFeedMap() {
@@ -27,9 +30,8 @@ public class RefreshResult
     public ConnectedServers getConnectedServers() {
         return connectedServers;
     }
-    
-    
-    public void setPoolFeedMap(HashMap<String, PoolsFeed> poolFeedMap) {
-        this.poolFeedMap = poolFeedMap;
+
+    public String getTitle() {
+        return title;
     }
 }

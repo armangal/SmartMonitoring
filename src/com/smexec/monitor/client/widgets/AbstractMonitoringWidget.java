@@ -16,7 +16,9 @@ public abstract class AbstractMonitoringWidget
         FlowPanel mp = new FlowPanel();
         mainPanel.setStyleName("monitoringWidget");
         mainPanel.addStyleName("table");
-        mp.add(new HTML("<b><u>" + name + "</u></b>"));
+        HTML lable = new HTML(name);
+        lable.addStyleName("monitoringWidgetLable");
+        mp.add(lable);
         mp.add(mainPanel);
         mainPanel.add(sp);
         initWidget(mp);

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ServersConfig xmlns:ns2="http://www.armangal.com/smartexecutormonitor/v1">
+	<name>Dummy Monitoring</name>
 	<servers>
 		<server>
-			<name>First</name>
+			<name>Local (1)</name>
 			<serverCode>15</serverCode>
 			<ip>127.0.0.1</ip>
 			<jmxPort>9010</jmxPort>
@@ -14,10 +15,10 @@
 			<jmxPort>9020</jmxPort>
 		</server>
 		<server>
-			<name>333</name>
+			<name>EDI_CHANNEL</name>
 			<serverCode>17</serverCode>
-			<ip>127.0.0.1</ip>
-			<jmxPort>9030</jmxPort>
+			<ip>192.168.203.110</ip>
+			<jmxPort>9010</jmxPort>
 		</server>
 		<server>
 			<name>4444</name>

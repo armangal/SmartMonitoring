@@ -31,6 +31,7 @@ public class Smartexecutormonitor
     final Button refresh = new Button("Start Refresh");
     boolean continueRefresh = false;
 
+    private HTML title = new HTML("<h1>----------------------------</h1>");
     private AlertsWidget alertsWidget = new AlertsWidget();
     private MemoryWidget memoryWidget = new MemoryWidget();
     private PlayersWidget playersWidget = new PlayersWidget();
@@ -60,6 +61,7 @@ public class Smartexecutormonitor
 
             @Override
             public void onSuccess(RefreshResult result) {
+                title.setHTML("<h1>" + result.getTitle() + "</h1>");
                 ConnectedServers cs = result.getConnectedServers();
                 if (cs != null) {
                     serversWidget.update(cs.getServers());
@@ -67,7 +69,7 @@ public class Smartexecutormonitor
                     if (cs.getServers() == null || cs.getServers().isEmpty()) {
                         cleanMonitors();
                     }
-                    
+
                     poolsWidget.refresh(result.getPoolFeedMap());
                 }
 
@@ -90,7 +92,7 @@ public class Smartexecutormonitor
     public void onModuleLoad() {
         RootPanel.get().add(mainPanel);
         mainPanel.setStyleName("mainPanel");
-        mainPanel.add(new HTML("<h1>Smart Executor Monitoring</h1>"));
+        mainPanel.add(title);
 
         mainPanel.add(tournamentsWidget);
         mainPanel.add(playersWidget);
