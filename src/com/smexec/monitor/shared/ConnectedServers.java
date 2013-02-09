@@ -6,6 +6,8 @@ import java.util.ArrayList;
 public class ConnectedServers
     implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
     private ArrayList<ConnectedServer> servers = new ArrayList<ConnectedServer>(0);
 
     public ConnectedServers() {}

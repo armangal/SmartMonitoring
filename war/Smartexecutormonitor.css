@@ -171,7 +171,7 @@ body {
 
 #infoTable td {
 	color: #669;
-	padding: 0px 8px 0;
+	padding: 0px 0px 0;
 	border-bottom: 1px solid #ccc;
 }
 
@@ -180,14 +180,20 @@ body {
 	background: #eff2ff;
 }
 
-#infoTable #memoryVeryHigh {
+#infoTable #memoryVeryHigh td{
 	background-color: #FF33CC;
+	font-weight: bold !important;
+	color: white !important;
 }
 
-#infoTable #memoryHigh {
+#infoTable #memoryHigh td{
 	background-color: #FF6699;
+	font-weight: bold !important;
+	color: white !important;
 }
 
-#infoTable #memoryWarn {
+#infoTable #memoryWarn td{
 	background-color: #FFCC66;
+	font-weight: bold !important;
+	color: white !important;
 }

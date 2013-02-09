@@ -1,6 +1,11 @@
 package com.smexec.monitor.server.tasks;
 
+import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
+
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,12 +21,12 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
-import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 
 import com.smexec.monitor.server.model.ConnectedServersState;
 import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.utils.JMXGetGCStat;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.ConnectedServers;
@@ -128,13 +133,20 @@ public class StateUpdaterThread
     private void getMemoryStats(ServerStataus serverStataus)
         throws MBeanException, AttributeNotFoundException, InstanceNotFoundException, ReflectionException, IOException, MalformedObjectNameException {
         MBeanServerConnection mbsc = serverStataus.getConnector().getMBeanServerConnection();
+        JMXGetGCStat p = new JMXGetGCStat(mbsc);
 
-        Object o = mbsc.getAttribute(new ObjectName("java.lang:type=Memory"), "HeapMemoryUsage");
-        CompositeData cd = (CompositeData) o;
-        serverStataus.updateMemoryUsage(Long.valueOf(cd.get("init").toString()),
-                                        Long.valueOf(cd.get("used").toString()),
-                                        Long.valueOf(cd.get("committed").toString()),
-                                        Long.valueOf(cd.get("max").toString()));
+        MemoryMXBean mxBean = newPlatformMXBeanProxy(mbsc, ManagementFactory.MEMORY_MXBEAN_NAME, MemoryMXBean.class);
+
+        MemoryUsage heapMemoryUsage = mxBean.getHeapMemoryUsage();
+
+        String[] gc = p.getVerboseGc();
+        serverStataus.updateMemoryUsage(heapMemoryUsage.getInit(),
+                                        heapMemoryUsage.getUsed(),
+                                        heapMemoryUsage.getCommitted(),
+                                        heapMemoryUsage.getMax(),
+                                        gc[0],
+                                        gc[1]);
+
     }
 
     private long getLong(MBeanServerConnection mbsc, ObjectName on, String name) {

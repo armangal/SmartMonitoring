@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.smexec.monitor.client.widgets.LineChart;
-import com.smexec.monitor.client.widgets.LineChart.LineType;
+import com.smexec.monitor.client.widgets.LineType;
 import com.smexec.monitor.shared.PoolsFeed;
 
 public class PoolWidget

@@ -29,8 +29,8 @@ public class ServerStataus {
         return poolFeedMap;
     }
 
-    public void updateMemoryUsage(long init, long used, long committed, long max) {
-        memoryUsage.add(new MemoryUsage(init, used, committed, max));
+    public void updateMemoryUsage(long init, long used, long committed, long max, String GcDetails, String gcs) {
+        memoryUsage.add(new MemoryUsage(init, used, committed, max, GcDetails, gcs));
         if (memoryUsage.size() > 100) {
             memoryUsage.remove();
         }

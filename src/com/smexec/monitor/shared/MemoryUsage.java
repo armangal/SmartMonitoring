@@ -13,15 +13,19 @@ public class MemoryUsage
     long init;
     long max;
     long used;
+    String gcData;
+    String gcs;
 
     public MemoryUsage() {}
 
-    public MemoryUsage(long init, long used, long committed, long max) {
+    public MemoryUsage(long init, long used, long committed, long max, String gcData, String gcs) {
         super();
         this.committed = committed;
         this.init = init;
         this.max = max;
         this.used = used;
+        this.gcData = gcData;
+        this.gcs = gcs;
     }
 
     public static long getSerialversionuid() {
@@ -46,6 +50,15 @@ public class MemoryUsage
 
     public double getPercentage() {
         return used * 100d / max;
+    }
+
+    public String getGcData() {
+        return gcData;
+    }
+    
+    
+    public String getGcs() {
+        return gcs;
     }
 
     @Override

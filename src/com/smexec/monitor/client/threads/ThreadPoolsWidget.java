@@ -9,6 +9,7 @@ import java.util.List;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
+import com.smexec.monitor.client.widgets.LineType;
 import com.smexec.monitor.shared.PoolsFeed;
 
 public class ThreadPoolsWidget
@@ -75,14 +76,14 @@ public class ThreadPoolsWidget
         for (PoolsFeed feed : values) {
             j = 0;
             ft.setText(i, j++, "" + feed.getPoolName());
-            ft.setText(i, j++, "" + feed.getSubmitted());
-            ft.setText(i, j++, "" + feed.getExecuted());
-            ft.setText(i, j++, "" + feed.getCompleted());
-            ft.setText(i, j++, "" + feed.getRejected());
-            ft.setText(i, j++, "" + feed.getFailed());
-            ft.setText(i, j++, "" + feed.getMaxGenTime());
-            ft.setText(i, j++, "" + feed.getAvgGenTime());
-            ft.setText(i, j++, "" + feed.getMinGenTime());
+            ft.setText(i, j++, "" + feed.getSubmitted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex()) + ")");
+            ft.setText(i, j++, "" + feed.getExecuted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
+            ft.setText(i, j++, "" + feed.getCompleted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex()) + ")");
+            ft.setText(i, j++, "" + feed.getRejected() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.REJECTED.getIndex()) + ")");
+            ft.setText(i, j++, "" + feed.getFailed() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.FAILED.getIndex()) + ")");
+            ft.setText(i, j++, "" + feed.getMaxGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.MAX.getIndex()) + ")");
+            ft.setText(i, j++, "" + feed.getAvgGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ")");
+            ft.setText(i, j++, "" + feed.getMinGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
             ft.setText(i, j++, "" + feed.getTotoalGenTime() / 1000 + "sec");
             ft.setText(i, j++, "" + feed.getHosts());
             i++;
