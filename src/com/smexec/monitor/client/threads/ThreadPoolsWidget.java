@@ -1,15 +1,12 @@
 package com.smexec.monitor.client.threads;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
@@ -61,26 +58,41 @@ public class ThreadPoolsWidget
 
         FlexTable ft = new FlexTable();
         ft.getElement().setId("infoTable");
+        ft.setStyleName("poolsList");
         fp.add(ft);
         ft.setCellPadding(0);
         ft.setCellSpacing(0);
 
         int i = 0;
-        ft.setText(i, 0, "Pool Name");
-        ft.setText(i, 1, "Submited");
-        ft.setText(i, 2, "Executed");
-        ft.setText(i, 3, "Completed");
-        ft.setText(i, 4, "Rejected");
-        ft.setText(i, 5, "Failed");
+        int j = 0;
+        ft.setText(i, j++, "Name");
+        ft.setText(i, j++, "Subm");
+        ft.setText(i, j++, "Exec");
+        ft.setText(i, j++, "Comp");
+        ft.setText(i, j++, "Rejc");
+        ft.setText(i, j++, "Fail");
+        ft.setText(i, j++, "Time.MX");
+        ft.setText(i, j++, "Time.AV");
+        ft.setText(i, j++, "Time.MI");
+        ft.setText(i, j++, "Time.TO");
+        ft.setText(i, j++, "Hosts");
+
         ft.getRowFormatter().getElement(i++).setId("th");
 
         for (PoolsFeed feed : values) {
-            ft.setText(i, 0, "" + feed.getPoolName());
-            ft.setText(i, 1, "" + feed.getSubmitted());
-            ft.setText(i, 2, "" + feed.getExecuted());
-            ft.setText(i, 3, "" + feed.getCompleted());
-            ft.setText(i, 4, "" + feed.getRejected());
-            ft.setText(i++, 5, "" + feed.getFailed());
+            j = 0;
+            ft.setText(i, j++, "" + feed.getPoolName());
+            ft.setText(i, j++, "" + feed.getSubmitted());
+            ft.setText(i, j++, "" + feed.getExecuted());
+            ft.setText(i, j++, "" + feed.getCompleted());
+            ft.setText(i, j++, "" + feed.getRejected());
+            ft.setText(i, j++, "" + feed.getFailed());
+            ft.setText(i, j++, "" + feed.getMaxGenTime());
+            ft.setText(i, j++, "" + feed.getAvgGenTime());
+            ft.setText(i, j++, "" + feed.getMinGenTime());
+            ft.setText(i, j++, "" + feed.getTotoalGenTime() / 1000 + "sec");
+            ft.setText(i, j++, "" + feed.getHosts());
+            i++;
         }
     }
 }

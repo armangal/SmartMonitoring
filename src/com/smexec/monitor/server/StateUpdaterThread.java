@@ -36,7 +36,7 @@ public class StateUpdaterThread
         ConnectedServers servers = new ConnectedServers();
 
         ArrayList<ConnectedServer> serversList = new ArrayList<ConnectedServer>(0);
-        for (ServerStataus ss : ConnectedServersState.map.values()) {
+        for (ServerStataus ss : ConnectedServersState.getMap().values()) {
             ServerConfig sc = ss.getServerConfig();
             if (ss.isConnected()) {
                 try {

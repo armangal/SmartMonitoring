@@ -9,7 +9,7 @@ import com.smexec.monitor.shared.RefreshResult;
 
 public final class ConnectedServersState {
 
-    public static ConcurrentHashMap<Integer, ServerStataus> map = new ConcurrentHashMap<Integer, ServerStataus>();
+    private static ConcurrentHashMap<Integer, ServerStataus> map = new ConcurrentHashMap<Integer, ServerStataus>();
 
     /**
      * Result ready to be used by clients
@@ -21,6 +21,11 @@ public final class ConnectedServersState {
      */
     private static ServersConfig serversConfig;
 
+    
+    public static ConcurrentHashMap<Integer, ServerStataus> getMap() {
+        return map;
+    }
+   
     public static synchronized RefreshResult getRefreshResult() {
         return result;
     }

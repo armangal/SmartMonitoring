@@ -4,13 +4,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.Widget;
+import com.smexec.monitor.client.MonitoringService;
+import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.shared.ConnectedServer;
 
 public class MemoryWidget
     extends AbstractMonitoringWidget {
+
+    private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
 
     private NumberFormat formatLong = NumberFormat.getDecimalFormat();
 
@@ -48,7 +61,39 @@ public class MemoryWidget
 
         for (ConnectedServer cs : list) {
             if (cs.getStatus()) {
-                ft.setText(i, 0, cs.getName() + ":" + cs.getServerCode());
+                HTML name = new HTML("<a>"+cs.getName() + ":" + cs.getServerCode()+"</a>");
+                name.getElement().setAttribute("code", "" + cs.getServerCode());
+                name.setTitle("Click to get Thread Dump");
+                name.addClickHandler(new ClickHandler() {
+
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        String code = ((Widget) event.getSource()).getElement().getAttribute("code");
+                        service.getThreadDump(Integer.valueOf(code), new AsyncCallback<String>() {
+
+                            @Override
+                            public void onSuccess(String result) {
+                                DialogBox db = new DialogBox();
+                                db.setAnimationEnabled(true);
+                                db.setAutoHideEnabled(true);
+                                db.setModal(true);
+                                db.setSize("900px", "600px");
+                                TextArea textArea = new TextArea();
+                                textArea.setText(result);
+                                textArea.setSize("990px", "590px");
+                                db.setWidget(textArea);
+                                db.center();
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught) {
+                                Window.alert(caught.getMessage());
+                            }
+                        });
+                    }
+                });
+
+                ft.setWidget(i, 0, name);
                 ft.setText(i, 1, formatLong.format(cs.getMemoryUsage().getUsed() / 1048576) + " MB");
                 ft.setText(i, 2, formatLong.format(cs.getMemoryUsage().getMax() / 1048576) + " MB");
                 ft.setText(i++, 3, formatLong.format(cs.getMemoryUsage().getPercentage()) + "%");

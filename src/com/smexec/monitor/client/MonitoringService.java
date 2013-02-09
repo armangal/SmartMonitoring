@@ -12,4 +12,6 @@ public interface MonitoringService
     extends RemoteService {
 
     RefreshResult refresh();
+    
+    String getThreadDump(Integer serverCode);
 }

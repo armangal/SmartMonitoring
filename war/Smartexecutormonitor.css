@@ -153,6 +153,10 @@ body {
 	margin: 5px;
 }
 
+.poolsList td{
+	font-size: xx-small !important;
+}
+
 #infoTable #th {
 	font-size: 14px;
 	font-weight: bold;

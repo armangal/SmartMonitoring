@@ -1,5 +1,6 @@
 package com.smexec.monitor.client.widgets;
 
+import com.google.gwt.core.client.GWT;
 import com.googlecode.gchart.client.GChart;
 import com.smexec.monitor.shared.ChartFeed;
 
@@ -27,9 +28,9 @@ public class LineChart
 
         GChart.setDefaultSymbolBorderColors(new String[] {"#c5000b", "#00ff00", "#0000ff", "#004586", "#ff420e", "#ffd320", "#7e0021", "#579d1c", "#83caff",
                                                           "#314004", "#aecf00", "#4b1f6f", "#ff950e", "#c5000b", "#0084d1"});
-//        setChartTitle("<span>Times</span>");
+        // setChartTitle("<span>Times</span>");
         setChartFootnotesLeftJustified(true);
-//        setChartFootnotes("<ol>" + "<li>Click on empty space to add a new point there.");
+        // setChartFootnotes("<ol>" + "<li>Click on empty space to add a new point there.");
         // "<li>Click on any point to delete it."
         // + "<li>Points are added after the last inserted or deleted point." + "</ol>");
 
@@ -70,9 +71,8 @@ public class LineChart
         getCurve().getSymbol().setBorderWidth(3);
         getCurve().getSymbol().setSymbolType(SymbolType.LINE);
 
-        // int size = GWT.isScript() ? (timeChartFeeds.getValuesLenght() > X_ELEMENTS ? X_ELEMENTS :
-        // timeChartFeeds.getValuesLenght()) : 2;
-        int size = timeChartFeeds.getValuesLenght();
+        int size = GWT.isScript() ? (timeChartFeeds.getValuesLenght()) : 2;
+        // int size = timeChartFeeds.getValuesLenght();
         for (int i = 0; i < size; i++) {
             double value = timeChartFeeds.getValues(lineType.getIndex(), i);
             if (value > max)

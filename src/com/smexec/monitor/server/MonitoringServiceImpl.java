@@ -19,4 +19,10 @@ public class MonitoringServiceImpl
         return ConnectedServersState.getRefreshResult();
     }
 
+    @Override
+    public String getThreadDump(Integer serverCode) {
+
+        return JMXGetThreadDump.getThreadDump(serverCode);
+    }
+
 }

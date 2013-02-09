@@ -36,16 +36,16 @@ public class JMXConnectorThread
 
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {
-                    if (ConnectedServersState.map.containsKey(sc.getServerCode())) {
-                        ServerStataus serverStataus = ConnectedServersState.map.get(sc.getServerCode());
+                    if (ConnectedServersState.getMap().containsKey(sc.getServerCode())) {
+                        ServerStataus serverStataus = ConnectedServersState.getMap().get(sc.getServerCode());
                         if (!serverStataus.isConnected()) {
                             // try to connect again
                             ServerStataus ss = connect(sc);
-                            ConnectedServersState.map.put(sc.getServerCode(), ss);
+                            ConnectedServersState.getMap().put(sc.getServerCode(), ss);
                         }
                     } else {
                         ServerStataus ss = connect(sc);
-                        ConnectedServersState.map.put(sc.getServerCode(), ss);
+                        ConnectedServersState.getMap().put(sc.getServerCode(), ss);
                     }
                 }
             }
@@ -72,7 +72,7 @@ public class JMXConnectorThread
                 public void handleNotification(Notification notification, Object key) {
                     System.out.println("Notification:" + notification);
                     if (notification.getType().contains("closed") || notification.getType().contains("failed")) {
-                        ConnectedServersState.map.remove(((ServerConfig) key).getServerCode());
+                        ConnectedServersState.getMap().remove(((ServerConfig) key).getServerCode());
                         // TODO clear state
                     }
                 }

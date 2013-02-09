@@ -216,18 +216,19 @@ public class PoolsFeed
 
     public void merge(PoolsFeed pf) {
         this.avgGenTime = (this.avgGenTime * this.hosts + pf.getAvgGenTime()) / (this.hosts + 1);
-        this.maxGenTime = (this.maxGenTime * this.hosts + pf.getMaxGenTime()) / (this.hosts + 1);
-        this.minGenTime = (this.maxGenTime * this.hosts + pf.getMaxGenTime()) / (this.hosts + 1);
-        this.executed += pf.getExecuted();
+        this.maxGenTime = this.maxGenTime > pf.getMaxGenTime() ? this.maxGenTime : pf.getMaxGenTime();
+        this.minGenTime = this.minGenTime < pf.getMinGenTime() ? this.minGenTime : pf.getMinGenTime();
+        this.totoalGenTime += pf.getTotoalGenTime();
 
         this.submitted += pf.getSubmitted();
+        this.executed += pf.getExecuted();
         this.rejected += pf.getRejected();
-        this.completed = pf.getCompleted();
+        this.completed += pf.getCompleted();
         this.failed += pf.getFailed();
-        this.totoalGenTime += pf.getTotoalGenTime();
-        this.activeThreads = (this.activeThreads * this.hosts + pf.getActiveThreads()) / (this.hosts + 1);
-        this.largestPoolSize = (this.largestPoolSize * this.hosts + pf.getLargestPoolSize()) / (this.hosts + 1);
-        this.poolSize = (this.poolSize * this.hosts + pf.getPoolSize()) / (this.hosts + 1);
+
+        this.activeThreads = this.activeThreads > pf.getActiveThreads() ? this.activeThreads : pf.getActiveThreads();
+        this.largestPoolSize = this.largestPoolSize > pf.getLargestPoolSize() ? this.largestPoolSize : pf.getLargestPoolSize();
+        this.poolSize = this.poolSize > pf.getPoolSize() ? this.poolSize : pf.getPoolSize();
 
         this.hosts++;
     }
