@@ -145,7 +145,7 @@ public class JMXGetGCStat {
             sb.append("Count=" + gc.getCollectionCount());
             sb.append(" GCTime=" + formatMillis(gc.getCollectionTime()));
             sb.append("]");
-            gcs += formatMillisShort(gc.getCollectionTime()) + ";";
+            gcs += formatMillisShort(gc.getCollectionTime()) + ":(" + gc.getCollectionCount() + ");";
         }
         sb.append("\n");
         for (MemoryPoolMXBean p : pools) {
@@ -162,6 +162,7 @@ public class JMXGetGCStat {
     private String formatMillis(long ms) {
         return String.format("%.4fsec", ms / (double) 1000);
     }
+
     private String formatMillisShort(long ms) {
         return String.format("%.2f", ms / (double) 1000);
     }

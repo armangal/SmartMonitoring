@@ -98,7 +98,7 @@ public class MemoryWidget
         ft.setText(i, 0, "Code, Name");
         ft.setText(i, 1, "Memory");
         ft.setText(i, 2, "Usage %");
-        ft.setText(i, 3, "GC Time(sec)");
+        ft.setText(i, 3, "GC [sec:(times)]");
         ft.getRowFormatter().getElement(i++).setId("th");
 
         for (ConnectedServer cs : list) {
@@ -127,8 +127,9 @@ public class MemoryWidget
                     String[] seconds = cs.getMemoryUsage().getGcs().split(";");
                     if (seconds.length > 0) {
                         for (String sec : seconds) {
-                            if (Double.valueOf(sec) > max) {
-                                max = Double.valueOf(sec);
+                            String[] split = sec.split(":");
+                            if (Double.valueOf(split[0]) > max) {
+                                max = Double.valueOf(split[0]);
                             }
                         }
                     }

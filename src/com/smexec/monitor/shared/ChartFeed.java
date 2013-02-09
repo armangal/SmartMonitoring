@@ -28,7 +28,7 @@ public class ChartFeed
     }
 
     public long getLastValues(int x) {
-        return values[x][Math.max(valuesLenght - 2, 0)];
+        return values[x][Math.max(valuesLenght - 1, 0)];
     }
 
     public int getValuesAmount() {

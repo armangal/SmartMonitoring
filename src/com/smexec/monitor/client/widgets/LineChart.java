@@ -1,6 +1,5 @@
 package com.smexec.monitor.client.widgets;
 
-import com.google.gwt.core.client.GWT;
 import com.googlecode.gchart.client.GChart;
 import com.smexec.monitor.shared.ChartFeed;
 
@@ -46,10 +45,10 @@ public class LineChart
             }
             
         }
-        getYAxis().setAxisMax(maxYAxis + Math.max((maxYAxis / 100 * 5), 5));
-        getYAxis().setAxisMin(minYAxis+Math.max((minYAxis / 100 * 5), 5));
+        getYAxis().setAxisMax(maxYAxis + (maxYAxis / 100 * 5));
+        getYAxis().setAxisMin(minYAxis);
 
-        getXAxis().setAxisMax(timeChartFeeds.getValuesLenght());
+        getXAxis().setAxisMax(timeChartFeeds.getValuesLenght()-1);
 
     }
 
@@ -58,13 +57,14 @@ public class LineChart
         double min = Double.MAX_VALUE;
         addCurve();
         // getCurve().setLegendLabel(lineType.name());
-        getCurve().getSymbol().setHeight(2);
-        getCurve().getSymbol().setWidth(3);
-        getCurve().getSymbol().setBorderWidth(3);
+        getCurve().getSymbol().setHeight(1);
+        getCurve().getSymbol().setWidth(1);
+        getCurve().getSymbol().setBorderWidth(1);
+        getCurve().getSymbol().setBrushWidth(DEFAULT_WIDGET_WIDTH_UPPERBOUND);
         getCurve().getSymbol().setSymbolType(SymbolType.LINE);
 
-        int size = GWT.isScript() ? (timeChartFeeds.getValuesLenght()) : 2;
-        // int size = timeChartFeeds.getValuesLenght();
+//        int size = GWT.isScript() ? (timeChartFeeds.getValuesLenght()) : 2;
+         int size = timeChartFeeds.getValuesLenght();
         for (int i = 0; i < size; i++) {
             double value = timeChartFeeds.getValues(lineType.getIndex(), i);
             if (value > max)

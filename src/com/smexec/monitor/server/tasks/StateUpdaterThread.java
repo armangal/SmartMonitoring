@@ -7,7 +7,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -66,9 +65,9 @@ public class StateUpdaterThread
 
         JMXConnector jmxConnector = ss.getConnector();
         MBeanServerConnection mbsc = jmxConnector.getMBeanServerConnection();
-        System.out.println(mbsc.getMBeanCount());
+        //System.out.println(mbsc.getMBeanCount());
 
-        System.out.println(Arrays.toString(mbsc.getDomains()));
+        //System.out.println(Arrays.toString(mbsc.getDomains()));
 
         Set<ObjectInstance> names = new HashSet<ObjectInstance>(mbsc.queryMBeans(null, null));
 
@@ -85,7 +84,7 @@ public class StateUpdaterThread
                 String[] split = chunks.split("]");
 
                 ChartFeed timesChartFeed = new ChartFeed(split.length, 3);
-                for (int i = 1; i < split.length; i++) {
+                for (int i = 0; i < split.length; i++) {
                     String[] values = split[i].split(",");
                     timesChartFeed.getValues()[0][i] = Long.valueOf(values[0]);
                     timesChartFeed.getValues()[1][i] = Long.valueOf(values[1]);
@@ -98,7 +97,7 @@ public class StateUpdaterThread
                 split = chunks.split("]");
 
                 ChartFeed tasksChartFeed = new ChartFeed(split.length, 5);
-                for (int i = 1; i < split.length; i++) {
+                for (int i = 0; i < split.length; i++) {
                     String[] values = split[i].split(",");
                     tasksChartFeed.getValues()[0][i] = Long.valueOf(values[0]);
                     tasksChartFeed.getValues()[1][i] = Long.valueOf(values[1]);

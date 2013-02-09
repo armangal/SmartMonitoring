@@ -75,6 +75,14 @@ public class PoolWidget
         initWidget(fp);
     }
 
+    public void clear() {
+        timeChart.setVisible(false);
+        tasksChart.setVisible(false);
+        timesData.setHTML("");
+        tasksData.setHTML("");
+        tasksData2.setHTML("");
+        poolNameWidget.setHTML("");
+    }
     public void refresh(PoolsFeed pf) {
         this.pn = pf.getPoolName();
 
