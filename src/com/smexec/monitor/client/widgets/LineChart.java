@@ -39,7 +39,6 @@ public class LineChart
         getXAxis().setAxisMax(10);
         getXAxis().setTickCount(5);
         getXAxis().setHasGridlines(true);
-        getYAxis().setAxisMin(0);
         getYAxis().setTickCount(10);
         getYAxis().setHasGridlines(true);
         // switch back to GChart's built-in default colors
@@ -50,20 +49,27 @@ public class LineChart
         clearCurves();
 
         double maxYAxis = Double.MIN_VALUE;
+        double minYAxis = Double.MAX_VALUE;
         for (int i = 0; i < lineTypes.length; i++) {
-            double line = drawLine(timeChartFeeds, lineTypes[i]);
-            if (line > maxYAxis) {
-                maxYAxis = line;
+            double[] line = drawLine(timeChartFeeds, lineTypes[i]);
+            if (line[0] > maxYAxis) {
+                maxYAxis = line[0];
             }
+            if (line[1] < minYAxis) {
+                minYAxis = line[1];
+            }
+            
         }
-        getYAxis().setAxisMax(maxYAxis + +Math.max((maxYAxis / 100 * 5), 5));
+        getYAxis().setAxisMax(maxYAxis + Math.max((maxYAxis / 100 * 5), 5));
+        getYAxis().setAxisMin(minYAxis+Math.max((minYAxis / 100 * 5), 5));
 
         getXAxis().setAxisMax(timeChartFeeds.getValuesLenght());
 
     }
 
-    private double drawLine(ChartFeed timeChartFeeds, LineType lineType) {
-        double max = 1d;
+    private double[] drawLine(ChartFeed timeChartFeeds, LineType lineType) {
+        double max = Double.MIN_VALUE;
+        double min = Double.MAX_VALUE;
         addCurve();
         // getCurve().setLegendLabel(lineType.name());
         getCurve().getSymbol().setHeight(2);
@@ -77,9 +83,11 @@ public class LineChart
             double value = timeChartFeeds.getValues(lineType.getIndex(), i);
             if (value > max)
                 max = value;
+            if (value < min) 
+                min = value;
             getCurve().addPoint(i, value);
         }
-        return max;
+        return new double[]{max,min};
     }
 
 }

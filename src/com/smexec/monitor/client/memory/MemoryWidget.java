@@ -56,24 +56,25 @@ public class MemoryWidget
         });
 
         int i = 0;
-        ft.setText(i, 0, "Server Name: Code");
+        ft.setText(i, 0, "Code, Name");
         ft.setText(i, 1, "Used Memory");
-        ft.setText(i, 2, "Max");
-        ft.setText(i, 3, "%%");
+        ft.setText(i, 2, "Max Memory");
+        ft.setText(i, 3, "Usage %");
         ft.getRowFormatter().getElement(i++).setId("th");
 
         for (ConnectedServer cs : list) {
             if (cs.getStatus()) {
-                final HTML name = new HTML("<a>"+cs.getName() + ":" + cs.getServerCode()+"</a>");
+                final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
                 name.getElement().setAttribute("code", "" + cs.getServerCode());
                 name.setTitle("Click to get Thread Dump");
                 name.addMouseOverHandler(new MouseOverHandler() {
+
                     @Override
                     public void onMouseOver(MouseOverEvent event) {
-                        name.getElement().getStyle().setCursor(Cursor.POINTER);      
+                        name.getElement().getStyle().setCursor(Cursor.POINTER);
                     }
                 });
-                
+
                 name.addClickHandler(new ClickHandler() {
 
                     @Override

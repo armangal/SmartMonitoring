@@ -42,7 +42,7 @@ public class ThreadPoolsWidget
 
             @Override
             public int compare(PoolsFeed o1, PoolsFeed o2) {
-                return (int) (o2.getSubmitted() - o1.getSubmitted());
+                return (int) (o2.getTotoalGenTime() - o1.getTotoalGenTime());
             }
         });
 
