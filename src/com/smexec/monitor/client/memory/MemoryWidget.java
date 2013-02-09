@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -61,9 +64,16 @@ public class MemoryWidget
 
         for (ConnectedServer cs : list) {
             if (cs.getStatus()) {
-                HTML name = new HTML("<a>"+cs.getName() + ":" + cs.getServerCode()+"</a>");
+                final HTML name = new HTML("<a>"+cs.getName() + ":" + cs.getServerCode()+"</a>");
                 name.getElement().setAttribute("code", "" + cs.getServerCode());
                 name.setTitle("Click to get Thread Dump");
+                name.addMouseOverHandler(new MouseOverHandler() {
+                    @Override
+                    public void onMouseOver(MouseOverEvent event) {
+                        name.getElement().getStyle().setCursor(Cursor.POINTER);      
+                    }
+                });
+                
                 name.addClickHandler(new ClickHandler() {
 
                     @Override

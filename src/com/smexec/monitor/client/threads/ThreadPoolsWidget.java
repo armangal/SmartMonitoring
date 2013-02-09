@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -15,20 +14,23 @@ import com.smexec.monitor.shared.PoolsFeed;
 public class ThreadPoolsWidget
     extends AbstractMonitoringWidget {
 
-    private Map<String, PoolWidget> poolsMap = new HashMap<String, PoolWidget>();
+    private PoolWidget poolWidget = new PoolWidget();
 
     private FlowPanel fp = new FlowPanel();
+
+    private FlexTable ft = new FlexTable();
 
     public ThreadPoolsWidget() {
         super("Thread Pools");
         addStyleName("threadPoolsWidget");
         getScrollPanel().add(fp);
+        fp.add(poolWidget);
     }
 
     public void refresh(HashMap<String, PoolsFeed> map) {
         // TODO, clean, remove, update
 
-        fp.clear();
+        fp.remove(ft);
 
         if (map.size() == 0) {
             return;
@@ -45,18 +47,9 @@ public class ThreadPoolsWidget
         });
 
         PoolsFeed pf = values.get(0);
-        String poolName = pf.getPoolName();
+        poolWidget.refresh(pf);
 
-        PoolWidget w = poolsMap.get(poolName);
-        if (w == null) {
-            w = new PoolWidget(pf.getPoolName());
-            poolsMap.put(pf.getPoolName(), w);
-        }
-
-        fp.add(w);
-        w.refresh(pf);
-
-        FlexTable ft = new FlexTable();
+        ft = new FlexTable();
         ft.getElement().setId("infoTable");
         ft.setStyleName("poolsList");
         fp.add(ft);

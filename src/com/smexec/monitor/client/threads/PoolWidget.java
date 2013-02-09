@@ -21,7 +21,7 @@ public class PoolWidget
     private HTML tasksData = new HTML();
     private HTML tasksData2 = new HTML();
 
-    private HTML poolName = new HTML();;
+    private HTML poolNameWidget = new HTML();;
 
     private Label avgGenTime = new Label();;
     private Label maxGenTime = new Label();;
@@ -42,14 +42,14 @@ public class PoolWidget
 
     private String pn;
 
-    public PoolWidget(String poolName) {
-        this.pn = poolName;
-        this.poolName.setStylePrimaryName("poolName");
+    public PoolWidget() {
+
+        this.poolNameWidget.setStylePrimaryName("poolName");
         fp.setStyleName("poolWidget");
 
         FlowPanel threads = new FlowPanel();
         threads.setStyleName("poolThreads");
-        threads.add(this.poolName);
+        threads.add(this.poolNameWidget);
         // threads.add(this.activeThreads);
         // threads.add(this.poolSize);
         // threads.add(this.largestPoolSize);
@@ -76,6 +76,8 @@ public class PoolWidget
     }
 
     public void refresh(PoolsFeed pf) {
+        this.pn = pf.getPoolName();
+
         timeChart.setVisible(false);
         tasksChart.setVisible(false);
         timeChart.updateChart(pf.getTimeChartFeeds(), new LineType[] {LineType.MAX, LineType.AVG, LineType.MIN});
@@ -122,13 +124,13 @@ public class PoolWidget
                           + formatLong.format(pf.getAvgGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ") | "
                           + formatLong.format(pf.getMinGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
 
-//        activeThreads.setText("Active Threads:" + formatLong.format(pf.getActiveThreads()));
-//        poolSize.setText("Pool Size:" + formatLong.format(pf.getPoolSize()));
-//        largestPoolSize.setText("Largest Pool Size:" + formatLong.format(pf.getLargestPoolSize()));
-//        hosts.setText("Hosts:" + formatLong.format(pf.getHosts()));
+        // activeThreads.setText("Active Threads:" + formatLong.format(pf.getActiveThreads()));
+        // poolSize.setText("Pool Size:" + formatLong.format(pf.getPoolSize()));
+        // largestPoolSize.setText("Largest Pool Size:" + formatLong.format(pf.getLargestPoolSize()));
+        // hosts.setText("Hosts:" + formatLong.format(pf.getHosts()));
 
-        poolName.setHTML(pn + " | " + formatLong.format(pf.getActiveThreads()) + " | " + formatLong.format(pf.getPoolSize()) + " | "
-                         + formatLong.format(pf.getLargestPoolSize()) + " | Hosts:" + formatLong.format(pf.getHosts()));
+        poolNameWidget.setHTML(this.pn + " | " + formatLong.format(pf.getActiveThreads()) + " | " + formatLong.format(pf.getPoolSize()) + " | "
+                               + formatLong.format(pf.getLargestPoolSize()) + " | Hosts:" + formatLong.format(pf.getHosts()));
 
         timeChart.setVisible(true);
         tasksChart.setVisible(true);
@@ -138,7 +140,7 @@ public class PoolWidget
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((poolName == null) ? 0 : poolName.hashCode());
+        result = prime * result + ((pn == null) ? 0 : pn.hashCode());
         return result;
     }
 
@@ -151,10 +153,10 @@ public class PoolWidget
         if (getClass() != obj.getClass())
             return false;
         PoolWidget other = (PoolWidget) obj;
-        if (poolName == null) {
-            if (other.poolName != null)
+        if (pn == null) {
+            if (other.pn != null)
                 return false;
-        } else if (!poolName.equals(other.poolName))
+        } else if (!pn.equals(other.pn))
             return false;
         return true;
     }
