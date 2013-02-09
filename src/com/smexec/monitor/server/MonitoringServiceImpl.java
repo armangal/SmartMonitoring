@@ -3,6 +3,7 @@ package com.smexec.monitor.server;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.server.model.ConnectedServersState;
+import com.smexec.monitor.server.utils.JMXGetThreadDump;
 import com.smexec.monitor.shared.RefreshResult;
 
 /**

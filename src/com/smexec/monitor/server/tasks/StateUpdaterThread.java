@@ -1,4 +1,4 @@
-package com.smexec.monitor.server;
+package com.smexec.monitor.server.tasks;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,6 +75,7 @@ public class StateUpdaterThread
                 pf.setPoolName(poolName);
 
                 String chunks = (String) mbsc.getAttribute(objectName, "TimeChunks");
+                System.out.println(chunks);
                 chunks = chunks.replace("[", "");
                 String[] split = chunks.split("]");
 

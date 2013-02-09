@@ -43,9 +43,10 @@ public class ChartFeed
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("ChartFeed [values=");
-        builder.append(Arrays.toString(values));
+        for ( int i =0;i<values.length; i++){
+            builder.append(Arrays.toString(values[i]));
+        }
         builder.append("]");
         return builder.toString();
     }
-
 }

@@ -1,4 +1,4 @@
-package com.smexec.monitor.server;
+package com.smexec.monitor.server.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
