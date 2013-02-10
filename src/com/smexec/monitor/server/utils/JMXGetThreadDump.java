@@ -1,11 +1,14 @@
 package com.smexec.monitor.server.utils;
 
+import static java.lang.management.ManagementFactory.THREAD_MXBEAN_NAME;
+import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
+
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.openmbean.CompositeData;
 
 import com.smexec.monitor.server.model.ConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
@@ -21,26 +24,24 @@ public class JMXGetThreadDump {
         } else {
             try {
                 MBeanServerConnection mbsc = ss.getConnector().getMBeanServerConnection();
-                ObjectName threading = new ObjectName("java.lang:type=Threading");
-                CompositeData[] invoke = (CompositeData[]) mbsc.invoke(threading, "dumpAllThreads", new Object[] {true, true}, new String[] {"boolean",
-                                                                                                                                             "boolean"});
+                ThreadMXBean threadMXBean = newPlatformMXBeanProxy(mbsc, THREAD_MXBEAN_NAME, ThreadMXBean.class);
+                ThreadInfo[] dump = threadMXBean.dumpAllThreads(true, true);
 
-                response.append("Dump of " + invoke.length + " thread at server:" + serverCode + ", time:"
+                response.append("Dump of " + dump.length + " thread at server:" + serverCode + ", time:"
                                 + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z").format(new Date(System.currentTimeMillis())) + "\n\n");
 
-                for (CompositeData cd : invoke) {
+                for (ThreadInfo ti : dump) {
 
-                    response.append("\"" + cd.get("threadName") + "\"  tid=" + cd.get("threadId") + " " + cd.get("threadState") + "\n");
+                    response.append("\"" + ti.getThreadName() + "\"  tid=" + ti.getThreadId() + " " + ti.getThreadState() + "\n");
 
-                    response.append("    native=" + cd.get("inNative") + ", suspended=" + cd.get("suspended") + ", block=" + cd.get("blockedCount") + ", wait="
-                                    + cd.get("waitedCount") + ", waitedTime=" + cd.get("waitedTime") + "\n");
+                    response.append("    native=" + ti.isInNative() + ", suspended=" + ti.isSuspended() + ", block=" + ti.getBlockedCount() + ", wait="
+                                    + ti.getWaitedCount() + ", waitedTime=" + ti.getWaitedTime() + "\n");
 
-                    response.append("    lock=" + cd.get("lockName") + " owned by " + cd.get("lockOwnerName") + " (" + cd.get("lockOwnerId") + ") cpuTime="
-                                    + getThreadCpuTime(mbsc, threading, Long.valueOf(cd.get("threadId").toString())) + ", userTime="
-                                    + getThreadUserTime(mbsc, threading, Long.valueOf(cd.get("threadId").toString())) + "\n");
+                    response.append("    lock=" + ti.getLockName() + " owned by " + ti.getLockOwnerName() + " (" + ti.getLockOwnerId() + ") cpuTime="
+                                    + threadMXBean.getCurrentThreadCpuTime() + ", userTime=" + threadMXBean.getCurrentThreadUserTime() + "\n");
 
-                    for (CompositeData st : (CompositeData[]) cd.get("stackTrace")) {
-                        response.append(extractStack(st)).append("\n");
+                    for (StackTraceElement ste : ti.getStackTrace()) {
+                        response.append(extractStack(ste)).append("\n");
                     }
                     response.append("\n");
                 }
@@ -54,29 +55,12 @@ public class JMXGetThreadDump {
         return response.toString();
     }
 
-    private static long getThreadCpuTime(MBeanServerConnection mbsc, ObjectName threading, long threadId) {
-        try {
-            return Long.valueOf(mbsc.invoke(threading, "getThreadCpuTime", new Object[] {threadId}, new String[] {"long"}).toString()).longValue() / 1000000L;
-        } catch (Exception e) {
-            return -1L;
-        }
-    }
-
-    private static long getThreadUserTime(MBeanServerConnection mbsc, ObjectName threading, long threadId) {
-        try {
-            return Long.valueOf(mbsc.invoke(threading, "getThreadUserTime", new Object[] {threadId}, new String[] {"long"}).toString()).longValue() / 1000000L;
-        } catch (Exception e) {
-            return -1L;
-        }
-    }
-
-    private static String extractStack(CompositeData st) {
-        return st.get("className")
+    private static String extractStack(StackTraceElement ste) {
+        return ste.getClassName()
                + "."
-               + st.get("methodName")
-               + (Boolean.valueOf(st.get("nativeMethod").toString()) ? "(Native Method)"
-                               : (st.get("fileName") != null && Integer.valueOf(st.get("lineNumber").toString()) >= 0 ? "(" + st.get("fileName") + ":"
-                                                                                                                        + st.get("lineNumber") + ")"
-                                               : (st.get("fileName") != null ? "(" + st.get("fileName") + ")" : "(Unknown Source)")));
+               + ste.getMethodName()
+               + (ste.isNativeMethod() ? "(Native Method)" : (ste.getFileName() != null && ste.getLineNumber() >= 0 ? "(" + ste.getFileName() + ":"
+                                                                                                                      + ste.getLineNumber() + ")"
+                               : (ste.getFileName() != null ? "(" + ste.getFileName() + ")" : "(Unknown Source)")));
     }
 }

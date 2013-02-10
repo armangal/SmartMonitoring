@@ -12,7 +12,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -22,15 +21,15 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.client.MonitoringServiceAsync;
+import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.GCHistory;
 
 public class MemoryWidget
     extends AbstractMonitoringWidget {
 
     private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
-
-    private NumberFormat formatLong = NumberFormat.getDecimalFormat();
 
     private ClickHandler getThreadDump = new ClickHandler() {
 
@@ -49,6 +48,35 @@ public class MemoryWidget
                     TextArea textArea = new TextArea();
                     textArea.setText(result);
                     textArea.setSize("990px", "590px");
+                    db.setWidget(textArea);
+                    db.center();
+                }
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    Window.alert(caught.getMessage());
+                }
+            });
+        }
+    };
+
+    private ClickHandler getGCHistory = new ClickHandler() {
+
+        @Override
+        public void onClick(ClickEvent event) {
+            String code = ((Widget) event.getSource()).getElement().getAttribute("code");
+            service.getGCHistory(Integer.valueOf(code), new AsyncCallback<String>() {
+
+                @Override
+                public void onSuccess(String result) {
+                    DialogBox db = new DialogBox();
+                    db.setAnimationEnabled(true);
+                    db.setAutoHideEnabled(true);
+                    db.setModal(true);
+                    db.setSize("600px", "600px");
+                    TextArea textArea = new TextArea();
+                    textArea.setText(result);
+                    textArea.setSize("590px", "590px");
                     db.setWidget(textArea);
                     db.center();
                 }
@@ -94,15 +122,17 @@ public class MemoryWidget
             }
         });
 
-        int i = 0;
-        ft.setText(i, 0, "Code, Name");
-        ft.setText(i, 1, "Memory");
-        ft.setText(i, 2, "Usage %");
-        ft.setText(i, 3, "GC [sec:(times)]");
+        int i = 0, j = 0;
+        ft.setText(i, j++, "Code, Name");
+        ft.setText(i, j++, "Up Time");
+        ft.setText(i, j++, "Memory");
+        ft.setText(i, j++, "Usage %");
+        ft.setText(i, j++, "GC [sec:(times)]");
         ft.getRowFormatter().getElement(i++).setId("th");
 
         for (ConnectedServer cs : list) {
             if (cs.getStatus()) {
+                j = 0;
                 final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
                 name.getElement().setAttribute("code", "" + cs.getServerCode());
                 name.setTitle("Click to get Thread Dump");
@@ -110,36 +140,36 @@ public class MemoryWidget
 
                 name.addClickHandler(getThreadDump);
 
-                ft.setWidget(i, 0, name);
-                ft.setText(i,
-                           1,
-                           formatLong.format(cs.getMemoryUsage().getUsed() / 1048576) + " of " + formatLong.format(cs.getMemoryUsage().getMax() / 1048576)
-                                           + " MB");
+                ft.setWidget(i, j++, name);
+                ft.setText(i, j++, ClientStringFormatter.formatMilisecondsToHours(cs.getUpTime()));
 
-                ft.setText(i, 2, formatLong.format(cs.getMemoryUsage().getPercentage()) + "%");
+                HTML usage = new HTML(ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + " of "
+                                      + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB");
+                usage.setTitle(cs.getMemoryUsage().getMemoryState());
+                usage.addMouseOverHandler(handCursor);
+                ft.setWidget(i, j++, usage);
 
-                final HTML memory = new HTML(cs.getMemoryUsage().getGcs());
-                memory.setTitle(cs.getMemoryUsage().getGcData());
-                memory.addMouseOverHandler(handCursor);
+                HTML percent = new HTML(ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%");
+                percent.setTitle(cs.getMemoryUsage().getMemoryState());
+                ft.setWidget(i, j++, percent);
 
-                double max = Double.MIN_VALUE;
-                try {
-                    String[] seconds = cs.getMemoryUsage().getGcs().split(";");
-                    if (seconds.length > 0) {
-                        for (String sec : seconds) {
-                            String[] split = sec.split(":");
-                            if (Double.valueOf(split[0]) > max) {
-                                max = Double.valueOf(split[0]);
-                            }
-                        }
+                String gcs = "";
+                long max = Long.MIN_VALUE;
+                for (GCHistory gch : cs.getGcHistories()) {
+                    gcs += ClientStringFormatter.formatMillisShort(gch.getCollectionTime()) + ":(" + gch.getCollectionCount() + ");";
+                    if (gch.getCollectionTime() > max) {
+                        max = gch.getCollectionTime();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+                final HTML memory = new HTML(gcs);
+                memory.setTitle("Click to see GC history");
+                memory.addMouseOverHandler(handCursor);
+                memory.addClickHandler(getGCHistory);
+                memory.getElement().setAttribute("code", "" + cs.getServerCode());
 
-                ft.setWidget(i++, 3, memory);
-                if (max > 3d) {
-                    Style style = ft.getFlexCellFormatter().getElement(i - 1, 3).getStyle();
+                ft.setWidget(i++, j++, memory);
+                if (max > 3000L) {
+                    Style style = ft.getFlexCellFormatter().getElement(i - 1, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
                     style.setColor("white");

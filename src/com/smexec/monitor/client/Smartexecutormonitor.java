@@ -1,5 +1,7 @@
 package com.smexec.monitor.client;
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -17,7 +19,7 @@ import com.smexec.monitor.client.players.PlayersWidget;
 import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.threads.ThreadPoolsWidget;
 import com.smexec.monitor.client.tournaments.TournamentsWidget;
-import com.smexec.monitor.shared.ConnectedServers;
+import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
 /**
@@ -62,15 +64,14 @@ public class Smartexecutormonitor
             @Override
             public void onSuccess(RefreshResult result) {
                 title.setHTML("<h1>" + result.getTitle() + "</h1>");
-                ConnectedServers cs = result.getConnectedServers();
-                if (cs != null) {
-                    serversWidget.update(cs.getServers());
-                    memoryWidget.update(cs.getServers());
-                    if (cs.getServers() == null || cs.getServers().isEmpty()) {
-                        cleanMonitors();
-                    }
-
+                ArrayList<ConnectedServer> servers = result.getServers();
+                if (servers != null && !servers.isEmpty()) {
+                    serversWidget.update(servers);
+                    memoryWidget.update(servers);
                     poolsWidget.refresh(result.getPoolFeedMap());
+                } else {
+                    poolsWidget.clear();
+                    cleanMonitors();
                 }
 
             }

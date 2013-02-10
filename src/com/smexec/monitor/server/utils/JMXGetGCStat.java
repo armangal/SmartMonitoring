@@ -44,10 +44,6 @@ import static java.lang.management.ManagementFactory.GARBAGE_COLLECTOR_MXBEAN_DO
 import static java.lang.management.ManagementFactory.MEMORY_MXBEAN_NAME;
 import static java.lang.management.ManagementFactory.MEMORY_POOL_MXBEAN_DOMAIN_TYPE;
 import static java.lang.management.ManagementFactory.RUNTIME_MXBEAN_NAME;
-import static java.lang.management.ManagementFactory.getGarbageCollectorMXBeans;
-import static java.lang.management.ManagementFactory.getMemoryMXBean;
-import static java.lang.management.ManagementFactory.getMemoryPoolMXBeans;
-import static java.lang.management.ManagementFactory.getRuntimeMXBean;
 import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
 
 import java.io.IOException;
@@ -64,6 +60,9 @@ import java.util.Set;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+
+import com.smexec.monitor.shared.GCHistory;
+import com.smexec.monitor.shared.StringFormatter;
 
 /**
  * Example of using the java.lang.management API to monitor the memory usage and garbage collection
@@ -120,58 +119,66 @@ public class JMXGetGCStat {
         }
     }
 
-    /**
-     * Constructs a PrintGCStat object to monitor the local JVM.
-     */
-    public JMXGetGCStat() {
-        // Obtain the platform mxbean instances for the running JVM.
-        this.rmbean = getRuntimeMXBean();
-        this.mmbean = getMemoryMXBean();
-        this.pools = getMemoryPoolMXBeans();
-        this.gcmbeans = getGarbageCollectorMXBeans();
+    public List<GCHistory> getGcHistory() {
+        List<GCHistory> retList = new ArrayList<GCHistory>(0);
+        for (GarbageCollectorMXBean gc : gcmbeans) {
+            retList.add(new GCHistory(gc.getName(), gc.getCollectionCount(), gc.getCollectionTime(), gc.getMemoryPoolNames()));
+        }
+        return retList;
+    }
+
+    public long getUpTime() {
+        return rmbean.getUptime();
+    }
+
+    public String getMemoryState() {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Uptime: " + StringFormatter.formatMillis(rmbean.getUptime()));
+
+            sb.append("\n");
+            for (MemoryPoolMXBean p : pools) {
+                sb.append("  [" + p.getName() + ":");
+                MemoryUsage u = p.getUsage();
+                sb.append(" Used=" + StringFormatter.formatBytes(u.getUsed()));
+                sb.append(" Committed=" + StringFormatter.formatBytes(u.getCommitted()));
+                sb.append("]\n");
+            }
+
+            return sb.toString();
+        } catch (Throwable e) {
+            return e.getMessage();
+        }
     }
 
     /**
      * Prints the verbose GC log to System.out to list the memory usage of all memory pools as well as the GC
      * statistics.
      */
+    @Deprecated
     public String[] getVerboseGc() {
         String gcs = "";
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Uptime: " + formatMillis(rmbean.getUptime()));
+        sb.append("Uptime: " + StringFormatter.formatMillis(rmbean.getUptime()));
+
         for (GarbageCollectorMXBean gc : gcmbeans) {
             sb.append(" [" + gc.getName() + ": ");
             sb.append("Count=" + gc.getCollectionCount());
-            sb.append(" GCTime=" + formatMillis(gc.getCollectionTime()));
+            sb.append(" GCTime=" + StringFormatter.formatMillis(gc.getCollectionTime()));
             sb.append("]");
-            gcs += formatMillisShort(gc.getCollectionTime()) + ":(" + gc.getCollectionCount() + ");";
+            gcs += StringFormatter.formatMillisShort(gc.getCollectionTime()) + ":(" + gc.getCollectionCount() + ");";
         }
         sb.append("\n");
         for (MemoryPoolMXBean p : pools) {
             sb.append("  [" + p.getName() + ":");
             MemoryUsage u = p.getUsage();
-            sb.append(" Used=" + formatBytes(u.getUsed()));
-            sb.append(" Committed=" + formatBytes(u.getCommitted()));
+            sb.append(" Used=" + StringFormatter.formatBytes(u.getUsed()));
+            sb.append(" Committed=" + StringFormatter.formatBytes(u.getCommitted()));
             sb.append("]\n");
         }
 
         return new String[] {sb.toString(), gcs};
     }
 
-    private String formatMillis(long ms) {
-        return String.format("%.4fsec", ms / (double) 1000);
-    }
-
-    private String formatMillisShort(long ms) {
-        return String.format("%.2f", ms / (double) 1000);
-    }
-
-    private String formatBytes(long bytes) {
-        long kb = bytes;
-        if (bytes > 0) {
-            kb = bytes / 1024;
-        }
-        return kb + "K";
-    }
 }

@@ -9,6 +9,7 @@ import java.lang.management.MemoryUsage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.utils.JMXGetGCStat;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.ConnectedServers;
+import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.PoolsFeed;
 
 public class StateUpdaterThread
@@ -36,26 +37,34 @@ public class StateUpdaterThread
 
     @Override
     public void run() {
-        System.out.println("Refreshing stats");
-        ConnectedServers servers = new ConnectedServers();
-
-        ArrayList<ConnectedServer> serversList = new ArrayList<ConnectedServer>(0);
-        for (ServerStataus ss : ConnectedServersState.getMap().values()) {
-            ServerConfig sc = ss.getServerConfig();
-            if (ss.isConnected()) {
-                try {
-                    getMemoryStats(ss);
-                    getSmartThreadPoolStats(ss);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        try {
+            System.out.println("Refreshing stats");
+            ArrayList<ConnectedServer> serversList = new ArrayList<ConnectedServer>(0);
+            for (ServerStataus ss : ConnectedServersState.getMap().values()) {
+                ServerConfig sc = ss.getServerConfig();
+                if (ss.isConnected()) {
+                    try {
+                        getMemoryStats(ss);
+                        getSmartThreadPoolStats(ss);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+                ConnectedServer cs = new ConnectedServer(sc.getName(),
+                                                         sc.getServerCode(),
+                                                         sc.getIp(),
+                                                         sc.getJmxPort(),
+                                                         ss.isConnected(),
+                                                         ss.getLastMemoryUsage(),
+                                                         ss.getLastGCHistory(),
+                                                         ss.getUpTime());
+                serversList.add(cs);
             }
-            ConnectedServer cs = new ConnectedServer(sc.getName(), sc.getServerCode(), sc.getIp(), sc.getJmxPort(), ss.isConnected(), ss.getLastMemoryUsage());
-            serversList.add(cs);
-        }
-        servers.setServers(serversList);
 
-        ConnectedServersState.mergeStats(servers);
+            ConnectedServersState.mergeStats(serversList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void getSmartThreadPoolStats(ServerStataus ss)
@@ -65,9 +74,9 @@ public class StateUpdaterThread
 
         JMXConnector jmxConnector = ss.getConnector();
         MBeanServerConnection mbsc = jmxConnector.getMBeanServerConnection();
-        //System.out.println(mbsc.getMBeanCount());
+        // System.out.println(mbsc.getMBeanCount());
 
-        //System.out.println(Arrays.toString(mbsc.getDomains()));
+        // System.out.println(Arrays.toString(mbsc.getDomains()));
 
         Set<ObjectInstance> names = new HashSet<ObjectInstance>(mbsc.queryMBeans(null, null));
 
@@ -138,14 +147,20 @@ public class StateUpdaterThread
 
         MemoryUsage heapMemoryUsage = mxBean.getHeapMemoryUsage();
 
-        String[] gc = p.getVerboseGc();
+        String memoryState = p.getMemoryState();
+
+        serverStataus.setUptime(p.getUpTime());
+
         serverStataus.updateMemoryUsage(heapMemoryUsage.getInit(),
                                         heapMemoryUsage.getUsed(),
                                         heapMemoryUsage.getCommitted(),
                                         heapMemoryUsage.getMax(),
-                                        gc[0],
-                                        gc[1]);
+                                        memoryState);
 
+        List<GCHistory> gcHistoryList = p.getGcHistory();
+        for (GCHistory gch : gcHistoryList) {
+            serverStataus.updateGCHistory(gch);
+        }
     }
 
     private long getLong(MBeanServerConnection mbsc, ObjectName on, String name) {

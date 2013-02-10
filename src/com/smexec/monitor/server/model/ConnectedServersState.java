@@ -1,9 +1,10 @@
 package com.smexec.monitor.server.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.smexec.monitor.shared.ConnectedServers;
+import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.RefreshResult;
 
@@ -30,7 +31,7 @@ public final class ConnectedServersState {
         return result;
     }
 
-    public static synchronized void mergeStats(ConnectedServers servers) {
+    public static synchronized void mergeStats(ArrayList<ConnectedServer> servers) {
         HashMap<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>();
         for (ServerStataus ss : map.values()) {
             if (ss.isConnected()) {

@@ -14,4 +14,6 @@ public interface MonitoringService
     RefreshResult refresh();
     
     String getThreadDump(Integer serverCode);
+    
+    String getGCHistory(Integer serverCode);
 }

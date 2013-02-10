@@ -3,6 +3,8 @@ package com.smexec.monitor.server.tasks;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.management.Notification;
 import javax.management.NotificationListener;
@@ -38,6 +40,7 @@ public class JMXConnectorThread
                 for (ServerConfig sc : serversConfig.getServers()) {
                     if (ConnectedServersState.getMap().containsKey(sc.getServerCode())) {
                         ServerStataus serverStataus = ConnectedServersState.getMap().get(sc.getServerCode());
+
                         if (!serverStataus.isConnected()) {
                             // try to connect again
                             ServerStataus ss = connect(sc);
@@ -58,11 +61,19 @@ public class JMXConnectorThread
     private ServerStataus connect(final ServerConfig sc) {
 
         JMXConnector c;
-        ServerStataus ss = new ServerStataus();
-        ss.setServerConfig(sc);
+        ServerStataus ss = new ServerStataus(sc);
+
         try {
+            System.out.println("Coonecting to:" + sc);
             JMXServiceURL u = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + sc.getIp() + ":" + sc.getJmxPort() + "/jmxrmi");
-            c = JMXConnectorFactory.connect(u);
+            if (sc.isAuthenticate()) {
+                Map<String, String[]> env = new HashMap<String, String[]>(0);
+                String[] creds = {sc.getUsername(), sc.getPassword()};
+                env.put(JMXConnector.CREDENTIALS, creds);
+                c = JMXConnectorFactory.connect(u, env);
+            } else {
+                c = JMXConnectorFactory.connect(u);
+            }
 
             System.out.println("Conneted to:" + c);
 

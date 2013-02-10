@@ -60,6 +60,12 @@ public class ThreadPoolsWidget
         fp.add(poolWidget);
     }
 
+    public void clear() {
+        this.lastUpdate = null;
+        fp.remove(ft);
+        poolWidget.clear();
+    }
+
     public void refresh(HashMap<String, PoolsFeed> map) {
         this.lastUpdate = map;
         fp.remove(ft);
