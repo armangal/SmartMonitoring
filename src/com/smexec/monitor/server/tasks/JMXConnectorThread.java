@@ -84,7 +84,6 @@ public class JMXConnectorThread
                     System.out.println("Notification:" + notification);
                     if (notification.getType().contains("closed") || notification.getType().contains("failed")) {
                         ConnectedServersState.getMap().remove(((ServerConfig) key).getServerCode());
-                        // TODO clear state
                     }
                 }
             }, null, sc);
