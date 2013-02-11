@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ServersConfig xmlns:ns2="http://www.armangal.com/smartexecutormonitor/v1">
 	<name>Dummy Monitoring</name>
+	<username>admin</username>
+	<password>password</password>
 	<servers>
 		<server>
 			<name>Local (1)</name>
@@ -11,7 +13,6 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		<!-- 
 		<server>
 			<name>Second</name>
 			<serverCode>16</serverCode>
@@ -21,6 +22,7 @@
 			<username>user</username>
 			<password>password</password>
 		</server>
+		<!-- 
 		<server>
 			<name>EDI_CHANNEL</name>
 			<serverCode>17</serverCode>

@@ -16,4 +16,6 @@ public interface MonitoringService
     String getThreadDump(Integer serverCode);
     
     String getGCHistory(Integer serverCode);
+    
+    Boolean authenticate(String userName, String password);
 }

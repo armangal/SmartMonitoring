@@ -22,11 +22,10 @@ public final class ConnectedServersState {
      */
     private static ServersConfig serversConfig;
 
-    
     public static ConcurrentHashMap<Integer, ServerStataus> getMap() {
         return map;
     }
-   
+
     public static synchronized RefreshResult getRefreshResult() {
         return result;
     }
@@ -49,7 +48,11 @@ public final class ConnectedServersState {
         result = new RefreshResult(poolFeedMap, servers, serversConfig.getName());
     }
 
-    public static void setServersConfig(ServersConfig serversConfig) {
-        ConnectedServersState.serversConfig = serversConfig;
+    public static void setServersConfig(ServersConfig sc) {
+        serversConfig = sc;
+    }
+
+    public static ServersConfig getServersConfig() {
+        return serversConfig;
     }
 }

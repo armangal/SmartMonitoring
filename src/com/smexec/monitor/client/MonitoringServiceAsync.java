@@ -10,4 +10,6 @@ public interface MonitoringServiceAsync {
     void getThreadDump(Integer serverCode, AsyncCallback<String> callback);
 
     void getGCHistory(Integer serverCode, AsyncCallback<String> callback);
+
+    void authenticate(String userName, String password, AsyncCallback<Boolean> callback);
 }

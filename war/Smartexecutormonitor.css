@@ -23,6 +23,20 @@ body {
 	margin: 0px !important;
 }
 
+.login {
+	top: 200px;
+	width: 400px;
+	height: 300px;
+	border: solid #EE8318 thin;
+	margin: auto;
+	padding: 0px;
+}
+
+.login #label {
+	font-weight: bold;
+	font-style: italic;
+}
+
 .mainPanel {
 	width: 1260px;
 	height: 710px;
@@ -57,24 +71,14 @@ body {
 	height: 100px;
 }
 
-.serevrsWidget {
-	width: 50%;
-	position: relative;
-	float: left;
-}
-
-.serevrsWidget .table {
-	height: 80px;
-}
-
-.memoryWidget {
+.serversWidget {
 	width: 50%;
 	position: relative;
 	float: right;
 }
 
-.memoryWidget .table {
-	height: 100px;
+.serversWidget .table {
+	height: 200px;
 }
 
 .playersWidget {
@@ -153,7 +157,7 @@ body {
 	margin: 5px;
 }
 
-.poolsList td{
+.poolsList td {
 	font-size: xx-small !important;
 }
 
@@ -180,19 +184,19 @@ body {
 	background: #eff2ff;
 }
 
-#infoTable #memoryVeryHigh td{
+#infoTable #memoryVeryHigh td {
 	background-color: #FF33CC;
 	font-weight: bold !important;
 	color: white !important;
 }
 
-#infoTable #memoryHigh td{
+#infoTable #memoryHigh td {
 	background-color: #FF6699;
 	font-weight: bold !important;
 	color: white !important;
 }
 
-#infoTable #memoryWarn td{
+#infoTable #memoryWarn td {
 	background-color: #FFCC66;
 	font-weight: bold !important;
 	color: white !important;

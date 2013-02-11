@@ -26,7 +26,7 @@ import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.GCHistory;
 
-public class MemoryWidget
+public class ServersWidget
     extends AbstractMonitoringWidget {
 
     private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
@@ -97,10 +97,10 @@ public class MemoryWidget
         }
     };
 
-    public MemoryWidget() {
+    public ServersWidget() {
 
-        super("Memory");
-        setStyleName("memoryWidget");
+        super("Connected Servers");
+        setStyleName("serversWidget");
     }
 
     public void update(ArrayList<ConnectedServer> list) {
@@ -131,11 +131,11 @@ public class MemoryWidget
         ft.getRowFormatter().getElement(i++).setId("th");
 
         for (ConnectedServer cs : list) {
+            j = 0;
             if (cs.getStatus()) {
-                j = 0;
                 final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
                 name.getElement().setAttribute("code", "" + cs.getServerCode());
-                name.setTitle("Click to get Thread Dump");
+                name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort() + "\nClick to get Thread Dump");
                 name.addMouseOverHandler(handCursor);
 
                 name.addClickHandler(getThreadDump);
@@ -181,6 +181,15 @@ public class MemoryWidget
                 } else if (cs.getMemoryUsage().getPercentage() > 70) {
                     ft.getRowFormatter().getElement(i - 1).setId("memoryWarn");
                 }
+            } else {
+                final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
+                name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort());
+                ft.setWidget(i, j++, name);
+                ft.setText(i, j++, "Offline");
+                ft.setText(i, j++, "Offline");
+                ft.setText(i, j++, "Offline");
+                ft.setText(i, j++, "Offline");
+                ft.getRowFormatter().getElement(i++).setId("offline");
             }
         }
 

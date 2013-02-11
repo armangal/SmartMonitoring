@@ -20,6 +20,9 @@ public class ServersConfig {
 
     private String name;
 
+    private String username;
+    private String password;
+
     public ServersConfig() {}
 
     public List<ServerConfig> getServers() {
@@ -34,6 +37,14 @@ public class ServersConfig {
         return name;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -41,6 +52,10 @@ public class ServersConfig {
         builder.append(servers);
         builder.append(", name=");
         builder.append(name);
+        builder.append(", username=");
+        builder.append(username);
+        builder.append(", password=");
+        builder.append(password);
         builder.append("]");
         return builder.toString();
     }
