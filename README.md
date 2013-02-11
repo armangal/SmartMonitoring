@@ -10,7 +10,7 @@ SmartExecutorMonitoring is a part of SmartExecutor project providing web-based m
 - Extensive statistics over the pools performance
 - JMX monitoring
 - Can aggregate statistics from many servers at the same time.
-
+ 
 <h2>Members:</h2>
 <b>Owner: </b>
 - Arman Gal
