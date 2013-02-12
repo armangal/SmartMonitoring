@@ -161,3 +161,4 @@ pip-log.txt
 /gwt-unitCache
 /war\WEB-INF\classes
 /test-classes
+/.gwt
