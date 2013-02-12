@@ -2,6 +2,7 @@ package com.smexec.monitor.client;
 
 import java.util.ArrayList;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -61,44 +62,50 @@ public class Smartexecutormonitor
 
     private void refresh() {
 
+        Log.debug("Send refresh request.");
+
         service.refresh(new AsyncCallback<RefreshResult>() {
 
             @Override
             public void onSuccess(RefreshResult result) {
+
                 title.setHTML("<h1>" + result.getTitle() + "</h1>");
                 ArrayList<ConnectedServer> servers = result.getServers();
                 if (servers != null && !servers.isEmpty()) {
+                    Log.debug("Received FULL refresh response.");
+
                     serversWidget.update(servers);
                     poolsWidget.refresh(result.getPoolFeedMap());
                     tournamentsWidget.update();
                     playersWidget.update();
                 } else {
+                    Log.debug("Received EMPTY response.");
+
                     poolsWidget.clear();
-                    cleanMonitors();
                 }
 
             }
 
             @Override
             public void onFailure(Throwable caught) {
+                Log.error("Received refresh response error:" + caught.getMessage());
+
                 Window.alert("Refresh Error:" + caught.getMessage());
             }
         });
-    }
-
-    private void cleanMonitors() {
-
     }
 
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
+        Log.debug("Starting monitoring client.");
         RootPanel.get().add(loginWidget);
         loginWidget.registerCallBack(new LoggedInCallBack() {
 
             @Override
             public void loggedIn() {
+                Log.debug("Authenticated");
                 loginWidget.removeFromParent();
                 RootPanel.get().add(mainPanel);
                 RootPanel.get().add(refreshBtn);
