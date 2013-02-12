@@ -70,6 +70,8 @@ public class Smartexecutormonitor
                 if (servers != null && !servers.isEmpty()) {
                     serversWidget.update(servers);
                     poolsWidget.refresh(result.getPoolFeedMap());
+                    tournamentsWidget.update();
+                    playersWidget.update();
                 } else {
                     poolsWidget.clear();
                     cleanMonitors();

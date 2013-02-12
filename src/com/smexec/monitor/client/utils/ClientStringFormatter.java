@@ -23,6 +23,10 @@ public class ClientStringFormatter {
     public static String formatMillisShort(double ms) {
         return NumberFormat.getFormat("#,##0.0#").format(ms);
     }
+    
+    public static String formatNumber(Integer ms) {
+        return NumberFormat.getFormat("#,##0").format(ms);
+    }
 
     public static String formatBytes(long bytes) {
         long kb = bytes;

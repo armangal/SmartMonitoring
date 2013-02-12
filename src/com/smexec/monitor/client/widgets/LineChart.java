@@ -7,8 +7,8 @@ import com.smexec.monitor.shared.ChartFeed;
 public class LineChart
     extends GChart {
 
-    public LineChart() {
-        setChartSize(200, 150);
+    public LineChart(int xSize, int ySize) {
+        setChartSize(xSize, ySize);
         setBorderStyle("none");
         setStyleName("chart");
 

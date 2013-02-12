@@ -71,6 +71,17 @@ body {
 	height: 100px;
 }
 
+.tournamentsWidget .left {
+	float: left;
+	width: 250px;
+}
+
+.tournamentsWidget .right {
+	float: left;
+	width: 340px;
+	border-left: solid orange thin;
+}
+
 .serversWidget {
 	width: 50%;
 	position: relative;
@@ -89,6 +100,29 @@ body {
 
 .playersWidget .table {
 	height: 300px;
+}
+
+.playersWidget .players {
+	float: left;
+	width: 200px;
+	height: 200px;
+	border: solid orange thin;
+}
+
+.playersWidget .charts {
+	float: left;
+	border: solid orange thin;
+	width: 390px;
+	height: 200px;
+}
+
+.playersWidget .servers {
+	border: thin solid orange;
+	float: left;
+	height: 200px;
+	margin: 2px;
+	padding: 2px;
+	width: 97%;
 }
 
 .alertsWidget {

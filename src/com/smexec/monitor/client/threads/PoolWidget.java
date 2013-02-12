@@ -14,10 +14,10 @@ public class PoolWidget
 
     private NumberFormat formatLong = NumberFormat.getDecimalFormat();
 
-    private LineChart timeChart = new LineChart();
+    private LineChart timeChart = new LineChart(200, 150);
     private HTML timesData = new HTML();
 
-    private LineChart tasksChart = new LineChart();
+    private LineChart tasksChart = new LineChart(200, 150);
     private HTML tasksData = new HTML();
     private HTML tasksData2 = new HTML();
 
