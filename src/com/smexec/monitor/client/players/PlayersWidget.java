@@ -6,32 +6,41 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
-import com.smexec.monitor.client.widgets.LineChart;
+import com.smexec.monitor.client.widgets.LineType;
+import com.smexec.monitor.client.widgets.MonitoringLineChart;
+import com.smexec.monitor.shared.ChartFeed;
 
 public class PlayersWidget
     extends AbstractMonitoringWidget {
 
     private FlowPanel fp = new FlowPanel();
-    private LineChart connected = new LineChart(300, 70);
-    private LineChart reconnected = new LineChart(300, 70);
+    private MonitoringLineChart connected = new MonitoringLineChart(new LineType[] {LineType.CONNECTED, LineType.PLAYING}, "Players", "Time", "Online Players");
+    private MonitoringLineChart reconnected = new MonitoringLineChart(new LineType[] {LineType.DROPPED, LineType.OPENED}, "Players", "Time", "Drops vs. New");
+    private FlexTable playersTable = new FlexTable();
 
     public PlayersWidget() {
         super("Online Players");
         setStyleName("playersWidget");
         getScrollPanel().add(fp);
-    }
 
-    public void update() {
-        fp.clear();
         FlowPanel players = getPlayers();
         FlowPanel charts = getCharts();
         FlowPanel servers = getServers();
         fp.add(players);
         fp.add(charts);
         fp.add(servers);
-        
-        connected.update();
-        reconnected.update();
+    }
+
+    public void update() {
+        Random r = new Random();
+        int i = 0;
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(10000)));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(4000)));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(100)));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(100)));
+
+        connected.updateChart(new ChartFeed());
+        reconnected.updateChart(new ChartFeed());
 
     }
 
@@ -46,6 +55,9 @@ public class PlayersWidget
         fp.setStyleName("charts");
         fp.add(connected);
         fp.add(reconnected);
+        connected.setStyleName("playersChart");
+        reconnected.setStyleName("reconnectionsChart");
+
         return fp;
     }
 
@@ -53,22 +65,15 @@ public class PlayersWidget
 
         FlowPanel fp = new FlowPanel();
         fp.setStyleName("players");
-        FlexTable ft = new FlexTable();
-        ft.getElement().setId("infoTable");
-        fp.add(ft);
-        Random r = new Random();
 
-        int i = 0, j = 0;
-        ft.setText(i++, j, "Connected:");
-        ft.setText(i++, j, "Playing:");
-        ft.setText(i++, j, "Disconnected (min)");
-        ft.setText(i++, j++, "Connected (min)");
+        playersTable.getElement().setId("infoTable");
+        fp.add(playersTable);
 
-        i = 0;
-        ft.setText(i++, j, ClientStringFormatter.formatNumber(r.nextInt(10000)));
-        ft.setText(i++, j, ClientStringFormatter.formatNumber(r.nextInt(4000)));
-        ft.setText(i++, j, ClientStringFormatter.formatNumber(r.nextInt(100)));
-        ft.setText(i++, j, ClientStringFormatter.formatNumber(r.nextInt(100)));
+        int i = 0;
+        playersTable.setText(i++, 0, "Connected:");
+        playersTable.setText(i++, 0, "Playing:");
+        playersTable.setText(i++, 0, "Disconnected (min)");
+        playersTable.setText(i++, 0, "Connected (min)");
 
         return fp;
     }

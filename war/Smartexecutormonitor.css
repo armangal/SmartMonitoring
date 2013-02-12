@@ -109,6 +109,26 @@ body {
 	border: solid orange thin;
 }
 
+.tasksChart {
+	border: thin solid grey;
+	height: 150px;
+}
+
+.timesChart {
+	border: thin solid grey;
+	height: 150px;
+}
+
+.playersChart {
+	border: thin solid grey;
+	height: 100px;
+}
+
+.reconnectionsChart {
+	border: thin solid grey;
+	height: 100px;
+}
+
 .playersWidget .charts {
 	float: left;
 	border: solid orange thin;
@@ -161,9 +181,8 @@ body {
 }
 
 .poolCharts {
-	border: solid #EE8318 thin;
+	float: left;
 	margin: 3px;
-	float: right;
 	padding: 8px;
 	height: 150px;
 	width: 45%;

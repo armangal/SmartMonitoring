@@ -22,6 +22,7 @@ import com.smexec.monitor.client.players.PlayersWidget;
 import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.threads.ThreadPoolsWidget;
 import com.smexec.monitor.client.tournaments.TournamentsWidget;
+import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
@@ -98,6 +99,8 @@ public class Smartexecutormonitor
      */
     public void onModuleLoad() {
         Log.debug("Starting monitoring client.");
+
+        Window.setMargin("0px");
         RootPanel.get().add(loginWidget);
         loginWidget.registerCallBack(new LoggedInCallBack() {
 

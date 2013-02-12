@@ -1,11 +1,13 @@
 package com.smexec.monitor.client.threads;
 
+
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.smexec.monitor.client.widgets.LineChart;
+import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.client.widgets.LineType;
 import com.smexec.monitor.shared.PoolsFeed;
 
@@ -14,10 +16,11 @@ public class PoolWidget
 
     private NumberFormat formatLong = NumberFormat.getDecimalFormat();
 
-    private LineChart timeChart = new LineChart(200, 150);
+    MonitoringLineChart timeChart = new MonitoringLineChart(new LineType[] {LineType.MAX, LineType.AVG, LineType.MIN}, "Milis", "Time", "Execution Time");
     private HTML timesData = new HTML();
 
-    private LineChart tasksChart = new LineChart(200, 150);
+    MonitoringLineChart tasksChart = new MonitoringLineChart(new LineType[] {LineType.SUBMITED, LineType.EXECUTED, LineType.FAILED, LineType.REJECTED,
+                                                                       LineType.COMPLETED}, "Tasks", "Milis", "Tasks");
     private HTML tasksData = new HTML();
     private HTML tasksData2 = new HTML();
 
@@ -72,28 +75,29 @@ public class PoolWidget
         tasksData2.setStyleName("poolTasks");
         fp.add(taskPanel);
 
+        tasksChart.setStyleName("tasksChart");
+        timeChart.setStyleName("timesChart");
+
         initWidget(fp);
     }
 
     public void clear() {
-        timeChart.setVisible(false);
-        tasksChart.setVisible(false);
         timesData.setHTML("");
         tasksData.setHTML("");
         tasksData2.setHTML("");
         poolNameWidget.setHTML("");
+        timeChart.clean();
+        tasksChart.clean();
     }
+
     public void refresh(PoolsFeed pf) {
         this.pn = pf.getPoolName();
 
-        timeChart.setVisible(false);
-        tasksChart.setVisible(false);
-        timeChart.updateChart(pf.getTimeChartFeeds(), new LineType[] {LineType.MAX, LineType.AVG, LineType.MIN});
-        timeChart.update();
+        Log.debug("TimeChart:" + pf.getTimeChartFeeds());
+        timeChart.updateChart(pf.getTimeChartFeeds());
 
-        tasksChart.updateChart(pf.getTasksChartFeeds(), new LineType[] {LineType.SUBMITED, LineType.EXECUTED, LineType.FAILED, LineType.REJECTED,
-                                                                        LineType.COMPLETED});
-        tasksChart.update();
+        Log.debug("TasksChart:" + pf.getTasksChartFeeds());
+        tasksChart.updateChart(pf.getTasksChartFeeds());
 
         // submitted.setText("Submitted:" + formatLong.format(pf.getSubmitted()) + " (" +
         // pf.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex())
@@ -140,33 +144,7 @@ public class PoolWidget
         poolNameWidget.setHTML(this.pn + " | " + formatLong.format(pf.getActiveThreads()) + " | " + formatLong.format(pf.getPoolSize()) + " | "
                                + formatLong.format(pf.getLargestPoolSize()) + " | Hosts:" + formatLong.format(pf.getHosts()));
 
-        timeChart.setVisible(true);
-        tasksChart.setVisible(true);
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((pn == null) ? 0 : pn.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        PoolWidget other = (PoolWidget) obj;
-        if (pn == null) {
-            if (other.pn != null)
-                return false;
-        } else if (!pn.equals(other.pn))
-            return false;
-        return true;
-    }
 
 }
