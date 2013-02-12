@@ -1,4 +1,4 @@
-package com.smexec.monitor.client.memory;
+package com.smexec.monitor.client.servers;
 
 import java.util.ArrayList;
 import java.util.Collections;
