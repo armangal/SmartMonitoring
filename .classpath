@@ -4,7 +4,8 @@
 	<classpathentry kind="src" output="test-classes" path="test"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/gchart.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-log-3.2.1.jar" sourcepath="lib/gwt-log-3.2.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-log-3.2.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-charts-0.9.9.jar" sourcepath="C:/programs/repository/com/googlecode/gwt-charts/gwt-charts/0.9.9/gwt-charts-0.9.9-sources.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
