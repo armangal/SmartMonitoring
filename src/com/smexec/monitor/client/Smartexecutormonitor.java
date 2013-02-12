@@ -25,14 +25,11 @@ import com.smexec.monitor.client.tournaments.TournamentsWidget;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
 public class Smartexecutormonitor
     implements EntryPoint {
 
     /**
-     * Create a remote service proxy to talk to the server-side Greeting service.
+     * Create a remote service proxy to talk to the server-side service.
      */
     private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
 
@@ -54,6 +51,7 @@ public class Smartexecutormonitor
         @Override
         public boolean execute() {
             refresh();
+            Log.debug("Reschedule refresh?:" + refresh);
             return refresh;
         }
     };
@@ -123,9 +121,7 @@ public class Smartexecutormonitor
         mainPanel.add(serversWidget);
         mainPanel.add(alertsWidget);
 
-        refreshBtn.getElement().setAttribute("state", "2");
-
-        // mainPanel.add(monitors);
+        refreshBtn.getElement().setAttribute("state", "1");
 
         refreshBtn.addClickHandler(new ClickHandler() {
 
