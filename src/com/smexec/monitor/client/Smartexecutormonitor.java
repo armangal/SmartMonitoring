@@ -22,7 +22,6 @@ import com.smexec.monitor.client.players.PlayersWidget;
 import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.threads.ThreadPoolsWidget;
 import com.smexec.monitor.client.tournaments.TournamentsWidget;
-import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
@@ -76,7 +75,7 @@ public class Smartexecutormonitor
                     serversWidget.update(servers);
                     poolsWidget.refresh(result.getPoolFeedMap());
                     tournamentsWidget.update();
-                    playersWidget.update();
+                    playersWidget.update(result.getChannelSeverStats());
                 } else {
                     Log.debug("Received EMPTY response.");
 

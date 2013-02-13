@@ -176,8 +176,6 @@ body {
 .poolName {
 	color: blue;
 	font-weight: bold;
-	padding-bottom: 5px;
-	padding-top: 5px;
 }
 
 .poolCharts {
@@ -253,4 +251,19 @@ body {
 	background-color: #FFCC66;
 	font-weight: bold !important;
 	color: white !important;
+}
+
+.poolDataTable {
+	border: solid grey thin;	
+	float : left;
+	width: 45%;
+}
+.poolDataTable #th {
+	font-weight: bold;
+	background-color: grey;
+	border-bottom: solid grey thin;
+}
+.poolDataTable td {
+	font-weight: bold;
+	border-bottom: solid grey thin;
 }

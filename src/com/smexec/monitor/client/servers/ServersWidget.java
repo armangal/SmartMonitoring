@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -115,10 +116,18 @@ public class ServersWidget
 
             @Override
             public int compare(ConnectedServer o1, ConnectedServer o2) {
+                double o1p = 0, o2p = 0;
                 if (o1.getStatus() && o2.getStatus()) {
-                    return (int) (o2.getMemoryUsage().getPercentage() - o1.getMemoryUsage().getPercentage());
+                    o1p = o1.getMemoryUsage().getPercentage();
+                    o2p = o2.getMemoryUsage().getPercentage();
+                } else if (o1.getStatus()) {
+                    o1p = o1.getMemoryUsage().getPercentage();
+                    o2p = 0;
+                } else if (o2.getStatus()) {
+                    o1p = 0;
+                    o2p = o2.getMemoryUsage().getPercentage();
                 }
-                return 0;
+                return (int) (o2p * 100d - o1p * 100d);
             }
         });
 

@@ -17,7 +17,7 @@
 
 	<!-- Other module inherits -->
 
-	<inherits name="com.googlecode.gwt.charts.Charts"/> 
+	<inherits name="com.googlecode.gwt.charts.Charts" />
 
 
 	<!-- For development, a default of `DEBUG` is recommended -->

@@ -92,6 +92,12 @@ public class MonitoringLineChart
             options.setTitle(title);
             options.setHAxis(HAxis.create(xColumnname));
             options.setVAxis(VAxis.create(yColumnName));
+            String[] color = new String[lineTypes.length];
+
+            for (int i = 0; i < lineTypes.length; i++) {
+                color[i] = lineTypes[i].getLineColor();
+            }
+            options.setColors(color);
 
             // Draw the chart
             chart.draw(dataTable, options);

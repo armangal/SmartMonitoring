@@ -26,7 +26,7 @@ public class ThreadPoolsWidget
 
     private FlowPanel fp = new FlowPanel();
 
-    private FlexTable ft = new FlexTable();
+    private FlexTable poolsTable = new FlexTable();
 
     private HashMap<String, PoolsFeed> lastUpdate = new HashMap<String, PoolsFeed>(0);
 
@@ -53,22 +53,26 @@ public class ThreadPoolsWidget
         }
     };
 
+    /**
+     * 
+     */
     public ThreadPoolsWidget() {
         super("Thread Pools");
         addStyleName("threadPoolsWidget");
         getScrollPanel().add(fp);
         fp.add(poolWidget);
+        fp.add(poolsTable);
     }
 
     public void clear() {
         this.lastUpdate = null;
-        fp.remove(ft);
+        fp.remove(poolsTable);
         poolWidget.clear();
     }
 
     public void refresh(HashMap<String, PoolsFeed> map) {
         this.lastUpdate = map;
-        fp.remove(ft);
+        fp.remove(poolsTable);
 
         if (map.size() == 0) {
             poolNameToShow = null;
@@ -97,28 +101,28 @@ public class ThreadPoolsWidget
 
         poolWidget.refresh(pf);
 
-        ft = new FlexTable();
-        ft.getElement().setId("infoTable");
-        ft.setStyleName("poolsList");
-        fp.add(ft);
-        ft.setCellPadding(0);
-        ft.setCellSpacing(0);
+        poolsTable = new FlexTable();
+        poolsTable.getElement().setId("infoTable");
+        poolsTable.setStyleName("poolsList");
+        fp.add(poolsTable);
+        poolsTable.setCellPadding(0);
+        poolsTable.setCellSpacing(0);
 
         int i = 0;
         int j = 0;
-        ft.setText(i, j++, "Name");
-        ft.setText(i, j++, "Subm");
-        ft.setText(i, j++, "Exec");
-        ft.setText(i, j++, "Comp");
-        ft.setText(i, j++, "Rejc");
-        ft.setText(i, j++, "Fail");
-        ft.setText(i, j++, "Time.MX");
-        ft.setText(i, j++, "Time.AV");
-        ft.setText(i, j++, "Time.MI");
-        ft.setText(i, j++, "Time.TO");
-        ft.setText(i, j++, "Hosts");
+        poolsTable.setText(i, j++, "Name");
+        poolsTable.setText(i, j++, "Subm");
+        poolsTable.setText(i, j++, "Exec");
+        poolsTable.setText(i, j++, "Comp");
+        poolsTable.setText(i, j++, "Rejc");
+        poolsTable.setText(i, j++, "Fail");
+        poolsTable.setText(i, j++, "Time.MX");
+        poolsTable.setText(i, j++, "Time.AV");
+        poolsTable.setText(i, j++, "Time.MI");
+        poolsTable.setText(i, j++, "Time.TO");
+        poolsTable.setText(i, j++, "Hosts");
 
-        ft.getRowFormatter().getElement(i++).setId("th");
+        poolsTable.getRowFormatter().getElement(i++).setId("th");
 
         for (PoolsFeed feed : values) {
             j = 0;
@@ -126,17 +130,17 @@ public class ThreadPoolsWidget
             name.addMouseOverHandler(handCursor);
             name.getElement().setAttribute("name", feed.getPoolName());
             name.addClickHandler(setDefaultPoolClickHandler);
-            ft.setWidget(i, j++, name);
-            ft.setText(i, j++, "" + feed.getSubmitted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex()) + ")");
-            ft.setText(i, j++, "" + feed.getExecuted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
-            ft.setText(i, j++, "" + feed.getCompleted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex()) + ")");
-            ft.setText(i, j++, "" + feed.getRejected() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.REJECTED.getIndex()) + ")");
-            ft.setText(i, j++, "" + feed.getFailed() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.FAILED.getIndex()) + ")");
-            ft.setText(i, j++, "" + feed.getMaxGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.MAX.getIndex()) + ")");
-            ft.setText(i, j++, "" + feed.getAvgGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ")");
-            ft.setText(i, j++, "" + feed.getMinGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
-            ft.setText(i, j++, "" + feed.getTotoalGenTime() / 1000 + "sec");
-            ft.setText(i, j++, "" + feed.getHosts());
+            poolsTable.setWidget(i, j++, name);
+            poolsTable.setText(i, j++, "" + feed.getSubmitted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getExecuted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getCompleted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getRejected() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.REJECTED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getFailed() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.FAILED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getMaxGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.MAX.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getAvgGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getMinGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getTotoalGenTime() / 1000 + "sec");
+            poolsTable.setText(i, j++, "" + feed.getHosts());
             i++;
         }
     }

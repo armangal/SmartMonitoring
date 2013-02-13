@@ -1,13 +1,13 @@
 package com.smexec.monitor.client.players;
 
-import java.util.Random;
-
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.LineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
+import com.smexec.monitor.shared.ChannelChunkStats;
+import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ChartFeed;
 
 public class PlayersWidget
@@ -31,13 +31,13 @@ public class PlayersWidget
         fp.add(servers);
     }
 
-    public void update() {
-        Random r = new Random();
+    public void update(ChannelSeverStats css) {
         int i = 0;
-        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(10000)));
-        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(4000)));
-        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(100)));
-        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(100)));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(css.getOpenBinarySessions() + css.getOpenStringSessions()));
+        playersTable.setText(i++, 1, "????");
+        ChannelChunkStats lastChunk = css.getLastChunk();
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getDisconnectedBinarySessions() + lastChunk.getDisconnectedLegacySessions()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getConnectedBinarySessions() + lastChunk.getConnectedLegacySessions()));
 
         connected.updateChart(new ChartFeed());
         reconnected.updateChart(new ChartFeed());

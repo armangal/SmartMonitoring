@@ -21,13 +21,16 @@ public class RefreshResult
 
     private String title;
 
+    private ChannelSeverStats channelSeverStats;
+
     public RefreshResult() {}
 
-    public RefreshResult(HashMap<String, PoolsFeed> poolFeedMap, ArrayList<ConnectedServer> servers, String title) {
+    public RefreshResult(HashMap<String, PoolsFeed> poolFeedMap, ArrayList<ConnectedServer> servers, String title, ChannelSeverStats channelSeverStats) {
         super();
         this.poolFeedMap = poolFeedMap;
         this.servers = servers;
         this.title = title;
+        this.channelSeverStats = channelSeverStats;
     }
 
     public HashMap<String, PoolsFeed> getPoolFeedMap() {
@@ -40,5 +43,9 @@ public class RefreshResult
 
     public String getTitle() {
         return title;
+    }
+
+    public ChannelSeverStats getChannelSeverStats() {
+        return channelSeverStats;
     }
 }

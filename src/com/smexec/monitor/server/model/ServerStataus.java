@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.management.remote.JMXConnector;
 
+import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.PoolsFeed;
@@ -39,6 +40,8 @@ public class ServerStataus {
     private Map<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>(0);
 
     private long upTime;
+
+    private ChannelSeverStats channelSeverStats;
 
     public ServerStataus(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
@@ -139,6 +142,22 @@ public class ServerStataus {
 
     public void setUptime(long uptime) {
         this.upTime = uptime;
+    }
+
+    /**
+     * returns channel server stats, will lazily initiate if needed
+     * 
+     * @return
+     */
+    public ChannelSeverStats getChannelSeverStats() {
+        if (channelSeverStats == null) {
+            this.channelSeverStats = new ChannelSeverStats();
+        }
+        return channelSeverStats;
+    }
+
+    public boolean haveChannelSeverStats() {
+        return channelSeverStats != null;
     }
 
     @Override
