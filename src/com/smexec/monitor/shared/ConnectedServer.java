@@ -21,6 +21,8 @@ public class ConnectedServer
     private MemoryUsage memoryUsage;
     private ArrayList<GCHistory> gcHistories;
     private long upTime;
+    private boolean channelServer;
+    private ChannelSeverStats channelSeverStats;
 
     public ConnectedServer() {}
 
@@ -31,7 +33,8 @@ public class ConnectedServer
                            Boolean status,
                            MemoryUsage memoryUsage,
                            ArrayList<GCHistory> gcHistories,
-                           long upTime) {
+                           long upTime,
+                           ChannelSeverStats channelSeverStats) {
         super();
         this.name = name;
         this.serverCode = serverCode;
@@ -41,6 +44,8 @@ public class ConnectedServer
         this.memoryUsage = memoryUsage;
         this.gcHistories = gcHistories;
         this.upTime = upTime;
+        this.channelSeverStats = channelSeverStats;
+        this.channelServer = channelSeverStats != null;
     }
 
     public String getName() {
@@ -70,10 +75,21 @@ public class ConnectedServer
     public ArrayList<GCHistory> getGcHistories() {
         return gcHistories;
     }
-    
-    
+
     public long getUpTime() {
         return upTime;
+    }
+
+    public boolean isChannelServer() {
+        return channelServer;
+    }
+
+    public void setChannelServer(boolean channelServer) {
+        this.channelServer = channelServer;
+    }
+
+    public ChannelSeverStats getChannelSeverStats() {
+        return channelSeverStats;
     }
 
     @Override

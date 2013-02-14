@@ -60,7 +60,8 @@ public class StateUpdaterThread
                                                          ss.isConnected(),
                                                          ss.getLastMemoryUsage(),
                                                          ss.getLastGCHistory(),
-                                                         ss.getUpTime());
+                                                         ss.getUpTime(),
+                                                         ss.haveChannelSeverStats() ? ss.getChannelSeverStats() : null);
                 serversList.add(cs);
             }
 

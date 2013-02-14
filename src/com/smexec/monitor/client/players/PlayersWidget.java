@@ -7,6 +7,7 @@ import java.util.Comparator;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.LineType;
@@ -14,6 +15,7 @@ import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.ChannelChunkStats;
 import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ChartFeed;
+import com.smexec.monitor.shared.ConnectedServer;
 
 public class PlayersWidget
     extends AbstractMonitoringWidget {
@@ -22,6 +24,9 @@ public class PlayersWidget
     private MonitoringLineChart connected = new MonitoringLineChart(new LineType[] {LineType.CONNECTED, LineType.PLAYING}, "Players", "Time", "Online Players");
     private MonitoringLineChart reconnected = new MonitoringLineChart(new LineType[] {LineType.DROPPED, LineType.OPENED}, "Players", "Time", "Drops vs. New");
     private FlexTable playersTable = new FlexTable();
+
+    private FlexTable channelServers = new FlexTable();
+    private ScrollPanel channelScrollPanel = new ScrollPanel();
 
     public PlayersWidget() {
         super("Online Players");
@@ -36,7 +41,7 @@ public class PlayersWidget
         fp.add(servers);
     }
 
-    public void update(ChannelSeverStats css) {
+    public void update(ChannelSeverStats css, ArrayList<ConnectedServer> servers) {
         int i = 0;
         Log.debug("Players:" + css);
         ChannelChunkStats lastChunk = css.getLastChunk();
@@ -46,12 +51,12 @@ public class PlayersWidget
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getDisconnectedBinarySessions() + lastChunk.getDisconnectedLegacySessions()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getConnectedBinarySessions() + lastChunk.getConnectedLegacySessions()));
 
-        playersTable.setText(i++, 1,"-1");
-        playersTable.setText(i++, 1,"-1");
-        playersTable.setText(i++, 1,"-1");
-        playersTable.setText(i++, 1,"-1");
-        playersTable.setText(i++, 1,"-1");
-        playersTable.setText(i++, 1,"-1");
+        playersTable.setText(i++, 1, "5,232 (3,434)");
+        playersTable.setText(i++, 1, "2,543 (1,222)");
+        playersTable.setText(i++, 1, "1,233 (902)");
+        playersTable.setText(i++, 1, "32,545 (25,543)");
+        playersTable.setText(i++, 1, "5");
+        playersTable.setText(i++, 1, "564");
 
         ArrayList<ChannelChunkStats> values = new ArrayList<ChannelChunkStats>(css.getMapValues());
         Collections.sort(values, new Comparator<ChannelChunkStats>() {
@@ -63,7 +68,36 @@ public class PlayersWidget
         });
         updateOnlinePlayers(css, values);
         updatedropsAndConnections(css, values);
+        updateChannelServers(servers);
 
+    }
+
+    private void updateChannelServers(ArrayList<ConnectedServer> servers) {
+        channelServers.removeFromParent();
+        channelServers = new FlexTable();
+        channelScrollPanel.add(channelServers);
+        channelServers.getElement().setId("infoTable");
+
+        channelServers.setText(0, 0, "Server");
+        channelServers.setText(0, 1, "Connected Player");
+        channelServers.setText(0, 2, "Dropped Players");
+        channelServers.setText(0, 3, "New Sessions");
+        channelServers.setText(0, 4, "Total Drops");
+        channelServers.setText(0, 5, "Total New");
+
+        int row = 1, col = 0;
+        for (ConnectedServer cs : servers) {
+            if (cs.getStatus() && cs.isChannelServer()) {
+                col = 0;
+                ChannelSeverStats css = cs.getChannelSeverStats();
+                channelServers.setText(row, col++, cs.getServerCode() + "," + cs.getName());
+                channelServers.setText(row, col++, ClientStringFormatter.formatNumber(css.getOpenBinarySessions() + css.getOpenStringSessions()));
+                channelServers.setText(row, col++, ClientStringFormatter.formatNumber(css.getLastChunk().getDisconnectedBinarySessions() + css.getLastChunk().getDisconnectedLegacySessions()));
+                channelServers.setText(row, col++, "New Sessions");
+                channelServers.setText(row, col++, "Total Drops");
+                channelServers.setText(row++, col++, "Total New");
+            }
+        }
     }
 
     private void updatedropsAndConnections(ChannelSeverStats css, ArrayList<ChannelChunkStats> values) {
@@ -109,6 +143,9 @@ public class PlayersWidget
     private FlowPanel getServers() {
         FlowPanel fp = new FlowPanel();
         fp.setStyleName("servers");
+
+        channelScrollPanel.add(channelServers);
+        fp.add(channelScrollPanel);
         return fp;
     }
 
@@ -134,16 +171,16 @@ public class PlayersWidget
         int i = 0;
         playersTable.setText(i++, 0, "Connected:");
         playersTable.setText(i++, 0, "Playing:");
-        playersTable.setText(i++, 0, "Disconnected (last min)");
-        playersTable.setText(i++, 0, "Connected (last min)");
+        playersTable.setText(i++, 0, "Disc (last min)");
+        playersTable.setText(i++, 0, "Conn (last min)");
 
         playersTable.setText(i++, 0, "Real Tables");
         playersTable.setText(i++, 0, "Fun Table");
         playersTable.setText(i++, 0, "Real Players");
         playersTable.setText(i++, 0, "Fun Player");
 
-        playersTable.setText(i++, 0, "Speed Poker Rooms");
-        playersTable.setText(i++, 0, "Speed Poker Players");
+        playersTable.setText(i++, 0, "S.P. Rooms");
+        playersTable.setText(i++, 0, "S.P. Players");
 
         return fp;
     }
