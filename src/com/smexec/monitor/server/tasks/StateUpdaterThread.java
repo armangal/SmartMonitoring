@@ -94,18 +94,21 @@ public class StateUpdaterThread
                 stats.setOpenBinarySessions(Integer.valueOf(mbsc.getAttribute(sessionStats, "TotalBinarySessions").toString()));
                 stats.setOpenStringSessions(Integer.valueOf(mbsc.getAttribute(sessionStats, "TotalLegacySessions").toString()));
                 CompositeData[] drained = (CompositeData[]) mbsc.invoke(sessionStats, "drainSessionStatEntries", new Object[] {}, new String[] {});
+                System.out.println("drained:" + drained.length);
                 for (CompositeData cd : drained) {
                     Integer startTime = Integer.valueOf(cd.get("startTime").toString());
                     ChannelChunkStats cscs = new ChannelChunkStats(Integer.valueOf(cd.get("connectedBinarySessions").toString()),
-                                                                               Integer.valueOf(cd.get("connectedLegacySessions").toString()),
-                                                                               Integer.valueOf(cd.get("disconnectedBinarySessions").toString()),
-                                                                               Integer.valueOf(cd.get("disconnectedLegacySessions").toString()),
-                                                                               startTime,
-                                                                               Integer.valueOf(cd.get("endTime").toString()),
-                                                                               Integer.valueOf(cd.get("totalBinarySessions").toString()),
-                                                                               Integer.valueOf(cd.get("totalLegacySessions").toString()));
+                                                                   Integer.valueOf(cd.get("connectedLegacySessions").toString()),
+                                                                   Integer.valueOf(cd.get("disconnectedBinarySessions").toString()),
+                                                                   Integer.valueOf(cd.get("disconnectedLegacySessions").toString()),
+                                                                   startTime,
+                                                                   Integer.valueOf(cd.get("endTime").toString()),
+                                                                   Integer.valueOf(cd.get("totalBinarySessions").toString()),
+                                                                   Integer.valueOf(cd.get("totalLegacySessions").toString()),
+                                                                   -1);
 
                     stats.addChunk(cscs);
+                    System.out.println(cscs);
                 }
             }
         } catch (Exception e) {
@@ -130,7 +133,7 @@ public class StateUpdaterThread
             pf.setPoolName(objectName.getKeyProperty("name"));
 
             String chunks = (String) mbsc.getAttribute(objectName, "TimeChunks");
-            //System.out.println(chunks);
+            // System.out.println(chunks);
             chunks = chunks.replace("[", "");
             String[] split = chunks.split("]");
 
@@ -173,7 +176,7 @@ public class StateUpdaterThread
             pf.setTotoalGenTime(getLong(mbsc, objectName, "TotalTime"));
 
             poolFeedMap.put(pf.getPoolName(), pf);
-//            System.out.println(pf);
+            // System.out.println(pf);
         }
 
         ss.setPoolFeedMap(poolFeedMap);

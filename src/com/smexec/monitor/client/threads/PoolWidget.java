@@ -70,7 +70,7 @@ public class PoolWidget
 
         tasksTable.setText(0, 0, "Tasks Executed");
 
-        tasksTable.getRowFormatter().getElement(0).setId("th");
+        tasksTable.getCellFormatter().getElement(0, 0).setId("th");
 
         tasksTable.getFlexCellFormatter().setColSpan(0, 0, 2);
 
@@ -90,7 +90,8 @@ public class PoolWidget
 
         timesTable.setText(0, 0, "Execution Duration");
 
-        timesTable.getRowFormatter().getElement(0).setId("th");
+        timesTable.getCellFormatter().getElement(0, 0).setId("th");
+
 
         timesTable.getFlexCellFormatter().setColSpan(0, 0, 2);
 

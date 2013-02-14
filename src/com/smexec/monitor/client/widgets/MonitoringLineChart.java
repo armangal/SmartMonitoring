@@ -48,7 +48,7 @@ public class MonitoringLineChart
         initWidget(fp);
     }
 
-    public void updateChart(ChartFeed timeChartFeeds) {
+    public void updateChart(ChartFeed chartFeeds) {
         try {
             // draw();
             // if (1 == 1) {
@@ -67,15 +67,15 @@ public class MonitoringLineChart
                 dataTable.addColumn(ColumnType.NUMBER, lineTypes[i].getName());
             }
 
-            dataTable.addRows(timeChartFeeds.getValuesLenght());
+            dataTable.addRows(chartFeeds.getValuesLenght());
 
             // create X values on chart
-            for (int i = 0; i < timeChartFeeds.getValuesLenght(); i = i + timeChartFeeds.getValuesLenght() / 10) {
+            for (int i = 0; i < chartFeeds.getValuesLenght(); i = i + chartFeeds.getValuesLenght() / 10) {
                 dataTable.setValue(i, 0, String.valueOf(i));
             }
 
             for (int i = 0; i < lineTypes.length; i++) {
-                double[] line = drawLine(timeChartFeeds, lineTypes[i], dataTable);
+                double[] line = drawLine(chartFeeds, lineTypes[i], dataTable);
                 if (line[0] > maxYAxis) {
                     maxYAxis = line[0];
                 }

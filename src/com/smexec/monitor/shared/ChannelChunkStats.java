@@ -15,17 +15,19 @@ public class ChannelChunkStats
     private int endTime;
     private int openBinarySessions;
     private int openStringSessions;
+    private int playing;
 
     public ChannelChunkStats() {}
 
     public ChannelChunkStats(int connectedBinarySessions,
-                                   int connectedLegacySessions,
-                                   int disconnectedBinarySessions,
-                                   int disconnectedLegacySessions,
-                                   int startTime,
-                                   int endTime,
-                                   int openBinarySessions,
-                                   int openStringSessions) {
+                             int connectedLegacySessions,
+                             int disconnectedBinarySessions,
+                             int disconnectedLegacySessions,
+                             int startTime,
+                             int endTime,
+                             int openBinarySessions,
+                             int openStringSessions,
+                             int playing) {
         super();
         this.connectedBinarySessions = connectedBinarySessions;
         this.connectedLegacySessions = connectedLegacySessions;
@@ -35,6 +37,7 @@ public class ChannelChunkStats
         this.endTime = endTime;
         this.openBinarySessions = openBinarySessions;
         this.openStringSessions = openStringSessions;
+        this.playing = playing;
     }
 
     public static long getSerialversionuid() {
@@ -71,6 +74,10 @@ public class ChannelChunkStats
 
     public int getOpenStringSessions() {
         return openStringSessions;
+    }
+
+    public int getPlaying() {
+        return playing;
     }
 
     @Override
@@ -114,6 +121,8 @@ public class ChannelChunkStats
         builder.append(openBinarySessions);
         builder.append(", openStringSessions=");
         builder.append(openStringSessions);
+        builder.append(", playing=");
+        builder.append(playing);
         builder.append("]");
         return builder.toString();
     }

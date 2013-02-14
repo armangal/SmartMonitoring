@@ -1,9 +1,9 @@
 package com.smexec.monitor.shared;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -32,9 +32,9 @@ public class ChannelSeverStats
 
     private int lastUpdateTime;
     /**
-     * key: timestamp in HHMM format coming from server value: the info retreived from server
+     * key: timestamp in mmddHHMM format coming from server value: the info retreived from server
      */
-    private Map<Integer, ChannelChunkStats> map = new HashMap<Integer, ChannelChunkStats>();
+    private LinkedList<ChannelChunkStats> list = new LinkedList<ChannelChunkStats>();
 
     public ChannelSeverStats() {}
 
@@ -62,23 +62,22 @@ public class ChannelSeverStats
         return totalConnections;
     }
 
-    public Collection<ChannelChunkStats> getMapValues() {
-        return map.values();
+    public LinkedList<ChannelChunkStats> getMapValues() {
+        return list;
     }
 
     public void addChunk(ChannelChunkStats cscs) {
-        map.put(cscs.getStartTime(), cscs);
+        list.add(cscs);
+        if (list.size() > 100) {
+            list.remove();
+        }
         this.totalConnections += cscs.getConnectedBinarySessions() + cscs.getConnectedLegacySessions();
         this.totalDrops += cscs.getDisconnectedBinarySessions() + cscs.getDisconnectedLegacySessions();
         this.lastUpdateTime = cscs.getStartTime();
     }
 
-    public void setMap(LinkedHashMap<Integer, ChannelChunkStats> map) {
-        this.map = map;
-    }
-
     public ChannelChunkStats getLastChunk() {
-        ChannelChunkStats channelChunkStats = map.get(lastUpdateTime);
+        ChannelChunkStats channelChunkStats = list.getLast();
         if (channelChunkStats == null) {
             channelChunkStats = new ChannelChunkStats();
         }
@@ -90,6 +89,9 @@ public class ChannelSeverStats
         this.openStringSessions += css.getOpenStringSessions();
         this.totalConnections += css.getTotalConnections();
         this.totalDrops += css.getTotalDrops();
+
+        HashMap<Integer, ChannelChunkStats> map = copyListToMap();
+
         for (ChannelChunkStats cscs : css.getMapValues()) {
             if (map.containsKey(cscs.getStartTime())) {
                 // merge
@@ -101,11 +103,36 @@ public class ChannelSeverStats
                                              agg.getStartTime(),
                                              agg.getEndTime(),
                                              agg.getOpenBinarySessions() + cscs.getOpenBinarySessions(),
-                                             agg.getOpenStringSessions() + cscs.getOpenStringSessions());
+                                             agg.getOpenStringSessions() + cscs.getOpenStringSessions(),
+                                             -1);
 
+            }
+            if (cscs.getStartTime() > this.lastUpdateTime) {
+                this.lastUpdateTime = cscs.getStartTime();
             }
             map.put(cscs.getStartTime(), cscs);
         }
+        copyMapToList(map);
+    }
+
+    private void copyMapToList(HashMap<Integer, ChannelChunkStats> map) {
+        list.clear();
+        list.addAll(map.values());
+        Collections.sort(list, new Comparator<ChannelChunkStats>() {
+
+            @Override
+            public int compare(ChannelChunkStats o1, ChannelChunkStats o2) {
+                return o1.getStartTime() - o2.getStartTime();
+            }
+        });
+    }
+
+    private HashMap<Integer, ChannelChunkStats> copyListToMap() {
+        HashMap<Integer, ChannelChunkStats> map = new HashMap<Integer, ChannelChunkStats>(list.size());
+        for (ChannelChunkStats css : list) {
+            map.put(css.getStartTime(), css);
+        }
+        return map;
     }
 
     @Override
@@ -119,8 +146,10 @@ public class ChannelSeverStats
         builder.append(totalDrops);
         builder.append(", totalConnections=");
         builder.append(totalConnections);
-        builder.append(", map=");
-        builder.append(map.size());
+        builder.append(", lastUpdate=");
+        builder.append(lastUpdateTime);
+        builder.append(", list=");
+        builder.append(list.size());
         builder.append("]");
         return builder.toString();
     }
