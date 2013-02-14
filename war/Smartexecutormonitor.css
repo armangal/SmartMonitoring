@@ -11,6 +11,7 @@ html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,aside,pre,abbr,a
 	background: transparent;
 }
 
+
 h1 {
 	font-size: 2em;
 	font-weight: bold;
@@ -55,6 +56,7 @@ body {
 	background-image: url("img/headers-background.png");
 	background-repeat: repeat-x;
 	height: 32px;
+	position: relative;
 }
 
 .monitoringWidget img {
@@ -67,7 +69,11 @@ body {
 	color: #fff;
 	float: left;
 	height: 32px;
-	width: 300px;
+margin: 0px;
+padding: 0px;
+position: absolute;
+left: 38px;
+top: 9px;
 }
 
 .tournamentsWidget {
