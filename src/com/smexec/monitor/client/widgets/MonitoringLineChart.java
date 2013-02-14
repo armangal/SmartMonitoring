@@ -49,12 +49,11 @@ public class MonitoringLineChart
     }
 
     public void updateChart(ChartFeed chartFeeds) {
-        try {
-            // draw();
-            // if (1 == 1) {
-            // return;
-            // }
+        updateChart(chartFeeds, false);
+    }
 
+    public void updateChart(ChartFeed chartFeeds, boolean lastRowAsColumn) {
+        try {
             double maxYAxis = Double.MIN_VALUE;
             double minYAxis = Double.MAX_VALUE;
 
@@ -69,9 +68,15 @@ public class MonitoringLineChart
 
             dataTable.addRows(chartFeeds.getValuesLenght());
 
-            // create X values on chart
-            for (int i = 0; i < chartFeeds.getValuesLenght(); i = i + chartFeeds.getValuesLenght() / 10) {
-                dataTable.setValue(i, 0, String.valueOf(i));
+            if (lastRowAsColumn) {
+                for (int i = 0; i < chartFeeds.getValuesLenght(); i++) {
+                    dataTable.setValue(i, 0, String.valueOf(chartFeeds.getValues(lineTypes.length, i)));
+                }
+            } else {
+                // create X values on chart
+                for (int i = 0; i < chartFeeds.getValuesLenght(); i++) {
+                    dataTable.setValue(i, 0, String.valueOf(i));
+                }
             }
 
             for (int i = 0; i < lineTypes.length; i++) {

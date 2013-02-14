@@ -113,7 +113,7 @@ body {
 	width: 50%;
 	position: relative;
 	float: right;
-	height: 300px;
+	height: 355px;
 }
 
 .playersWidget .players {
@@ -153,10 +153,10 @@ body {
 .playersWidget .servers {
 	border: thin solid orange;
 	float: left;
-	height: 200px;
+	height: 110px;
 	margin: 2px;
 	padding: 2px;
-	width: 97%;
+	width: 100%;
 }
 
 .alertsWidget {
@@ -253,7 +253,7 @@ body {
 #infoTable #memoryWarn td {
 	background-color: #FFCC66;
 	font-weight: bold !important;
-	color: white !important;
+	color: blue !important;
 }
 
 .poolDataTable {

@@ -77,11 +77,10 @@ public class ChannelSeverStats
     }
 
     public ChannelChunkStats getLastChunk() {
-        ChannelChunkStats channelChunkStats = list.getLast();
-        if (channelChunkStats == null) {
-            channelChunkStats = new ChannelChunkStats();
+        if (list.size() == 0) {
+            return new ChannelChunkStats();
         }
-        return channelChunkStats;
+        return list.getLast();
     }
 
     public void merge(ChannelSeverStats css) {

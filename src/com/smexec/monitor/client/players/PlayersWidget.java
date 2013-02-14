@@ -46,6 +46,13 @@ public class PlayersWidget
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getDisconnectedBinarySessions() + lastChunk.getDisconnectedLegacySessions()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getConnectedBinarySessions() + lastChunk.getConnectedLegacySessions()));
 
+        playersTable.setText(i++, 1,"-1");
+        playersTable.setText(i++, 1,"-1");
+        playersTable.setText(i++, 1,"-1");
+        playersTable.setText(i++, 1,"-1");
+        playersTable.setText(i++, 1,"-1");
+        playersTable.setText(i++, 1,"-1");
+
         ArrayList<ChannelChunkStats> values = new ArrayList<ChannelChunkStats>(css.getMapValues());
         Collections.sort(values, new Comparator<ChannelChunkStats>() {
 
@@ -60,8 +67,8 @@ public class PlayersWidget
     }
 
     private void updatedropsAndConnections(ChannelSeverStats css, ArrayList<ChannelChunkStats> values) {
-        ChartFeed dropsAndConnections = new ChartFeed(values.size(), 2);
-        for (int k = 0; k < 2; k++) {
+        ChartFeed dropsAndConnections = new ChartFeed(values.size(), 3);
+        for (int k = 0; k < 3; k++) {
             for (int j = 0; j < values.size(); j++) {
                 if (k == 0) {
                     // drops
@@ -69,17 +76,19 @@ public class PlayersWidget
                 } else if (k == 1) {
                     // new connetions
                     dropsAndConnections.getValues()[k][j] = values.get(j).getConnectedBinarySessions() + values.get(j).getConnectedLegacySessions();
+                } else if (k == 2) {
+                    dropsAndConnections.getValues()[k][j] = values.get(j).getStartTimeForChart();
                 }
             }
         }
 
         Log.debug("Updating drops, values size:" + values.size());
-        //reconnected.updateChart(dropsAndConnections);
+        reconnected.updateChart(dropsAndConnections, true);
     }
 
     private void updateOnlinePlayers(ChannelSeverStats css, ArrayList<ChannelChunkStats> values) {
-        ChartFeed online = new ChartFeed(values.size(), 2);
-        for (int k = 0; k < 2; k++) {
+        ChartFeed online = new ChartFeed(values.size(), 3);
+        for (int k = 0; k < 3; k++) {
             for (int j = 0; j < values.size(); j++) {
                 if (k == 0) {
                     // connected
@@ -87,12 +96,14 @@ public class PlayersWidget
                 } else if (k == 1) {
                     // playing
                     online.getValues()[k][j] = values.get(j).getPlaying();
+                } else if (k == 2) {
+                    online.getValues()[k][j] = values.get(j).getStartTimeForChart();
                 }
             }
         }
         Log.debug("Updating connected, values size:" + values.size());
 
-        //connected.updateChart(online);
+        connected.updateChart(online, true);
     }
 
     private FlowPanel getServers() {
@@ -123,8 +134,16 @@ public class PlayersWidget
         int i = 0;
         playersTable.setText(i++, 0, "Connected:");
         playersTable.setText(i++, 0, "Playing:");
-        playersTable.setText(i++, 0, "Disconnected (min)");
-        playersTable.setText(i++, 0, "Connected (min)");
+        playersTable.setText(i++, 0, "Disconnected (last min)");
+        playersTable.setText(i++, 0, "Connected (last min)");
+
+        playersTable.setText(i++, 0, "Real Tables");
+        playersTable.setText(i++, 0, "Fun Table");
+        playersTable.setText(i++, 0, "Real Players");
+        playersTable.setText(i++, 0, "Fun Player");
+
+        playersTable.setText(i++, 0, "Speed Poker Rooms");
+        playersTable.setText(i++, 0, "Speed Poker Players");
 
         return fp;
     }

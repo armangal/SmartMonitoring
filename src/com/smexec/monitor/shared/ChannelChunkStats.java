@@ -64,6 +64,10 @@ public class ChannelChunkStats
         return startTime;
     }
 
+    public int getStartTimeForChart() {
+        return startTime % 10000;
+    }
+
     public int getEndTime() {
         return endTime;
     }
