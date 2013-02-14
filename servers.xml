@@ -22,7 +22,6 @@
 			<username>user</username>
 			<password>password</password>
 		</server>
-		<!-- 
 		<server>
 			<name>EDI_CHANNEL</name>
 			<serverCode>17</serverCode>
@@ -32,6 +31,7 @@
 			<username>user</username>
 			<password>password</password>
 		</server>
+		<!-- 
 		<server>
 			<name>4444</name>
 			<serverCode>18</serverCode>
