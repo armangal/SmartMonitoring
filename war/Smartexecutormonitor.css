@@ -43,52 +43,62 @@ body {
 	border: solid #EE8318 thin;
 	margin: auto;
 	padding: 0px;
+	background-image: url("img/background-pattern.png");
 }
 
 .monitoringWidget {
-	border: solid orange thin;
-	margin: 0px 0px 2px 2px;
-	border-radius: 8px;
-	-moz-border-radius: 8px;
-	width: 97%;
-	padding: 2px;
+	background-image: url("img/widgets-bg-pattern.png");
+	width: 49%;
 }
 
-.monitoringWidgetLable {
-	font-style: italic;
-	font-weight: bold;
-	color: #819FF7;
-	font-variant: small-caps;
+.monitoringWidget .header {
+	background-image: url("img/headers-background.png");
+	background-repeat: repeat-x;
+	height: 32px;
+}
+
+.monitoringWidget img {
+	float: left;
+}
+.monitoringWidgetHeaderLable {
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+	font-weight: 700;
+	color: #fff;
+	float: left;
+	height: 32px;
+	width: 300px;
 }
 
 .tournamentsWidget {
-	width: 50%;
 	position: relative;
 	float: left;
-}
-
-.tournamentsWidget .table {
-	height: 100px;
+	height: 120px;
 }
 
 .tournamentsWidget .left {
 	float: left;
 	width: 250px;
+	margin-left: 5px;
 }
 
 .tournamentsWidget .right {
 	float: left;
 	width: 340px;
-	border-left: solid orange thin;
+	padding-left: 3px;
+	border-left: thin solid green;
+}
+
+.tournamentsWidgetInternal{
+	float: left;
+	width: 100%;
+	height: 85px;
 }
 
 .serversWidget {
 	width: 50%;
 	position: relative;
 	float: right;
-}
-
-.serversWidget .table {
 	height: 200px;
 }
 
@@ -96,9 +106,6 @@ body {
 	width: 50%;
 	position: relative;
 	float: right;
-}
-
-.playersWidget .table {
 	height: 300px;
 }
 
@@ -149,28 +156,18 @@ body {
 	width: 50%;
 	position: relative;
 	float: right;
-}
-
-.alertsWidget .table {
 	height: 80px;
 }
 
 .threadPoolsWidget {
-	width: 50%;
 	position: relative;
 	float: left;
-}
-
-.threadPoolsWidget .table {
-	height: 515px;
+	height: 555px;
 }
 
 .poolWidget {
-	border: dashed thin #990033;
-	padding: 5px;
 	position: relative;
-	background-color: #F5ECCE;
-	height: 300px;
+	height: 335px;
 }
 
 .poolName {
@@ -202,10 +199,9 @@ body {
 	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
 	font-size: 12px;
 	background: #fff;
-	width: 95%;
+	width: 100%;
 	border-collapse: collapse;
 	text-align: left;
-	margin: 5px;
 }
 
 .poolsList td {
@@ -254,15 +250,17 @@ body {
 }
 
 .poolDataTable {
-	border: solid grey thin;	
-	float : left;
+	border: solid grey thin;
+	float: left;
 	width: 45%;
 }
+
 .poolDataTable #th {
 	font-weight: bold;
 	background-color: grey;
 	border-bottom: solid grey thin;
 }
+
 .poolDataTable td {
 	font-weight: bold;
 	border-bottom: solid grey thin;

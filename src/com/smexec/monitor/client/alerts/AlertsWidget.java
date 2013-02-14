@@ -7,6 +7,6 @@ public class AlertsWidget
 
     public AlertsWidget() {
         super("Alerts");
-        setStyleName("alertsWidget");
+        addStyleName("alertsWidget");
     }
 }

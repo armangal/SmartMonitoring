@@ -20,7 +20,7 @@ public class PlayersWidget
 
     public PlayersWidget() {
         super("Online Players");
-        setStyleName("playersWidget");
+        addStyleName("playersWidget");
         getScrollPanel().add(fp);
 
         FlowPanel players = getPlayers();

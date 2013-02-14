@@ -101,7 +101,7 @@ public class ServersWidget
     public ServersWidget() {
 
         super("Connected Servers");
-        setStyleName("serversWidget");
+        addStyleName("serversWidget");
     }
 
     public void update(ArrayList<ConnectedServer> list) {
