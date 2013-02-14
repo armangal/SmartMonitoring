@@ -5,9 +5,15 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.LineType;
@@ -27,6 +33,30 @@ public class PlayersWidget
 
     private FlexTable channelServers = new FlexTable();
     private ScrollPanel channelScrollPanel = new ScrollPanel();
+    private ArrayList<ConnectedServer> servers;
+    private ClickHandler getServerStats = new ClickHandler() {
+
+        @Override
+        public void onClick(ClickEvent event) {
+            String code = ((Widget) event.getSource()).getElement().getAttribute("code");
+            if (servers != null && !servers.isEmpty()) {
+                ConnectedServer cs = null;
+                for (ConnectedServer cs1 : servers) {
+                    if (cs.getServerCode().equals(Integer.valueOf(code))) {
+                        cs = cs1;
+                        break;
+                    }
+                }
+                if (cs == null) {
+                    Window.alert("Server not found in list");
+                } else {
+                    ServerStatasPopup db = new ServerStatasPopup();
+
+                    db.center();
+                }
+            }
+        }
+    };
 
     public PlayersWidget() {
         super("Online Players");
@@ -42,6 +72,7 @@ public class PlayersWidget
     }
 
     public void update(ChannelSeverStats css, ArrayList<ConnectedServer> servers) {
+        this.servers = servers;
         int i = 0;
         Log.debug("Players:" + css);
         ChannelChunkStats lastChunk = css.getLastChunk();
@@ -91,7 +122,11 @@ public class PlayersWidget
             if (cs.getStatus() && cs.isChannelServer()) {
                 col = 0;
                 ChannelSeverStats css = cs.getChannelSeverStats();
-                channelServers.setText(row, col++, cs.getServerCode() + "," + cs.getName());
+                final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
+                name.getElement().setAttribute("code", "" + cs.getServerCode());
+                name.addClickHandler(getServerStats);
+
+                channelServers.setWidget(row, col++, name);
                 channelServers.setText(row, col++, ClientStringFormatter.formatNumber(css.getOpenBinarySessions() + css.getOpenStringSessions()));
                 channelServers.setText(row,
                                        col++,
