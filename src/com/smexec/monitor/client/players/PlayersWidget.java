@@ -84,6 +84,7 @@ public class PlayersWidget
         channelServers.setText(0, 3, "New Sessions");
         channelServers.setText(0, 4, "Total Drops");
         channelServers.setText(0, 5, "Total New");
+        channelServers.getRowFormatter().getElement(0).setId("th");
 
         int row = 1, col = 0;
         for (ConnectedServer cs : servers) {
@@ -92,10 +93,16 @@ public class PlayersWidget
                 ChannelSeverStats css = cs.getChannelSeverStats();
                 channelServers.setText(row, col++, cs.getServerCode() + "," + cs.getName());
                 channelServers.setText(row, col++, ClientStringFormatter.formatNumber(css.getOpenBinarySessions() + css.getOpenStringSessions()));
-                channelServers.setText(row, col++, ClientStringFormatter.formatNumber(css.getLastChunk().getDisconnectedBinarySessions() + css.getLastChunk().getDisconnectedLegacySessions()));
-                channelServers.setText(row, col++, "New Sessions");
-                channelServers.setText(row, col++, "Total Drops");
-                channelServers.setText(row++, col++, "Total New");
+                channelServers.setText(row,
+                                       col++,
+                                       ClientStringFormatter.formatNumber(css.getLastChunk().getDisconnectedBinarySessions()
+                                                                          + css.getLastChunk().getDisconnectedLegacySessions()));
+                channelServers.setText(row,
+                                       col++,
+                                       ClientStringFormatter.formatNumber(css.getLastChunk().getConnectedBinarySessions()
+                                                                          + css.getLastChunk().getConnectedLegacySessions()));
+                channelServers.setText(row, col++, ClientStringFormatter.formatNumber(css.getTotalDrops()));
+                channelServers.setText(row++, col++, ClientStringFormatter.formatNumber(css.getTotalConnections()));
             }
         }
     }
