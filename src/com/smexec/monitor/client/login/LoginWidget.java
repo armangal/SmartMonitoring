@@ -32,10 +32,10 @@ public class LoginWidget
     private Button login = new Button("Login");
 
     public LoginWidget() {
-        if (!GWT.isScript()) {
+//        if (!GWT.isScript()) {
             userName.setText("admin");
             password.setText("password");
-        }
+//        }
         initWidget(fp);
 
         fp.setStyleName("login");
