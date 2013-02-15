@@ -25,12 +25,14 @@ body {
 }
 
 .login {
-	top: 200px;
-	width: 400px;
+	position:absolute;
+	width: 150px;
 	height: 300px;
-	border: solid #EE8318 thin;
 	margin: auto;
 	padding: 0px;
+	position: center;
+	top :45%;
+	left:45%;
 }
 
 .login #label {

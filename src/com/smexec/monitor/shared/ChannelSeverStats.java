@@ -62,7 +62,7 @@ public class ChannelSeverStats
         return totalConnections;
     }
 
-    public LinkedList<ChannelChunkStats> getMapValues() {
+    public LinkedList<ChannelChunkStats> getChannelStats() {
         return list;
     }
 
@@ -91,7 +91,7 @@ public class ChannelSeverStats
 
         HashMap<Integer, ChannelChunkStats> map = copyListToMap();
 
-        for (ChannelChunkStats cscs : css.getMapValues()) {
+        for (ChannelChunkStats cscs : css.getChannelStats()) {
             if (map.containsKey(cscs.getStartTime())) {
                 // merge
                 ChannelChunkStats agg = map.get(cscs.getStartTime());

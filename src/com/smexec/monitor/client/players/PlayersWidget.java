@@ -8,7 +8,6 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -42,7 +41,7 @@ public class PlayersWidget
             if (servers != null && !servers.isEmpty()) {
                 ConnectedServer cs = null;
                 for (ConnectedServer cs1 : servers) {
-                    if (cs.getServerCode().equals(Integer.valueOf(code))) {
+                    if (cs1.getServerCode().equals(Integer.valueOf(code))) {
                         cs = cs1;
                         break;
                     }
@@ -50,7 +49,7 @@ public class PlayersWidget
                 if (cs == null) {
                     Window.alert("Server not found in list");
                 } else {
-                    ServerStatasPopup db = new ServerStatasPopup();
+                    ServerStatasPopup db = new ServerStatasPopup(cs);
 
                     db.center();
                 }
@@ -89,7 +88,7 @@ public class PlayersWidget
         playersTable.setText(i++, 1, "5");
         playersTable.setText(i++, 1, "564");
 
-        ArrayList<ChannelChunkStats> values = new ArrayList<ChannelChunkStats>(css.getMapValues());
+        ArrayList<ChannelChunkStats> values = new ArrayList<ChannelChunkStats>(css.getChannelStats());
         Collections.sort(values, new Comparator<ChannelChunkStats>() {
 
             @Override
@@ -97,8 +96,8 @@ public class PlayersWidget
                 return o1.getStartTime() - o2.getStartTime();
             }
         });
-        updateOnlinePlayers(css, values);
-        updatedropsAndConnections(css, values);
+        updateOnlinePlayers(values);
+        updatedropsAndConnections(values);
         updateChannelServers(servers);
 
     }
@@ -142,7 +141,7 @@ public class PlayersWidget
         }
     }
 
-    private void updatedropsAndConnections(ChannelSeverStats css, ArrayList<ChannelChunkStats> values) {
+    private void updatedropsAndConnections(ArrayList<ChannelChunkStats> values) {
         ChartFeed dropsAndConnections = new ChartFeed(values.size(), 3);
         for (int k = 0; k < 3; k++) {
             for (int j = 0; j < values.size(); j++) {
@@ -162,7 +161,7 @@ public class PlayersWidget
         reconnected.updateChart(dropsAndConnections, true);
     }
 
-    private void updateOnlinePlayers(ChannelSeverStats css, ArrayList<ChannelChunkStats> values) {
+    private void updateOnlinePlayers(ArrayList<ChannelChunkStats> values) {
         ChartFeed online = new ChartFeed(values.size(), 3);
         for (int k = 0; k < 3; k++) {
             for (int j = 0; j < values.size(); j++) {

@@ -23,6 +23,9 @@ public class MonitoringLineChart
     private String title;
     private String yColumnName;
     private String xColumnname;
+    private ChartFeed chartFeeds;
+    private boolean lastRowAsColumn;
+    private boolean initilized = false;
 
     public MonitoringLineChart(LineType[] lineTypes, String yColumnName, String xColumnname, String title) {
         this.lineTypes = lineTypes;
@@ -40,6 +43,11 @@ public class MonitoringLineChart
                     chart = new LineChart();
                     chart.setHeight("100%");
                     fp.add(chart);
+                    initilized = true;
+                    if (chartFeeds != null) {
+                        updateChart(chartFeeds, lastRowAsColumn);
+                    }
+
                 } catch (Exception e) {
                     Log.error(e.getMessage());
                 }
@@ -54,6 +62,12 @@ public class MonitoringLineChart
 
     public void updateChart(ChartFeed chartFeeds, boolean lastRowAsColumn) {
         try {
+            if (!initilized) {
+                this.chartFeeds = chartFeeds;
+                this.lastRowAsColumn = lastRowAsColumn;
+                return;
+            }
+
             double maxYAxis = Double.MIN_VALUE;
             double minYAxis = Double.MAX_VALUE;
 
@@ -107,6 +121,7 @@ public class MonitoringLineChart
             // Draw the chart
             chart.draw(dataTable, options);
         } catch (Exception e) {
+            e.printStackTrace();
             Log.error("MonitoringLineChart.update:, " + e.getMessage());
         }
     }
