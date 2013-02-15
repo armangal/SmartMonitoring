@@ -35,12 +35,12 @@ body {
 }
 
 .monitoringWidget {
-	background-image: url("img/widgets-bg-pattern.png");
+	background-image: url("/img/widgets-bg-pattern.png");
 	width: 49%;
 }
 
 .monitoringWidget .header {
-	background-image: url("img/headers-background.png");
+	background-image: url("/img/headers-background.png");
 	background-repeat: repeat-x;
 	height: 32px;
 	position: relative;
