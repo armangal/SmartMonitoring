@@ -44,6 +44,9 @@ body {
 	left: 0px !important;
 	z-index: 100;
 }
+.fullSize .data {
+	height: 100% !important;	
+}
 .monitoringWidget {
 	background-color:#FFFFF3;
 	width: 49%;
@@ -174,6 +177,12 @@ body {
 	float: right;
 	height: 120px;
 }
+.alertsWidget .data {
+	height: 96px;
+}
+.alertsWidgetData {
+	height: 100%;
+}
 
 .threadPoolsWidget {
 	position: relative;
@@ -222,6 +231,7 @@ body {
 
 .poolsList td {
 	font-size: xx-small !important;
+	height: 13px !important;
 }
 
 #infoTable #th {
@@ -241,6 +251,7 @@ body {
 	color: #669;
 	padding: 0px 0px 0;
 	border-bottom: 1px solid #ccc;
+	height: 16px;
 }
 
 #infoTable tr:hover td {

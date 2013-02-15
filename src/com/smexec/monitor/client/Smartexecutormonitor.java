@@ -76,6 +76,7 @@ public class Smartexecutormonitor
                     poolsWidget.refresh(result.getPoolFeedMap());
                     tournamentsWidget.update();
                     playersWidget.update(result.getChannelSeverStats(), servers);
+                    alertsWidget.update();
                 } else {
                     Log.debug("Received EMPTY response.");
 
