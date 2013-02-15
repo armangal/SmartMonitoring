@@ -71,7 +71,7 @@ public class ServerConfig {
         builder.append(username);
         builder.append(", password=");
         builder.append(password);
-        builder.append("]");
+        builder.append("]\n");
         return builder.toString();
     }
 
