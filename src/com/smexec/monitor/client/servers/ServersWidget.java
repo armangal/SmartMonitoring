@@ -102,18 +102,17 @@ public class ServersWidget
 
         super("Connected Servers");
         addStyleName("serversWidget");
-        getScrollPanel().setStyleName("serversWidgetTable");
     }
 
     public void update(ArrayList<ConnectedServer> list) {
-        getScrollPanel().clear();
+        getDataPanel().clear();
         FlowPanel fp = new FlowPanel();
         
         
         FlexTable ft = new FlexTable();
         ft.getElement().setId("infoTable");
         fp.add(ft);
-        getScrollPanel().add(fp);
+        getDataPanel().add(fp);
         ft.setCellPadding(0);
         ft.setCellSpacing(0);
 

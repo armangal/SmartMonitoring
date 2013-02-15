@@ -60,7 +60,7 @@ public class PlayersWidget
     public PlayersWidget() {
         super("Online Players");
         addStyleName("playersWidget");
-        getScrollPanel().add(fp);
+        getDataPanel().add(fp);
 
         FlowPanel players = getPlayers();
         FlowPanel charts = getCharts();

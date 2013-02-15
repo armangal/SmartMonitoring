@@ -59,7 +59,7 @@ public class ThreadPoolsWidget
     public ThreadPoolsWidget() {
         super("Thread Pools");
         addStyleName("threadPoolsWidget");
-        getScrollPanel().add(fp);
+        getDataPanel().add(fp);
         fp.add(poolWidget);
         fp.add(poolsTable);
     }

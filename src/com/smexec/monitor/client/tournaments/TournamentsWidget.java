@@ -34,7 +34,7 @@ public class TournamentsWidget
         fp.add(left);
         fp.add(sp);
         fp.setStyleName("tournamentsWidgetInternal");
-        getScrollPanel().add(fp);
+        getDataPanel().add(fp);
     }
 
     public void update() {

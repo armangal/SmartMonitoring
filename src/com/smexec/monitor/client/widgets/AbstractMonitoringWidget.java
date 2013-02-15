@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class AbstractMonitoringWidget
@@ -17,7 +16,7 @@ public abstract class AbstractMonitoringWidget
 
     private FlowPanel mainPanel = new FlowPanel();
 
-    private ScrollPanel sp = new ScrollPanel();
+    private FlowPanel dataPanel = new FlowPanel();
 
     private ClickHandler zoom = new ClickHandler() {
 
@@ -41,8 +40,6 @@ public abstract class AbstractMonitoringWidget
     };
 
     public AbstractMonitoringWidget(String name) {
-        mainPanel.setStyleName("monitoringWidget");
-        mainPanel.addStyleName("table");
 
         FlowPanel header = new FlowPanel();
         header.setStyleName("header");
@@ -53,22 +50,18 @@ public abstract class AbstractMonitoringWidget
 
         header.add(img);
         HTML lable = new HTML(name);
-        lable.setStyleName("monitoringWidgetHeaderLable");
+        lable.setStyleName("lable");
         header.add(lable);
         mainPanel.add(header);
 
-        mainPanel.add(sp);
+        mainPanel.add(dataPanel);
+        dataPanel.setStyleName("data");
+
         initWidget(mainPanel);
-//        sp.setHeight("100%");
-//        sp.setWidth("100%");
         setStyleName("monitoringWidget");
     }
 
-    public ScrollPanel getScrollPanel() {
-        return sp;
-    }
-
-    public FlowPanel getMainPanel() {
-        return mainPanel;
+    public FlowPanel getDataPanel() {
+        return dataPanel;
     }
 }

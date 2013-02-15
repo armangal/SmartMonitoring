@@ -50,29 +50,40 @@ body {
 }
 
 .monitoringWidget .header {
-	background-image: url("/img/headers-background.png");
-	background-repeat: repeat-x;
-	height: 32px;
-	position: relative;
+    background-image: url("/img/headers-background.png");
+    background-repeat: repeat-x;
+    height: 32px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
 }
 
 .monitoringWidget img {
 	float: left;
 }
 
-.monitoringWidgetHeaderLable {
-	font-family: Arial, sans-serif;
-	font-size: 14px;
-	font-weight: 700;
-	color: #fff;
-	float: left;
-	height: 32px;
-	margin: 0px;
-	padding: 0px;
-	position: absolute;
-	left: 38px;
-	top: 9px;
+.monitoringWidget .header .lable {
+   	color: white;
+    float: left;
+    font-family: Arial,sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    left: 38px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 9px;
 }
+
+.monitoringWidget .data {
+    float: left;
+    left: 0;
+    position: absolute;
+    top: 33px;
+    width: 100%;
+}
+
 
 .tournamentsWidget {
 	position: relative;
@@ -104,10 +115,6 @@ body {
 	position: relative;
 	float: right;
 	height: 200px;
-}
-
-.serversWidgetTable {
-	height: 165px;
 }
 
 .playersWidget {
