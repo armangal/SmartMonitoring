@@ -49,7 +49,7 @@ public class PlayersWidget
                 if (cs == null) {
                     Window.alert("Server not found in list");
                 } else {
-                    ServerStatasPopup db = new ServerStatasPopup(cs);
+                    ChannelServerStatasPopup db = new ChannelServerStatasPopup(cs);
 
                     db.center();
                 }
@@ -68,6 +68,7 @@ public class PlayersWidget
         fp.add(players);
         fp.add(charts);
         fp.add(servers);
+        channelScrollPanel.setHeight("100%");
     }
 
     public void update(ChannelSeverStats css, ArrayList<ConnectedServer> servers) {
@@ -212,8 +213,8 @@ public class PlayersWidget
         int i = 0;
         playersTable.setText(i++, 0, "Connected:");
         playersTable.setText(i++, 0, "Playing:");
-        playersTable.setText(i++, 0, "Disc (last min)");
-        playersTable.setText(i++, 0, "Conn (last min)");
+        playersTable.setText(i++, 0, "Disc (min)");
+        playersTable.setText(i++, 0, "Conn (min)");
 
         playersTable.setText(i++, 0, "Real Tables");
         playersTable.setText(i++, 0, "Fun Table");

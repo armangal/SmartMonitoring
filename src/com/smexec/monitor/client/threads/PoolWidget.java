@@ -36,23 +36,19 @@ public class PoolWidget
         this.poolNameWidget.setStylePrimaryName("poolName");
         fp.setStyleName("poolWidget");
 
-        FlowPanel threads = new FlowPanel();
-        threads.setStyleName("poolThreads");
-        threads.add(this.poolNameWidget);
-        // threads.add(this.activeThreads);
-        // threads.add(this.poolSize);
-        // threads.add(this.largestPoolSize);
-        // threads.add(this.hosts);
-        fp.add(threads);
+        fp.add(this.poolNameWidget);
 
         FlowPanel timePanel = new FlowPanel();
         timePanel.setStyleName("poolCharts");
         timePanel.add(timeChart);
+        timePanel.add(timesTable);
         fp.add(timePanel);
 
         FlowPanel taskPanel = new FlowPanel();
         taskPanel.setStyleName("poolCharts");
         taskPanel.add(tasksChart);
+        taskPanel.add(tasksTable);
+
         fp.add(taskPanel);
 
         tasksChart.setStyleName("tasksChart");
@@ -80,7 +76,6 @@ public class PoolWidget
         tasksTable.setText(4, 0, "Rejected:");
         tasksTable.setText(5, 0, "Failed:");
 
-        fp.add(tasksTable);
     }
 
     private void initilizeTimesTable() {
@@ -99,7 +94,6 @@ public class PoolWidget
         timesTable.setText(2, 0, "Avg. Time:");
         timesTable.setText(3, 0, "Min Time:");
         timesTable.setText(4, 0, "Total Time:");
-        fp.add(timesTable);
     }
 
     public void clear() {

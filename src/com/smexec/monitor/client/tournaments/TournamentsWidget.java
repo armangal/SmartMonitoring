@@ -7,6 +7,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
@@ -54,7 +55,9 @@ public class TournamentsWidget
         createRight();
 
         for (i = 1; i < 50; i++) {
-            interruptedTable.setText(i, 0, "" + r.nextInt(1223343));
+            HTML code  = new HTML("" + r.nextInt(1223343) + " (234)");
+            code.setTitle("code");
+            interruptedTable.setWidget(i, 0, code);
             interruptedTable.setText(i, 1, "Interrupted" + i);
             interruptedTable.setText(i, 2, format.format(new Date()));
             interruptedTable.setText(i++, 3, ClientStringFormatter.formatNumber(r.nextInt(5000)));
