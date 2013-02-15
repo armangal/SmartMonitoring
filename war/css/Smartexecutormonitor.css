@@ -106,6 +106,10 @@ body {
 	height: 200px;
 }
 
+.serversWidgetTable {
+	height: 165px;
+}
+
 .playersWidget {
 	width: 50%;
 	position: relative;

@@ -16,6 +16,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
@@ -101,13 +102,18 @@ public class ServersWidget
 
         super("Connected Servers");
         addStyleName("serversWidget");
+        getScrollPanel().setStyleName("serversWidgetTable");
     }
 
     public void update(ArrayList<ConnectedServer> list) {
         getScrollPanel().clear();
+        FlowPanel fp = new FlowPanel();
+        
+        
         FlexTable ft = new FlexTable();
         ft.getElement().setId("infoTable");
-        getScrollPanel().add(ft);
+        fp.add(ft);
+        getScrollPanel().add(fp);
         ft.setCellPadding(0);
         ft.setCellSpacing(0);
 

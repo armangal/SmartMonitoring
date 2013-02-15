@@ -59,8 +59,8 @@ public abstract class AbstractMonitoringWidget
 
         mainPanel.add(sp);
         initWidget(mainPanel);
-        sp.setHeight("100%");
-        sp.setWidth("100%");
+//        sp.setHeight("100%");
+//        sp.setWidth("100%");
         setStyleName("monitoringWidget");
     }
 
