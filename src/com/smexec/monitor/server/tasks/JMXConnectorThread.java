@@ -52,6 +52,8 @@ public class JMXConnectorThread
                     }
                 }
             }
+            
+            System.out.println("Connection loop finished");
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
