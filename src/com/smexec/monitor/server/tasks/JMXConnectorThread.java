@@ -47,12 +47,13 @@ public class JMXConnectorThread
                             ConnectedServersState.getMap().put(sc.getServerCode(), ss);
                         }
                     } else {
+                        // new in mappings
                         ServerStataus ss = connect(sc);
                         ConnectedServersState.getMap().put(sc.getServerCode(), ss);
                     }
                 }
             }
-            
+
             System.out.println("Connection loop finished");
 
         } catch (Exception e) {
@@ -66,6 +67,8 @@ public class JMXConnectorThread
         ServerStataus ss = new ServerStataus(sc);
 
         try {
+            ConnectionSynch.connectionLock.lock();
+
             System.out.println("Coonecting to:" + sc);
             JMXServiceURL u = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + sc.getIp() + ":" + sc.getJmxPort() + "/jmxrmi");
             if (sc.isAuthenticate()) {
@@ -95,6 +98,8 @@ public class JMXConnectorThread
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
+        } finally {
+            ConnectionSynch.connectionLock.unlock();
         }
 
         return ss;

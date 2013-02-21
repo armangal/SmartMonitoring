@@ -42,16 +42,8 @@ public class ChannelSeverStats
         return openBinarySessions;
     }
 
-    public void setOpenBinarySessions(int openBinarySessions) {
-        this.openBinarySessions = openBinarySessions;
-    }
-
     public int getOpenStringSessions() {
         return openStringSessions;
-    }
-
-    public void setOpenStringSessions(int openStringSessions) {
-        this.openStringSessions = openStringSessions;
     }
 
     public int getTotalDrops() {
@@ -74,6 +66,9 @@ public class ChannelSeverStats
         this.totalConnections += cscs.getConnectedBinarySessions() + cscs.getConnectedLegacySessions();
         this.totalDrops += cscs.getDisconnectedBinarySessions() + cscs.getDisconnectedLegacySessions();
         this.lastUpdateTime = cscs.getStartTime();
+        //assuming that the added recond is always the last and most up to date one
+        this.openBinarySessions = cscs.getOpenBinarySessions();
+        this.openStringSessions=cscs.getOpenStringSessions();
     }
 
     public ChannelChunkStats getLastChunk() {

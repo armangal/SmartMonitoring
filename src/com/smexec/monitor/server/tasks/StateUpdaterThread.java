@@ -40,6 +40,8 @@ public class StateUpdaterThread
     @Override
     public void run() {
         try {
+            ConnectionSynch.connectionLock.lock();
+
             System.out.println("Refreshing stats");
             ArrayList<ConnectedServer> serversList = new ArrayList<ConnectedServer>(0);
             for (ServerStataus ss : ConnectedServersState.getMap().values()) {
@@ -49,6 +51,8 @@ public class StateUpdaterThread
                         getMemoryStats(ss);
                         getSmartThreadPoolStats(ss);
                         getChannelStatistics(ss);
+
+                        ss.setFirstTimeAccess(false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -69,6 +73,8 @@ public class StateUpdaterThread
             ConnectedServersState.mergeStats(serversList);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            ConnectionSynch.connectionLock.unlock();
         }
     }
 
@@ -88,24 +94,30 @@ public class StateUpdaterThread
         try {
             JMXConnector jmxConnector = ss.getConnector();
             MBeanServerConnection mbsc = jmxConnector.getMBeanServerConnection();
-            ObjectName sessionStats = new ObjectName("com.playtech.poker.jmx:type=Stats,name=SessionStats");
+            ObjectName sessionStats = new ObjectName("com.playtech.poker.jmx:type=Stats,name=ChannelServerStats");
             if (mbsc.isRegistered(sessionStats)) {
                 // channel server
                 ChannelSeverStats stats = ss.getChannelSeverStats();
-                stats.setOpenBinarySessions(Integer.valueOf(mbsc.getAttribute(sessionStats, "TotalBinarySessions").toString()));
-                stats.setOpenStringSessions(Integer.valueOf(mbsc.getAttribute(sessionStats, "TotalLegacySessions").toString()));
-                CompositeData[] drained = (CompositeData[]) mbsc.invoke(sessionStats, "drainSessionStatEntries", new Object[] {}, new String[] {});
-                System.out.println("drained:" + drained.length);
-                for (CompositeData cd : drained) {
-                    Integer startTime = Integer.valueOf(cd.get("startTime").toString());
-                    ChannelChunkStats cscs = new ChannelChunkStats(Integer.valueOf(cd.get("connectedBinarySessions").toString()),
-                                                                   Integer.valueOf(cd.get("connectedLegacySessions").toString()),
-                                                                   Integer.valueOf(cd.get("disconnectedBinarySessions").toString()),
-                                                                   Integer.valueOf(cd.get("disconnectedLegacySessions").toString()),
-                                                                   startTime,
-                                                                   Integer.valueOf(cd.get("endTime").toString()),
-                                                                   Integer.valueOf(cd.get("totalBinarySessions").toString()),
-                                                                   Integer.valueOf(cd.get("totalLegacySessions").toString()),
+                CompositeData[] data;
+                if (ss.isFirstTimeAccess()) {
+                    // load all stats
+                    data = (CompositeData[]) mbsc.getAttribute(sessionStats, "ServerStats");
+
+                } else {
+                    // load delta
+                    long startTime = stats.getLastChunk().getStartTime();
+                    data = (CompositeData[]) mbsc.invoke(sessionStats, "getLastServerStats", new Object[] {startTime}, new String[] {"long"});
+                }
+                System.out.println("got :" + data.length + " chunks from channel");
+                for (CompositeData cd : data) {
+                    ChannelChunkStats cscs = new ChannelChunkStats(getAtributeFromComposite(cd, "connectedBinarySessions"),
+                                                                   getAtributeFromComposite(cd, "connectedLegacySessions"),
+                                                                   getAtributeFromComposite(cd, "disconnectedBinarySessions"),
+                                                                   getAtributeFromComposite(cd, "disconnectedLegacySessions"),
+                                                                   getAtributeFromComposite(cd, "startTime"),
+                                                                   getAtributeFromComposite(cd, "endTime"),
+                                                                   getAtributeFromComposite(cd, "totalBinarySessions"),
+                                                                   getAtributeFromComposite(cd, "totalLegacySessions"),
                                                                    -1);
 
                     stats.addChunk(cscs);
@@ -114,6 +126,15 @@ public class StateUpdaterThread
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private Integer getAtributeFromComposite(CompositeData cd, String name) {
+        try {
+            return Integer.valueOf(cd.get(name).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
         }
     }
 

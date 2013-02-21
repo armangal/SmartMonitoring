@@ -24,6 +24,7 @@ import com.smexec.monitor.shared.StringFormatter;
 public class ServerStataus {
 
     private boolean connected = false;
+    private boolean firstTimeAccess = true;
     private JMXConnector connector;
     private ServerConfig serverConfig;
 
@@ -134,6 +135,19 @@ public class ServerStataus {
 
     public void setConnector(JMXConnector connector) {
         this.connector = connector;
+    }
+
+    /**
+     * true if we've never got any JMX stats from this server and we might get some historical data as well.
+     * 
+     * @return
+     */
+    public boolean isFirstTimeAccess() {
+        return firstTimeAccess;
+    }
+
+    public void setFirstTimeAccess(boolean firstTimeAccess) {
+        this.firstTimeAccess = firstTimeAccess;
     }
 
     public long getUpTime() {
