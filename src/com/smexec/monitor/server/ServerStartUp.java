@@ -30,7 +30,7 @@ public class ServerStartUp
 
         executor.scheduleAtFixedRate(new JMXConnectorThread(), 5, 30, TimeUnit.SECONDS);
 
-        executor.scheduleAtFixedRate(new StateUpdaterThread(), 15, 10, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(new StateUpdaterThread(), 20, 20, TimeUnit.SECONDS);
     }
 
     @Override

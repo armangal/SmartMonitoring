@@ -41,6 +41,8 @@ import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.GCHistory;
+import com.smexec.monitor.shared.LobbyChunkStats;
+import com.smexec.monitor.shared.LobbySeverStats;
 import com.smexec.monitor.shared.PoolsFeed;
 
 public class StateUpdaterThread
@@ -75,6 +77,7 @@ public class StateUpdaterThread
                     getMemoryStats(ss);
                     getSmartThreadPoolStats(ss);
                     getChannelStatistics(ss);
+                    getLobbyStatistics(ss);
 
                     ss.setFirstTimeAccess(false);
                 }
@@ -83,6 +86,7 @@ public class StateUpdaterThread
             }
             return ss;
         }
+
     };
 
     @Override
@@ -113,7 +117,7 @@ public class StateUpdaterThread
                                                          ss.getLastMemoryUsage(),
                                                          ss.getLastGCHistory(),
                                                          ss.getUpTime(),
-                                                         ss.haveChannelSeverStats() ? ss.getChannelSeverStats() : null);
+                                                         ss.hasChannelSeverStats() ? ss.getChannelSeverStats() : null);
                 serversList.add(cs);
             }
 
@@ -124,6 +128,59 @@ public class StateUpdaterThread
         } finally {
             ConnectionSynch.connectionLock.unlock();
         }
+    }
+
+    /**
+     * gets stats about lobby server
+     * 
+     * @param ss2
+     */
+    private void getLobbyStatistics(ServerStataus ss) {
+        try {
+            JMXConnector jmxConnector = ss.getConnector();
+            MBeanServerConnection mbsc = jmxConnector.getMBeanServerConnection();
+            ObjectName sessionStats = new ObjectName("com.playtech.poker.jmx:type=Stats,name=LobbyServerStats");
+            if (mbsc.isRegistered(sessionStats)) {
+                // Lobby server
+                LobbySeverStats stats = ss.getLobbySeverStats();
+                CompositeData[] data;
+                if (ss.isFirstTimeAccess()) {
+                    // load all stats from lobby
+                    data = (CompositeData[]) mbsc.getAttribute(sessionStats, "ServerStats");
+
+                } else {
+                    // load delta
+                    long startTime = stats.getLastChunk().getStartTime();
+                    data = (CompositeData[]) mbsc.invoke(sessionStats, "getLastServerStats", new Object[] {startTime}, new String[] {"long"});
+                }
+                System.out.println("got :" + data.length + " chunks from lobby");
+
+                for (CompositeData cd : data) {
+
+                    LobbyChunkStats lcs = new LobbyChunkStats(getAtributeFromComposite(cd, "startTime"),
+                                                              getAtributeFromComposite(cd, "endTime"),
+                                                              getAtributeFromComposite(cd, "funTables"),
+                                                              getAtributeFromComposite(cd, "funActiveTables"),
+                                                              getAtributeFromComposite(cd, "funCashPlayers"),
+                                                              getAtributeFromComposite(cd, "funTournamentPlayers"),
+                                                              getAtributeFromComposite(cd, "funActiveTournaments"),
+                                                              getAtributeFromComposite(cd, "realSpeedRooms"),
+                                                              getAtributeFromComposite(cd, "realActiveSpeedRooms"),
+                                                              getAtributeFromComposite(cd, "realActiveSpeedRoomPlayers"),
+                                                              getAtributeFromComposite(cd, "realTables"),
+                                                              getAtributeFromComposite(cd, "realActiveTables"),
+                                                              getAtributeFromComposite(cd, "realCashPLayers"),
+                                                              getAtributeFromComposite(cd, "realActiveTournaments"),
+                                                              getAtributeFromComposite(cd, "realTournamentPlayers"));
+
+                    stats.addChunk(lcs);
+                    System.out.println(lcs);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**

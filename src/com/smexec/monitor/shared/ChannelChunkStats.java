@@ -40,10 +40,6 @@ public class ChannelChunkStats
         this.playing = playing;
     }
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
     public int getConnectedBinarySessions() {
         return connectedBinarySessions;
     }

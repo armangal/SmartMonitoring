@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.LobbySeverStats;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.RefreshResult;
 
@@ -33,7 +34,10 @@ public final class ConnectedServersState {
 
     public static synchronized void mergeStats(ArrayList<ConnectedServer> servers) {
         HashMap<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>();
+        
         ChannelSeverStats aggregatedChannelSeverStats = new ChannelSeverStats();
+
+        LobbySeverStats lobbySeverStats = new LobbySeverStats();
 
         for (ServerStataus ss : map.values()) {
             if (ss.isConnected()) {
@@ -46,14 +50,22 @@ public final class ConnectedServersState {
                     }
                 }
 
-                // merge channle stats
-                if (ss.haveChannelSeverStats()) {
+                // merge channel stats
+                if (ss.hasChannelSeverStats()) {
                     aggregatedChannelSeverStats.merge(ss.getChannelSeverStats());
+                }
+
+                // merge lobby stats
+                if (ss.hasLobbySeverStats()) {
+                    if (ss.getLobbySeverStats().getLastChunk().getEndTime() > lobbySeverStats.getLastChunk().getEndTime()){
+                        // replacing with more up-to-date stats
+                        lobbySeverStats = ss.getLobbySeverStats();
+                    }
                 }
             }
         }
 
-        result = new RefreshResult(poolFeedMap, servers, serversConfig.getName(), aggregatedChannelSeverStats);
+        result = new RefreshResult(poolFeedMap, servers, serversConfig.getName(), aggregatedChannelSeverStats, lobbySeverStats);
     }
 
     public static void setServersConfig(ServersConfig sc) {

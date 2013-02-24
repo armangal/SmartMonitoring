@@ -10,6 +10,7 @@ import javax.management.remote.JMXConnector;
 
 import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.GCHistory;
+import com.smexec.monitor.shared.LobbySeverStats;
 import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.StringFormatter;
@@ -43,6 +44,8 @@ public class ServerStataus {
     private long upTime;
 
     private ChannelSeverStats channelSeverStats;
+
+    private LobbySeverStats lobbySeverStats;
 
     public ServerStataus(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
@@ -170,8 +173,19 @@ public class ServerStataus {
         return channelSeverStats;
     }
 
-    public boolean haveChannelSeverStats() {
+    public LobbySeverStats getLobbySeverStats() {
+        if (lobbySeverStats == null) {
+            this.lobbySeverStats = new LobbySeverStats();
+        }
+        return lobbySeverStats;
+    }
+
+    public boolean hasChannelSeverStats() {
         return channelSeverStats != null;
+    }
+
+    public boolean hasLobbySeverStats() {
+        return lobbySeverStats != null;
     }
 
     @Override

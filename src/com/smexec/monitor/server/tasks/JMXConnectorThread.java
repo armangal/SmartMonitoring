@@ -49,8 +49,7 @@ public class JMXConnectorThread
         @Override
         public void run() {
             // new in mappings or try to connect to offline server reconnection
-            ServerStataus ss = connect(sc);
-            ConnectedServersState.getMap().put(sc.getServerCode(), ss);
+            connect(sc);
         }
     };
 
@@ -91,13 +90,12 @@ public class JMXConnectorThread
         }
     }
 
-    private ServerStataus connect(final ServerConfig sc) {
+    private void connect(final ServerConfig sc) {
 
         JMXConnector c;
         ServerStataus ss = new ServerStataus(sc);
 
         try {
-            ConnectionSynch.connectionLock.lock();
 
             System.out.println("Coonecting to:" + sc);
             JMXServiceURL u = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + sc.getIp() + ":" + sc.getJmxPort() + "/jmxrmi");
@@ -129,10 +127,14 @@ public class JMXConnectorThread
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
+        }
+
+        try {
+            ConnectionSynch.connectionLock.lock();
+            ConnectedServersState.getMap().put(sc.getServerCode(), ss);
         } finally {
             ConnectionSynch.connectionLock.unlock();
         }
 
-        return ss;
     };
 }
