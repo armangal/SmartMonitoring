@@ -237,6 +237,35 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		
+
+		<server>
+			<name>Local (1)</name>
+			<serverCode>15</serverCode>
+			<ip>127.0.0.1</ip>
+			<jmxPort>9010</jmxPort>
+			<authenticate>true</authenticate>
+			<username>admin</username>
+			<password>password</password>
+		</server>
+
+		<server>
+			<name>EDI_CHANNEL</name>
+			<serverCode>17</serverCode>
+			<ip>192.168.203.110</ip>
+			<jmxPort>9010</jmxPort>
+			<authenticate>false</authenticate>
+			<username>user</username>
+			<password>password</password>
+		</server>
+
+		<server>
+			<name>EDI_LOBBY</name>
+			<serverCode>18</serverCode>
+			<ip>192.168.203.110</ip>
+			<jmxPort>9020</jmxPort>
+			<authenticate>false</authenticate>
+			<username>user</username>
+			<password>password</password>
+		</server>		
 	</servers>
 </ServersConfig>

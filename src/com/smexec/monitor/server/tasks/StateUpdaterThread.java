@@ -7,10 +7,19 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -37,6 +46,45 @@ import com.smexec.monitor.shared.PoolsFeed;
 public class StateUpdaterThread
     implements Runnable {
 
+    private static ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
+
+        private AtomicInteger num = new AtomicInteger();
+
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "REFRESH_" + num.getAndIncrement());
+        }
+
+    });
+
+    private class Refresher
+        implements Callable<ServerStataus> {
+
+        private ServerStataus ss;
+
+        public Refresher(ServerStataus ss) {
+            this.ss = ss;
+        }
+
+        @Override
+        public ServerStataus call()
+            throws Exception {
+            try {
+                if (ss.isConnected()) {
+                    System.out.println("Refreshing:" + ss.getServerConfig().getName());
+                    getMemoryStats(ss);
+                    getSmartThreadPoolStats(ss);
+                    getChannelStatistics(ss);
+
+                    ss.setFirstTimeAccess(false);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return ss;
+        }
+    };
+
     @Override
     public void run() {
         try {
@@ -44,19 +92,19 @@ public class StateUpdaterThread
 
             System.out.println("Refreshing stats");
             ArrayList<ConnectedServer> serversList = new ArrayList<ConnectedServer>(0);
-            for (ServerStataus ss : ConnectedServersState.getMap().values()) {
-                ServerConfig sc = ss.getServerConfig();
-                if (ss.isConnected()) {
-                    try {
-                        getMemoryStats(ss);
-                        getSmartThreadPoolStats(ss);
-                        getChannelStatistics(ss);
 
-                        ss.setFirstTimeAccess(false);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+            CompletionService<ServerStataus> compService = new ExecutorCompletionService<ServerStataus>(threadPool);
+
+            Collection<ServerStataus> values = ConnectedServersState.getMap().values();
+            for (ServerStataus ss : values) {
+                compService.submit(new Refresher(ss));
+            }
+
+            for (int i = 0; i < values.size(); i++) {
+                Future<ServerStataus> take = compService.take();
+                ServerStataus ss = take.get();
+                System.out.println("Updating:" + ss.getServerConfig().getName());
+                ServerConfig sc = ss.getServerConfig();
                 ConnectedServer cs = new ConnectedServer(sc.getName(),
                                                          sc.getServerCode(),
                                                          sc.getIp(),

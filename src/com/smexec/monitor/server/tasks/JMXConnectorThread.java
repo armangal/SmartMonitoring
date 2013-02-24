@@ -5,6 +5,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.Notification;
 import javax.management.NotificationListener;
@@ -21,6 +25,35 @@ import com.smexec.monitor.server.model.ServersConfig;
 public class JMXConnectorThread
     implements Runnable {
 
+    private static ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
+
+        private AtomicInteger num = new AtomicInteger();
+
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "JMX_CONNECTOR_" + num.getAndIncrement());
+        }
+
+    });
+
+    private class Connector
+        implements Runnable {
+
+        private ServerConfig sc;
+
+        public Connector(ServerConfig sc) {
+            super();
+            this.sc = sc;
+        }
+
+        @Override
+        public void run() {
+            // new in mappings or try to connect to offline server reconnection
+            ServerStataus ss = connect(sc);
+            ConnectedServersState.getMap().put(sc.getServerCode(), ss);
+        }
+    };
+
     public void run() {
         String location = System.getProperty("servers.config", "servers.xml");
 
@@ -33,6 +66,8 @@ public class JMXConnectorThread
             JAXBContext context = JAXBContext.newInstance(ServersConfig.class);
             ServersConfig serversConfig = (ServersConfig) context.createUnmarshaller().unmarshal(configXML);
 
+            serversConfig.validate();
+
             System.out.println("Initilized:" + serversConfig);
             ConnectedServersState.setServersConfig(serversConfig);
 
@@ -41,16 +76,11 @@ public class JMXConnectorThread
                     if (ConnectedServersState.getMap().containsKey(sc.getServerCode())) {
                         ServerStataus serverStataus = ConnectedServersState.getMap().get(sc.getServerCode());
 
-                        if (!serverStataus.isConnected()) {
-                            // try to connect again
-                            ServerStataus ss = connect(sc);
-                            ConnectedServersState.getMap().put(sc.getServerCode(), ss);
+                        if (serverStataus.isConnected()) {
+                            continue;
                         }
-                    } else {
-                        // new in mappings
-                        ServerStataus ss = connect(sc);
-                        ConnectedServersState.getMap().put(sc.getServerCode(), ss);
                     }
+                    threadPool.execute(new Connector(sc));
                 }
             }
 
@@ -86,7 +116,8 @@ public class JMXConnectorThread
 
                 @Override
                 public void handleNotification(Notification notification, Object key) {
-                    System.out.println("Notification:" + notification);
+                    System.out.println("Notification for key:" + key);
+                    System.out.println("Notificatio" + "n:" + notification);
                     if (notification.getType().contains("closed") || notification.getType().contains("failed")) {
                         ConnectedServersState.getMap().remove(((ServerConfig) key).getServerCode());
                     }

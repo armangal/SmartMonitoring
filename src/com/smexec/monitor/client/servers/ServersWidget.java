@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.MonitoringService;
@@ -31,6 +32,8 @@ public class ServersWidget
     extends AbstractMonitoringWidget {
 
     private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
+
+    private FlowPanel serversList = new FlowPanel();
 
     private ClickHandler getThreadDump = new ClickHandler() {
 
@@ -102,17 +105,18 @@ public class ServersWidget
 
         super("Connected Servers");
         addStyleName("serversWidget");
+        serversList.setStyleName("serversWidgetInternal");
+        getDataPanel().add(serversList);
     }
 
     public void update(ArrayList<ConnectedServer> list) {
-        getDataPanel().clear();
-        FlowPanel fp = new FlowPanel();
-        
+        serversList.clear();
         
         FlexTable ft = new FlexTable();
         ft.getElement().setId("infoTable");
-        fp.add(ft);
-        getDataPanel().add(fp);
+        ScrollPanel sp = new ScrollPanel(ft);
+        sp.setSize("100%", "100%");
+        serversList.add(sp);
         ft.setCellPadding(0);
         ft.setCellSpacing(0);
 
@@ -126,9 +130,9 @@ public class ServersWidget
                     o2p = o2.getMemoryUsage().getPercentage();
                 } else if (o1.getStatus()) {
                     o1p = o1.getMemoryUsage().getPercentage();
-                    o2p = 0;
+                    o2p = 100;
                 } else if (o2.getStatus()) {
-                    o1p = 0;
+                    o1p = 100;
                     o2p = o2.getMemoryUsage().getPercentage();
                 }
                 return (int) (o2p * 100d - o1p * 100d);
@@ -181,7 +185,7 @@ public class ServersWidget
                 memory.getElement().setAttribute("code", "" + cs.getServerCode());
 
                 ft.setWidget(i++, j++, memory);
-                if (max > 3000L) {
+                if (max > 30000L) {
                     Style style = ft.getFlexCellFormatter().getElement(i - 1, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);

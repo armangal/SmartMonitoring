@@ -114,10 +114,16 @@ body {
 }
 
 .serversWidget {
-	width: 50%;
 	position: relative;
 	float: right;
 	height: 200px;
+	width: 50%;
+}
+
+.serversWidgetInternal {
+	width:100%;
+	float: left;
+	height: 170px;
 }
 
 .playersWidget {
