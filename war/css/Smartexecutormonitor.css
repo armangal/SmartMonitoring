@@ -10,6 +10,7 @@ h1 {
 }
 body {
 	margin: 0px !important;
+	/*overflow: hidden;*/
 }
 
 .login {
@@ -30,7 +31,7 @@ body {
 
 .mainPanel {
 	width: 1260px;
-	height: 710px;
+	height: 980px;
 	border: solid #EE8318 thin;
 	margin: auto;
 	padding: 0px;
@@ -91,13 +92,14 @@ body {
 .tournamentsWidget {
 	position: relative;
 	float: left;
-	height: 150px;
+	height: 200px;
 }
 
 .tournamentsWidget .left {
 	float: left;
 	width: 40%;
 	padding-left: 2px;
+	font-weight: bold;
 }
 
 .tournamentsWidget .right {
@@ -110,7 +112,7 @@ body {
 .tournamentsWidgetInternal {
 	float: left;
 	width: 100%;
-	height: 117px;
+	height: 166px;
 }
 
 .serversWidget {
@@ -130,13 +132,13 @@ body {
 	width: 50%;
 	position: relative;
 	float: right;
-	height: 355px;
+	height: 521px;
 }
 
 .playersWidget .players {
 	float: left;
 	width: 200px;
-	height: 200px;
+	height: 360px;
 	border: solid orange thin;
 	font-weight: bold;
 }
@@ -153,19 +155,19 @@ body {
 
 .playersChart {
 	border: thin solid grey;
-	height: 100px;
+	height: 180px;
 }
 
 .reconnectionsChart {
 	border: thin solid grey;
-	height: 100px;
+	height: 180px;
 }
 
 .playersWidget .charts {
 	float: left;
 	border: solid orange thin;
 	width: 420px;
-	height: 200px;
+	height: 360px;
 }
 
 .playersWidget .servers {
@@ -181,7 +183,7 @@ body {
 	width: 50%;
 	position: relative;
 	float: right;
-	height: 120px;
+	height: 220px;
 }
 .alertsWidget .data {
 	height: 96px;

@@ -16,7 +16,7 @@ public class LobbyChunkStats
 
     private int funTournamentPlayers;
     private int funActiveTournaments;
-    
+
     private int realSpeedRooms;
     private int realActiveSpeedRooms;
     private int realActiveSpeedRoomPlayers;
@@ -25,11 +25,21 @@ public class LobbyChunkStats
     private int realActiveTables;
     private int realCashPLayers;
 
+    /**
+     * started
+     */
     private int realActiveTournaments;
+    /**
+     * in started tournaments
+     */
     private int realTournamentPlayers;
 
-    public LobbyChunkStats() {}
+    private int realTournamentsInRegisterStatus;
+    private int funTournamentsInRegisterStatus;
+    private int realRegisteredPlayers;
+    private int funRegisteredPlayers;
 
+    public LobbyChunkStats() {}
 
     public LobbyChunkStats(int startTime,
                            int endTime,
@@ -45,7 +55,11 @@ public class LobbyChunkStats
                            int realActiveTables,
                            int realCashPLayers,
                            int realActiveTournaments,
-                           int realTournamentPlayers) {
+                           int realTournamentPlayers,
+                           int realTournamentsInRegisterStatus,
+                           int funTournamentsInRegisterStatus,
+                           int realRegisteredPlayers,
+                           int funRegisteredPlayers) {
         super();
         this.startTime = startTime;
         this.endTime = endTime;
@@ -62,8 +76,11 @@ public class LobbyChunkStats
         this.realCashPLayers = realCashPLayers;
         this.realActiveTournaments = realActiveTournaments;
         this.realTournamentPlayers = realTournamentPlayers;
+        this.realTournamentsInRegisterStatus = realTournamentsInRegisterStatus;
+        this.funTournamentsInRegisterStatus = funTournamentsInRegisterStatus;
+        this.realRegisteredPlayers = realRegisteredPlayers;
+        this.funRegisteredPlayers = funRegisteredPlayers;
     }
-
 
     public int getStartTime() {
         return startTime;
@@ -129,12 +146,73 @@ public class LobbyChunkStats
         return realTournamentPlayers;
     }
 
+    public int getFunRegisteredPlayers() {
+        return funRegisteredPlayers;
+    }
+
+    public int getFunTournamentsInRegisterStatus() {
+        return funTournamentsInRegisterStatus;
+    }
+
+    public int getRealRegisteredPlayers() {
+        return realRegisteredPlayers;
+    }
+
+    public int getRealTournamentsInRegisterStatus() {
+        return realTournamentsInRegisterStatus;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + startTime;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("LobbyChunkStats [startTime=")
+               .append(startTime)
+               .append(", endTime=")
+               .append(endTime)
+               .append(", funTables=")
+               .append(funTables)
+               .append(", funActiveTables=")
+               .append(funActiveTables)
+               .append(", funCashPlayers=")
+               .append(funCashPlayers)
+               .append(", funTournamentPlayers=")
+               .append(funTournamentPlayers)
+               .append(", funActiveTournaments=")
+               .append(funActiveTournaments)
+               .append(", realSpeedRooms=")
+               .append(realSpeedRooms)
+               .append(", realActiveSpeedRooms=")
+               .append(realActiveSpeedRooms)
+               .append(", realActiveSpeedRoomPlayers=")
+               .append(realActiveSpeedRoomPlayers)
+               .append(", realTables=")
+               .append(realTables)
+               .append(", realActiveTables=")
+               .append(realActiveTables)
+               .append(", realCashPLayers=")
+               .append(realCashPLayers)
+               .append(", realActiveTournaments=")
+               .append(realActiveTournaments)
+               .append(", realTournamentPlayers=")
+               .append(realTournamentPlayers)
+               .append(", realTournamentsInRegisterStatus=")
+               .append(realTournamentsInRegisterStatus)
+               .append(", funTournamentsInRegisterStatus=")
+               .append(funTournamentsInRegisterStatus)
+               .append(", realRegisteredPlayers=")
+               .append(realRegisteredPlayers)
+               .append(", funRegisteredPlayers=")
+               .append(funRegisteredPlayers)
+               .append("]");
+        return builder.toString();
     }
 
     @Override
@@ -149,15 +227,6 @@ public class LobbyChunkStats
         if (startTime != other.startTime)
             return false;
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return "LobbyChunkStats [startTime=" + startTime + ", endTime=" + endTime + ", funActiveTables=" + funActiveTables + ", funActiveTournaments="
-               + funActiveTournaments + ", funCashPlayers=" + funCashPlayers + ", funTables=" + funTables + ", funTournamentPlayers=" + funTournamentPlayers
-               + ", realActiveSpeedRoomPlayers=" + realActiveSpeedRoomPlayers + ", realActiveSpeedRooms=" + realActiveSpeedRooms + ", realActiveTables="
-               + realActiveTables + ", realActiveTournaments=" + realActiveTournaments + ", realCashPLayers=" + realCashPLayers + ", realSpeedRooms="
-               + realSpeedRooms + ", realTables=" + realTables + ", realTournamentPlayers=" + realTournamentPlayers + "]";
     }
 
 }

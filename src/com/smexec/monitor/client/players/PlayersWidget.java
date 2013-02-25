@@ -47,7 +47,7 @@ public class PlayersWidget
                     }
                 }
                 if (cs == null) {
-                    Window.alert("Server not found in list");
+                    Window.alert("Server:" + code + " not found in list");
                 } else {
                     ChannelServerStatasPopup db = new ChannelServerStatasPopup(cs);
 
@@ -82,10 +82,12 @@ public class PlayersWidget
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getDisconnectedBinarySessions() + lastChunk.getDisconnectedLegacySessions()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getConnectedBinarySessions() + lastChunk.getConnectedLegacySessions()));
 
-        playersTable.setText(i++, 1, "5,232 (3,434)");
-        playersTable.setText(i++, 1, "2,543 (1,222)");
-        playersTable.setText(i++, 1, "1,233 (902)");
-        playersTable.setText(i++, 1, "32,545 (25,543)");
+        playersTable.setText(i++, 1, "5,232");
+        playersTable.setText(i++, 1, "3,434");
+        playersTable.setText(i++, 1, "2,543");
+        playersTable.setText(i++, 1, "1,222");
+        playersTable.setText(i++, 1, "1,233");
+        playersTable.setText(i++, 1, "32,545");
         playersTable.setText(i++, 1, "5");
         playersTable.setText(i++, 1, "564");
 
@@ -217,7 +219,11 @@ public class PlayersWidget
         playersTable.setText(i++, 0, "Conn (min)");
 
         playersTable.setText(i++, 0, "Real Tables");
+        playersTable.setText(i++, 0, "Real Active Tab.");
+        
         playersTable.setText(i++, 0, "Fun Table");
+        playersTable.setText(i++, 0, "Fun Active Tab.");
+        
         playersTable.setText(i++, 0, "Real Players");
         playersTable.setText(i++, 0, "Fun Player");
 

@@ -22,7 +22,7 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		<!--  -->
+		<!-- -->
 		<server>
 			<name>channel3</name>
 			<serverCode>3172</serverCode>
@@ -41,7 +41,7 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		<!--  -->
+		<!-- -->
 		<server>
 			<name>channel5</name>
 			<serverCode>3174</serverCode>
@@ -60,7 +60,7 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		<!--  -->
+		<!-- -->
 		<server>
 			<name>channel7</name>
 			<serverCode>3176</serverCode>
@@ -79,7 +79,7 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		<!--  -->
+		<!-- -->
 		<server>
 			<name>channel9</name>
 			<serverCode>3178</serverCode>
@@ -98,7 +98,7 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		<!--  -->
+		<!-- -->
 		<server>
 			<name>channel11</name>
 			<serverCode>3180</serverCode>
@@ -117,8 +117,8 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		
-		<!--  -->
+
+		<!-- -->
 		<server>
 			<name>channel13</name>
 			<serverCode>3182</serverCode>
@@ -137,8 +137,8 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		
-		<!--  -->
+
+		<!-- -->
 		<server>
 			<name>channel15</name>
 			<serverCode>3184</serverCode>
@@ -157,8 +157,8 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		
-		<!--  -->
+
+		<!-- -->
 		<server>
 			<name>channel17</name>
 			<serverCode>3186</serverCode>
@@ -177,8 +177,8 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		
-		<!--  -->
+
+		<!-- -->
 		<server>
 			<name>channel19</name>
 			<serverCode>3188</serverCode>
@@ -198,7 +198,7 @@
 			<password>password</password>
 		</server>
 
-		<!--  -->
+		<!-- -->
 		<server>
 			<name>channel21</name>
 			<serverCode>3190</serverCode>
@@ -218,7 +218,7 @@
 			<password>password</password>
 		</server>
 
-		<!--  -->
+		<!-- -->
 		<server>
 			<name>channel23</name>
 			<serverCode>3366</serverCode>
@@ -266,6 +266,15 @@
 			<authenticate>false</authenticate>
 			<username>user</username>
 			<password>password</password>
-		</server>		
+		</server>
+		<server>
+			<name>EDI_GAME</name>
+			<serverCode>19</serverCode>
+			<ip>192.168.203.110</ip>
+			<jmxPort>9030</jmxPort>
+			<authenticate>false</authenticate>
+			<username>user</username>
+			<password>password</password>
+		</server>
 	</servers>
 </ServersConfig>

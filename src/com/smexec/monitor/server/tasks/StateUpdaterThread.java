@@ -169,9 +169,13 @@ public class StateUpdaterThread
                                                               getAtributeFromComposite(cd, "realActiveSpeedRoomPlayers"),
                                                               getAtributeFromComposite(cd, "realTables"),
                                                               getAtributeFromComposite(cd, "realActiveTables"),
-                                                              getAtributeFromComposite(cd, "realCashPLayers"),
+                                                              getAtributeFromComposite(cd, "realCashPlayers"),
                                                               getAtributeFromComposite(cd, "realActiveTournaments"),
-                                                              getAtributeFromComposite(cd, "realTournamentPlayers"));
+                                                              getAtributeFromComposite(cd, "realTournamentPlayers"),
+                                                              getAtributeFromComposite(cd, "realTournamentsInRegisterStatus"),
+                                                              getAtributeFromComposite(cd, "funTournamentsInRegisterStatus"),
+                                                              getAtributeFromComposite(cd, "realRegisteredPlayers"),
+                                                              getAtributeFromComposite(cd, "funRegisteredPlayers"));
 
                     stats.addChunk(lcs);
                     System.out.println(lcs);

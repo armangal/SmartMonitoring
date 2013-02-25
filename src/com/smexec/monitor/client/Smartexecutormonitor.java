@@ -88,8 +88,9 @@ public class Smartexecutormonitor
             @Override
             public void onFailure(Throwable caught) {
                 Log.error("Received refresh response error:" + caught.getMessage());
+                title.setHTML("<h1>Error:" + caught.getMessage() + "</h1>");
 
-                Window.alert("Refresh Error:" + caught.getMessage());
+                // Window.alert("Refresh Error:" + caught.getMessage());
             }
         });
     }

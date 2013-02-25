@@ -58,7 +58,7 @@ public class ServersWidget
 
                 @Override
                 public void onFailure(Throwable caught) {
-                    Window.alert(caught.getMessage());
+                    Window.alert("Can't get thread dump:" + caught.getMessage());
                 }
             });
         }
@@ -87,7 +87,7 @@ public class ServersWidget
 
                 @Override
                 public void onFailure(Throwable caught) {
-                    Window.alert(caught.getMessage());
+                    Window.alert("Can't get GC history:" + caught.getMessage());
                 }
             });
         }
@@ -111,7 +111,7 @@ public class ServersWidget
 
     public void update(ArrayList<ConnectedServer> list) {
         serversList.clear();
-        
+
         FlexTable ft = new FlexTable();
         ft.getElement().setId("infoTable");
         ScrollPanel sp = new ScrollPanel(ft);
