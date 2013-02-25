@@ -56,11 +56,13 @@ public class JMXConnectorThread
     public void run() {
         String location = System.getProperty("servers.config", "servers.xml");
 
+        System.out.println("Loading configuraiotns:" + location);
         try {
             File file = new File(location);
             if (!file.canRead()) {
                 System.err.println("Configuration file wasn't found at:" + location);
             }
+            System.out.println("Configuration file:" + file);
             InputStream configXML = new FileInputStream(file);
             JAXBContext context = JAXBContext.newInstance(ServersConfig.class);
             ServersConfig serversConfig = (ServersConfig) context.createUnmarshaller().unmarshal(configXML);
@@ -85,8 +87,11 @@ public class JMXConnectorThread
 
             System.out.println("Connection loop finished");
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            System.out.println("Error loading config:" + e.getMessage());
             System.err.println(e.getMessage());
+            e.printStackTrace();
+            Runtime.getRuntime().exit(111);
         }
     }
 

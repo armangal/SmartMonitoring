@@ -29,7 +29,7 @@ public class PlayersWidget
     extends AbstractMonitoringWidget {
 
     private FlowPanel fp = new FlowPanel();
-    private MonitoringLineChart connected = new MonitoringLineChart(new LineType[] {LineType.CONNECTED, LineType.PLAYING}, "Players", "Time", "Online Players");
+    private MonitoringLineChart connected = new MonitoringLineChart(new LineType[] {LineType.CONNECTED}, "Players", "Time", "Online Players");
     private MonitoringLineChart reconnected = new MonitoringLineChart(new LineType[] {LineType.DROPPED, LineType.OPENED}, "Players", "Time", "Drops vs. New");
     private FlexTable playersTable = new FlexTable();
 
@@ -73,18 +73,18 @@ public class PlayersWidget
         fp.add(servers);
         channelScrollPanel.setHeight("100%");
     }
-    
+
     public void update(RefreshResult result) {
         ChannelSeverStats css = result.getChannelSeverStats();
         ArrayList<ConnectedServer> servers = result.getServers();
         LobbySeverStats lss = result.getLobbySeverStats();
-        
+
         this.servers = servers;
         int i = 0;
         Log.debug("Players:" + css);
         ChannelChunkStats lastChunk = css.getLastChunk();
         Log.debug("Last Chunk:" + lastChunk);
-        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(css.getOpenBinarySessions() + css.getOpenStringSessions()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getOpenBinarySessions() + lastChunk.getOpenStringSessions()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getDisconnectedBinarySessions() + lastChunk.getDisconnectedLegacySessions()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getConnectedBinarySessions() + lastChunk.getConnectedLegacySessions()));
 
@@ -136,7 +136,10 @@ public class PlayersWidget
                 name.addClickHandler(getServerStats);
 
                 channelServers.setWidget(row, col++, name);
-                channelServers.setText(row, col++, ClientStringFormatter.formatNumber(css.getOpenBinarySessions() + css.getOpenStringSessions()));
+                channelServers.setText(row,
+                                       col++,
+                                       ClientStringFormatter.formatNumber(css.getLastChunk().getOpenBinarySessions()
+                                                                          + css.getLastChunk().getOpenStringSessions()));
                 channelServers.setText(row,
                                        col++,
                                        ClientStringFormatter.formatNumber(css.getLastChunk().getDisconnectedBinarySessions()
@@ -172,16 +175,13 @@ public class PlayersWidget
     }
 
     private void updateOnlinePlayers(ArrayList<ChannelChunkStats> values) {
-        ChartFeed online = new ChartFeed(values.size(), 3);
-        for (int k = 0; k < 3; k++) {
+        ChartFeed online = new ChartFeed(values.size(), 2);
+        for (int k = 0; k < 2; k++) {
             for (int j = 0; j < values.size(); j++) {
                 if (k == 0) {
                     // connected
                     online.getValues()[k][j] = values.get(j).getOpenBinarySessions() + values.get(j).getOpenStringSessions();
                 } else if (k == 1) {
-                    // playing
-                    online.getValues()[k][j] = -1;
-                } else if (k == 2) {
                     online.getValues()[k][j] = values.get(j).getStartTimeForChart();
                 }
             }
@@ -226,10 +226,10 @@ public class PlayersWidget
 
         playersTable.setText(i++, 0, "Real Tables");
         playersTable.setText(i++, 0, "Real Active Tab.");
-        
+
         playersTable.setText(i++, 0, "Fun Table");
         playersTable.setText(i++, 0, "Fun Active Tab.");
-        
+
         playersTable.setText(i++, 0, "Real Players");
         playersTable.setText(i++, 0, "Fun Player");
 

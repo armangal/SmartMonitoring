@@ -12,7 +12,7 @@
 
 	<servlet-mapping>
 		<servlet-name>mainService</servlet-name>
-		<url-pattern>/smartexecutormonitor/mainService</url-pattern>
+		<url-pattern>/mainService</url-pattern>
 	</servlet-mapping>
 
 	<!-- Default page to serve -->

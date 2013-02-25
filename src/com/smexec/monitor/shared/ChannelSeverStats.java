@@ -11,16 +11,6 @@ public class ChannelSeverStats
     implements IsSerializable {
 
     /**
-     * currently open binary sessions
-     */
-    private int openBinarySessions = 0;
-
-    /**
-     * currently open string sessions
-     */
-    private int openStringSessions = 0;
-
-    /**
      * total drops sessions recorded since the monitoring system is running
      */
     private int totalDrops = 0;
@@ -37,14 +27,6 @@ public class ChannelSeverStats
     private LinkedList<ChannelChunkStats> list = new LinkedList<ChannelChunkStats>();
 
     public ChannelSeverStats() {}
-
-    public int getOpenBinarySessions() {
-        return openBinarySessions;
-    }
-
-    public int getOpenStringSessions() {
-        return openStringSessions;
-    }
 
     public int getTotalDrops() {
         return totalDrops;
@@ -66,9 +48,6 @@ public class ChannelSeverStats
         this.totalConnections += cscs.getConnectedBinarySessions() + cscs.getConnectedLegacySessions();
         this.totalDrops += cscs.getDisconnectedBinarySessions() + cscs.getDisconnectedLegacySessions();
         this.lastUpdateTime = cscs.getStartTime();
-        // assuming that the added recond is always the last and most up to date one
-        this.openBinarySessions = cscs.getOpenBinarySessions();
-        this.openStringSessions = cscs.getOpenStringSessions();
     }
 
     public ChannelChunkStats getLastChunk() {
@@ -79,8 +58,6 @@ public class ChannelSeverStats
     }
 
     public void merge(ChannelSeverStats css) {
-        this.openBinarySessions += css.getOpenBinarySessions();
-        this.openStringSessions += css.getOpenStringSessions();
         this.totalConnections += css.getTotalConnections();
         this.totalDrops += css.getTotalDrops();
 
@@ -131,11 +108,7 @@ public class ChannelSeverStats
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ChannelSeverStats [openBinarySessions=");
-        builder.append(openBinarySessions);
-        builder.append(", openStringSessions=");
-        builder.append(openStringSessions);
-        builder.append(", totalDrops=");
+        builder.append("ChannelSeverStats [totalDrops=");
         builder.append(totalDrops);
         builder.append(", totalConnections=");
         builder.append(totalConnections);

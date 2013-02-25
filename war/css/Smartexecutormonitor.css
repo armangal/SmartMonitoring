@@ -5,7 +5,7 @@ h1 {
 	text-shadow: 0px -1px 4px white, 0px -2px 10px yellow, 0px -10px 20px
 		#ff8000, 0px -18px 40px red;
 	font: 900 21px 'BlackJackRegular';
-	background-image: url("/img/fire_bg.jpg");
+	background-image: url("../img/fire_bg.jpg");
 	background-repeat: repeat-x;
 }
 body {
@@ -54,7 +54,7 @@ body {
 }
 
 .monitoringWidget .header {
-    background-image: url("/img/headers-background.png");
+    background-image: url("../img/headers-background.png");
     background-repeat: repeat-x;
     height: 32px;
     left: 0;

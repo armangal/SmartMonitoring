@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.ValidationException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -85,7 +84,7 @@ public class ServersConfig {
         for (ServerConfig sc : servers) {
             Boolean put = map.put(sc.getServerCode(), Boolean.TRUE);
             if (put != null) {
-                throw new ValidationException("Duplicate server code:" + sc.getServerCode());
+                throw new RuntimeException("Duplicate server code:" + sc.getServerCode());
             }
         }
     }

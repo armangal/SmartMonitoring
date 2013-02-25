@@ -33,8 +33,8 @@ public class ChannelServerStatasPopup
 
         fp.add(new HTML("<h1>Server:" + cs.getServerCode() + ", " + cs.getName() + "</h1>"));
 
-        fp.add(new HTML("<h2>Total Connected:" + cs.getChannelSeverStats().getOpenBinarySessions() + cs.getChannelSeverStats().getOpenStringSessions()
-                        + ", Playing:---" + "</h2>"));
+        fp.add(new HTML("<h2>Total Connected:" + cs.getChannelSeverStats().getLastChunk().getOpenBinarySessions()
+                        + cs.getChannelSeverStats().getLastChunk().getOpenStringSessions() + ", Playing:---" + "</h2>"));
 
         fp.add(new HTML("<h2>Total Drops:" + cs.getChannelSeverStats().getTotalDrops() + ", Total New Conn.:" + cs.getChannelSeverStats().getTotalConnections()
                         + "</h2>"));

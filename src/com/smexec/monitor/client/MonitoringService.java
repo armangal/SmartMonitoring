@@ -7,7 +7,7 @@ import com.smexec.monitor.shared.RefreshResult;
 /**
  * The client side stub for the RPC service.
  */
-@RemoteServiceRelativePath("mainService")
+@RemoteServiceRelativePath("../mainService")
 public interface MonitoringService
     extends RemoteService {
 
