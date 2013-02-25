@@ -146,16 +146,19 @@ public class StateUpdaterThread
                 CompositeData[] data;
                 if (ss.isFirstTimeAccess()) {
                     // load all stats from lobby
+                    System.out.println("Requesting full stats from Lobby");
                     data = (CompositeData[]) mbsc.getAttribute(sessionStats, "ServerStats");
 
                 } else {
                     // load delta
                     long startTime = stats.getLastChunk().getStartTime();
+                    System.out.println("Requesting delta Lobby chunks from:" + startTime);
                     data = (CompositeData[]) mbsc.invoke(sessionStats, "getLastServerStats", new Object[] {startTime}, new String[] {"long"});
                 }
                 System.out.println("got :" + data.length + " chunks from lobby");
 
-                for (CompositeData cd : data) {
+                for (int i = data.length - 1; i >= 0; i--) {
+                    CompositeData cd = data[i];
 
                     LobbyChunkStats lcs = new LobbyChunkStats(getAtributeFromComposite(cd, "startTime"),
                                                               getAtributeFromComposite(cd, "endTime"),
@@ -210,15 +213,19 @@ public class StateUpdaterThread
                 CompositeData[] data;
                 if (ss.isFirstTimeAccess()) {
                     // load all stats
+                    System.out.println("Requesting full stats from Channel");
+
                     data = (CompositeData[]) mbsc.getAttribute(sessionStats, "ServerStats");
 
                 } else {
                     // load delta
                     long startTime = stats.getLastChunk().getStartTime();
+                    System.out.println("Requesting delta Channel chunks from:" + startTime);
                     data = (CompositeData[]) mbsc.invoke(sessionStats, "getLastServerStats", new Object[] {startTime}, new String[] {"long"});
                 }
                 System.out.println("got :" + data.length + " chunks from channel");
-                for (CompositeData cd : data) {
+                for (int i = data.length - 1; i >= 0; i--) {
+                    CompositeData cd = data[i];
                     ChannelChunkStats cscs = new ChannelChunkStats(getAtributeFromComposite(cd, "connectedBinarySessions"),
                                                                    getAtributeFromComposite(cd, "connectedLegacySessions"),
                                                                    getAtributeFromComposite(cd, "disconnectedBinarySessions"),
@@ -226,8 +233,7 @@ public class StateUpdaterThread
                                                                    getAtributeFromComposite(cd, "startTime"),
                                                                    getAtributeFromComposite(cd, "endTime"),
                                                                    getAtributeFromComposite(cd, "totalBinarySessions"),
-                                                                   getAtributeFromComposite(cd, "totalLegacySessions"),
-                                                                   -1);
+                                                                   getAtributeFromComposite(cd, "totalLegacySessions"));
 
                     stats.addChunk(cscs);
                     System.out.println(cscs);

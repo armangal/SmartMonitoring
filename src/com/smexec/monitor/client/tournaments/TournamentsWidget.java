@@ -21,6 +21,10 @@ public class TournamentsWidget
     FlowPanel rightPanel = new FlowPanel();
     FlowPanel left = new FlowPanel();
 
+    private HTML regPlayers = new HTML();
+    private HTML playingPlayers = new HTML();
+    private HTML interrupedPlayers = new HTML();
+
     public TournamentsWidget() {
         super("Tournaments");
         addStyleName("tournamentsWidget");
@@ -35,27 +39,31 @@ public class TournamentsWidget
         fp.add(sp);
         fp.setStyleName("tournamentsWidgetInternal");
         getDataPanel().add(fp);
+
+        regPlayers.setTitle("Currently registered players");
+        playingPlayers.setTitle("Currently playing players, exclusding dropped");
+        interrupedPlayers.setTitle("Number of players affected by interruption");
     }
 
     public void update() {
 
         Random r = new Random();
         int i = 1;
-        tournamentStatus.setText(i, 1, ClientStringFormatter.formatNumber(r.nextInt(888)));
-        tournamentStatus.setText(i++, 2, ClientStringFormatter.formatNumber(r.nextInt(5000)));
+        tournamentStatus.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(888)));
+        regPlayers.setText(ClientStringFormatter.formatNumber(r.nextInt(2000) + 8000));
 
-        tournamentStatus.setText(i, 1, ClientStringFormatter.formatNumber(r.nextInt(333)));
-        tournamentStatus.setText(i++, 2, ClientStringFormatter.formatNumber(r.nextInt(5000)));
+        tournamentStatus.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(333)));
+        playingPlayers.setText(ClientStringFormatter.formatNumber(r.nextInt(2000) + 5000));
 
-        tournamentStatus.setText(i, 1, ClientStringFormatter.formatNumber(r.nextInt(33)));
-        tournamentStatus.setText(i++, 2, ClientStringFormatter.formatNumber(r.nextInt(5000)));
+        tournamentStatus.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(33)));
+        interrupedPlayers.setText(ClientStringFormatter.formatNumber(r.nextInt(5000)));
 
         interruptedTable.removeFromParent();
         interruptedTable = new FlexTable();
         createRight();
 
         for (i = 1; i < 50; i++) {
-            HTML code  = new HTML("" + r.nextInt(1223343) + " (234)");
+            HTML code = new HTML("" + r.nextInt(1223343) + " (234)");
             code.setTitle("code");
             interruptedTable.setWidget(i, 0, code);
             interruptedTable.setText(i, 1, "Interrupted" + i);
@@ -74,9 +82,14 @@ public class TournamentsWidget
         tournamentStatus.setText(i, j++, "Amount");
         tournamentStatus.setText(i, j++, "Players");
         tournamentStatus.getRowFormatter().getElement(i++).setId("th");
-        tournamentStatus.setText(i++, 0, "Registering:");
-        tournamentStatus.setText(i++, 0, "Started:");
-        tournamentStatus.setText(i++, 0, "Interrupted (12h):");
+        tournamentStatus.setText(i, 0, "Registering:");
+        tournamentStatus.setWidget(i++, 2, regPlayers);
+
+        tournamentStatus.setText(i, 0, "Started:");
+        tournamentStatus.setWidget(i++, 2, playingPlayers);
+
+        tournamentStatus.setText(i, 0, "Interrupted (12h):");
+        tournamentStatus.setWidget(i++, 2, interrupedPlayers);
     }
 
     private void createRight() {

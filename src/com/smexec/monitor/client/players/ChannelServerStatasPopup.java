@@ -34,7 +34,7 @@ public class ChannelServerStatasPopup
         fp.add(new HTML("<h1>Server:" + cs.getServerCode() + ", " + cs.getName() + "</h1>"));
 
         fp.add(new HTML("<h2>Total Connected:" + cs.getChannelSeverStats().getOpenBinarySessions() + cs.getChannelSeverStats().getOpenStringSessions()
-                        + ", Playing:" + cs.getChannelSeverStats().getLastChunk().getPlaying() + "</h2>"));
+                        + ", Playing:---" + "</h2>"));
 
         fp.add(new HTML("<h2>Total Drops:" + cs.getChannelSeverStats().getTotalDrops() + ", Total New Conn.:" + cs.getChannelSeverStats().getTotalConnections()
                         + "</h2>"));
@@ -46,7 +46,7 @@ public class ChannelServerStatasPopup
         HTML tech = new HTML("<h2>Up Time:" + ClientStringFormatter.formatMilisecondsToHours(cs.getUpTime()) + ", Memory:"
                              + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + " of "
                              + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB, Usage:"
-                             + ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%, GC Time:" + gcs +"</h2>");
+                             + ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%, GC Time:" + gcs + "</h2>");
 
         fp.add(tech);
 
@@ -103,7 +103,7 @@ public class ChannelServerStatasPopup
                     online.getValues()[k][j] = values.get(j).getOpenBinarySessions() + values.get(j).getOpenStringSessions();
                 } else if (k == 1) {
                     // playing
-                    online.getValues()[k][j] = values.get(j).getPlaying();
+                    online.getValues()[k][j] = -1;
                 } else if (k == 2) {
                     online.getValues()[k][j] = values.get(j).getStartTimeForChart();
                 }

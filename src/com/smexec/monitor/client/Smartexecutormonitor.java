@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.smexec.monitor.client.alerts.AlertsWidget;
 import com.smexec.monitor.client.login.LoginWidget;
 import com.smexec.monitor.client.login.LoginWidget.LoggedInCallBack;
+import com.smexec.monitor.client.netty.NettyWidget;
 import com.smexec.monitor.client.players.PlayersWidget;
 import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.threads.ThreadPoolsWidget;
@@ -45,12 +46,15 @@ public class Smartexecutormonitor
     private PlayersWidget playersWidget = new PlayersWidget();
     private TournamentsWidget tournamentsWidget = new TournamentsWidget();
     private ThreadPoolsWidget poolsWidget = new ThreadPoolsWidget();
+    private NettyWidget nettyWidget = new NettyWidget();
 
     private RepeatingCommand refreshCommand = new RepeatingCommand() {
 
         @Override
         public boolean execute() {
-            refresh();
+            if (refresh) {
+                refresh();
+            }
             Log.debug("Reschedule refresh?:" + refresh);
             return refresh;
         }
@@ -75,7 +79,7 @@ public class Smartexecutormonitor
                     serversWidget.update(servers);
                     poolsWidget.refresh(result.getPoolFeedMap());
                     tournamentsWidget.update();
-                    playersWidget.update(result.getChannelSeverStats(), servers);
+                    playersWidget.update(result);
                     alertsWidget.update();
                 } else {
                     Log.debug("Received EMPTY response.");
@@ -88,9 +92,10 @@ public class Smartexecutormonitor
             @Override
             public void onFailure(Throwable caught) {
                 Log.error("Received refresh response error:" + caught.getMessage());
-                title.setHTML("<h1>Error:" + caught.getMessage() + "</h1>");
-
-                // Window.alert("Refresh Error:" + caught.getMessage());
+                Window.setTitle("Error:" + caught.getMessage());
+                refresh = false;
+                RootPanel.get().clear();
+                RootPanel.get().add(loginWidget);
             }
         });
     }
@@ -111,6 +116,7 @@ public class Smartexecutormonitor
                 loginWidget.removeFromParent();
                 RootPanel.get().add(mainPanel);
                 RootPanel.get().add(refreshBtn);
+                refresh = true;
                 refresh();
                 Scheduler.get().scheduleFixedDelay(refreshCommand, 10000);
             }
@@ -124,6 +130,7 @@ public class Smartexecutormonitor
         mainPanel.add(poolsWidget);
         mainPanel.add(serversWidget);
         mainPanel.add(alertsWidget);
+        mainPanel.add(nettyWidget);
 
         refreshBtn.getElement().setAttribute("state", "1");
 

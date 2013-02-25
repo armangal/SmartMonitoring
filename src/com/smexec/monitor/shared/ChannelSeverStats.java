@@ -66,9 +66,9 @@ public class ChannelSeverStats
         this.totalConnections += cscs.getConnectedBinarySessions() + cscs.getConnectedLegacySessions();
         this.totalDrops += cscs.getDisconnectedBinarySessions() + cscs.getDisconnectedLegacySessions();
         this.lastUpdateTime = cscs.getStartTime();
-        //assuming that the added recond is always the last and most up to date one
+        // assuming that the added recond is always the last and most up to date one
         this.openBinarySessions = cscs.getOpenBinarySessions();
-        this.openStringSessions=cscs.getOpenStringSessions();
+        this.openStringSessions = cscs.getOpenStringSessions();
     }
 
     public ChannelChunkStats getLastChunk() {
@@ -97,8 +97,7 @@ public class ChannelSeverStats
                                              agg.getStartTime(),
                                              agg.getEndTime(),
                                              agg.getOpenBinarySessions() + cscs.getOpenBinarySessions(),
-                                             agg.getOpenStringSessions() + cscs.getOpenStringSessions(),
-                                             -1);
+                                             agg.getOpenStringSessions() + cscs.getOpenStringSessions());
 
             }
             if (cscs.getStartTime() > this.lastUpdateTime) {

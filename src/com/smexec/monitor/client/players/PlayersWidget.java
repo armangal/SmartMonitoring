@@ -21,6 +21,9 @@ import com.smexec.monitor.shared.ChannelChunkStats;
 import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.LobbyChunkStats;
+import com.smexec.monitor.shared.LobbySeverStats;
+import com.smexec.monitor.shared.RefreshResult;
 
 public class PlayersWidget
     extends AbstractMonitoringWidget {
@@ -70,26 +73,30 @@ public class PlayersWidget
         fp.add(servers);
         channelScrollPanel.setHeight("100%");
     }
-
-    public void update(ChannelSeverStats css, ArrayList<ConnectedServer> servers) {
+    
+    public void update(RefreshResult result) {
+        ChannelSeverStats css = result.getChannelSeverStats();
+        ArrayList<ConnectedServer> servers = result.getServers();
+        LobbySeverStats lss = result.getLobbySeverStats();
+        
         this.servers = servers;
         int i = 0;
         Log.debug("Players:" + css);
         ChannelChunkStats lastChunk = css.getLastChunk();
         Log.debug("Last Chunk:" + lastChunk);
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(css.getOpenBinarySessions() + css.getOpenStringSessions()));
-        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getPlaying()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getDisconnectedBinarySessions() + lastChunk.getDisconnectedLegacySessions()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lastChunk.getConnectedBinarySessions() + lastChunk.getConnectedLegacySessions()));
 
-        playersTable.setText(i++, 1, "5,232");
-        playersTable.setText(i++, 1, "3,434");
-        playersTable.setText(i++, 1, "2,543");
-        playersTable.setText(i++, 1, "1,222");
-        playersTable.setText(i++, 1, "1,233");
-        playersTable.setText(i++, 1, "32,545");
-        playersTable.setText(i++, 1, "5");
-        playersTable.setText(i++, 1, "564");
+        LobbyChunkStats lobbyStats = lss.getLastChunk();
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealTables()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealActiveTables()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getFunTables()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getFunActiveTables()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealCashPLayers()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getFunCashPlayers()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealSpeedRooms()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealActiveSpeedRoomPlayers()));
 
         ArrayList<ChannelChunkStats> values = new ArrayList<ChannelChunkStats>(css.getChannelStats());
         Collections.sort(values, new Comparator<ChannelChunkStats>() {
@@ -112,9 +119,9 @@ public class PlayersWidget
         channelServers.getElement().setId("infoTable");
 
         channelServers.setText(0, 0, "Server");
-        channelServers.setText(0, 1, "Connected Player");
-        channelServers.setText(0, 2, "Dropped Players");
-        channelServers.setText(0, 3, "New Sessions");
+        channelServers.setText(0, 1, "Online");
+        channelServers.setText(0, 2, "Dropped");
+        channelServers.setText(0, 3, "New");
         channelServers.setText(0, 4, "Total Drops");
         channelServers.setText(0, 5, "Total New");
         channelServers.getRowFormatter().getElement(0).setId("th");
@@ -173,7 +180,7 @@ public class PlayersWidget
                     online.getValues()[k][j] = values.get(j).getOpenBinarySessions() + values.get(j).getOpenStringSessions();
                 } else if (k == 1) {
                     // playing
-                    online.getValues()[k][j] = values.get(j).getPlaying();
+                    online.getValues()[k][j] = -1;
                 } else if (k == 2) {
                     online.getValues()[k][j] = values.get(j).getStartTimeForChart();
                 }
@@ -214,9 +221,8 @@ public class PlayersWidget
 
         int i = 0;
         playersTable.setText(i++, 0, "Connected:");
-        playersTable.setText(i++, 0, "Playing:");
-        playersTable.setText(i++, 0, "Disc (min)");
-        playersTable.setText(i++, 0, "Conn (min)");
+        playersTable.setText(i++, 0, "Disc last min");
+        playersTable.setText(i++, 0, "Conn last min");
 
         playersTable.setText(i++, 0, "Real Tables");
         playersTable.setText(i++, 0, "Real Active Tab.");

@@ -225,6 +225,12 @@ body {
 	
 }
 
+.nettyWidget {
+	width: 49%;
+	position: relative;
+	float: left;
+	height: 120px;
+}
 
 
 /*Tables*/
