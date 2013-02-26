@@ -44,6 +44,7 @@ import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.LobbyChunkStats;
 import com.smexec.monitor.shared.LobbySeverStats;
 import com.smexec.monitor.shared.PoolsFeed;
+import com.sun.management.OperatingSystemMXBean;
 
 public class StateUpdaterThread
     implements Runnable {
@@ -117,7 +118,8 @@ public class StateUpdaterThread
                                                          ss.getLastMemoryUsage(),
                                                          ss.getLastGCHistory(),
                                                          ss.getUpTime(),
-                                                         ss.hasChannelSeverStats() ? ss.getChannelSeverStats() : null);
+                                                         ss.hasChannelSeverStats() ? ss.getChannelSeverStats() : null,
+                                                         ss.getCpuUtilization());
                 serversList.add(cs);
             }
 
@@ -319,6 +321,17 @@ public class StateUpdaterThread
         ss.setPoolFeedMap(poolFeedMap);
     }
 
+    /**
+     * gets the memory and cpu stats
+     * 
+     * @param serverStataus
+     * @throws MBeanException
+     * @throws AttributeNotFoundException
+     * @throws InstanceNotFoundException
+     * @throws ReflectionException
+     * @throws IOException
+     * @throws MalformedObjectNameException
+     */
     private void getMemoryStats(ServerStataus serverStataus)
         throws MBeanException, AttributeNotFoundException, InstanceNotFoundException, ReflectionException, IOException, MalformedObjectNameException {
         MBeanServerConnection mbsc = serverStataus.getConnector().getMBeanServerConnection();
@@ -342,6 +355,9 @@ public class StateUpdaterThread
         for (GCHistory gch : gcHistoryList) {
             serverStataus.updateGCHistory(gch);
         }
+
+        OperatingSystemMXBean operatingSystemMXBean = newPlatformMXBeanProxy(mbsc, ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
+        serverStataus.updateCPUutilization(operatingSystemMXBean.getProcessCpuTime(), System.nanoTime());
     }
 
     private long getLong(MBeanServerConnection mbsc, ObjectName on, String name) {

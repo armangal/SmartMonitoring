@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.management.remote.JMXConnector;
 
+import com.smexec.monitor.shared.CPUUtilization;
 import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.LobbySeverStats;
@@ -43,9 +44,20 @@ public class ServerStataus {
 
     private long upTime;
 
+    /**
+     * if it's channle server, then here we will have the appropriate stats
+     */
     private ChannelSeverStats channelSeverStats;
 
+    /**
+     * if it's lobby server, then here we will have the appropriate stats
+     */
     private LobbySeverStats lobbySeverStats;
+
+    /**
+     * stores locally CPU utilization
+     */
+    private CPUUtilization cpuUtilization = new CPUUtilization();
 
     public ServerStataus(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
@@ -88,6 +100,10 @@ public class ServerStataus {
         if (memoryUsage.size() > 100) {
             memoryUsage.remove();
         }
+    }
+
+    public void updateCPUutilization(final long lastMeasurementAfter, final long lastMeasureTimeAfter) {
+        cpuUtilization.evolve(lastMeasurementAfter, lastMeasureTimeAfter);
     }
 
     public ArrayList<GCHistory> getLastGCHistory() {
@@ -186,6 +202,10 @@ public class ServerStataus {
 
     public boolean hasLobbySeverStats() {
         return lobbySeverStats != null;
+    }
+
+    public CPUUtilization getCpuUtilization() {
+        return cpuUtilization;
     }
 
     @Override

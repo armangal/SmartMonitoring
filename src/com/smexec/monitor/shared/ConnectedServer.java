@@ -22,7 +22,13 @@ public class ConnectedServer
     private ArrayList<GCHistory> gcHistories;
     private long upTime;
     private boolean channelServer;
+
+    /**
+     * here we communicate none aggregated stats in order to be able to show them separatelly per server.
+     */
     private ChannelSeverStats channelSeverStats;
+
+    private CPUUtilization cpuUtilization;
 
     public ConnectedServer() {}
 
@@ -34,7 +40,8 @@ public class ConnectedServer
                            MemoryUsage memoryUsage,
                            ArrayList<GCHistory> gcHistories,
                            long upTime,
-                           ChannelSeverStats channelSeverStats) {
+                           ChannelSeverStats channelSeverStats,
+                           CPUUtilization cpuUtilization) {
         super();
         this.name = name;
         this.serverCode = serverCode;
@@ -45,6 +52,7 @@ public class ConnectedServer
         this.gcHistories = gcHistories;
         this.upTime = upTime;
         this.channelSeverStats = channelSeverStats;
+        this.cpuUtilization = cpuUtilization;
         this.channelServer = channelSeverStats != null;
     }
 
@@ -92,26 +100,36 @@ public class ConnectedServer
         return channelSeverStats;
     }
 
+    public CPUUtilization getCpuUtilization() {
+        return cpuUtilization;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ConnectedServer [name=");
-        builder.append(name);
-        builder.append(", serverCode=");
-        builder.append(serverCode);
-        builder.append(", ip=");
-        builder.append(ip);
-        builder.append(", jmxPort=");
-        builder.append(jmxPort);
-        builder.append(", status=");
-        builder.append(status);
-        builder.append(", memoryUsage=");
-        builder.append(memoryUsage);
-        builder.append(", gcHistories=");
-        builder.append(gcHistories);
-        builder.append(", upTime=");
-        builder.append(upTime);
-        builder.append("]");
+        builder.append("ConnectedServer [name=")
+               .append(name)
+               .append(", serverCode=")
+               .append(serverCode)
+               .append(", ip=")
+               .append(ip)
+               .append(", jmxPort=")
+               .append(jmxPort)
+               .append(", status=")
+               .append(status)
+               .append(", memoryUsage=")
+               .append(memoryUsage)
+               .append(", gcHistories=")
+               .append(gcHistories)
+               .append(", upTime=")
+               .append(upTime)
+               .append(", channelServer=")
+               .append(channelServer)
+               .append(", channelSeverStats=")
+               .append(channelSeverStats)
+               .append(", cpuUtilization=")
+               .append(cpuUtilization)
+               .append("]");
         return builder.toString();
     }
 

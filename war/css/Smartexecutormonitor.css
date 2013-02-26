@@ -183,10 +183,10 @@ body {
 	width: 50%;
 	position: relative;
 	float: right;
-	height: 220px;
+	height: 234px;
 }
 .alertsWidget .data {
-	height: 96px;
+	height: 200px;
 }
 .alertsWidgetData {
 	height: 100%;

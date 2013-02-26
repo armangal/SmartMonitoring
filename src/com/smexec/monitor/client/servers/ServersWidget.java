@@ -145,6 +145,7 @@ public class ServersWidget
         ft.setText(i, j++, "Memory");
         ft.setText(i, j++, "Usage %");
         ft.setText(i, j++, "GC [sec:(times)]");
+        ft.setText(i, j++, "CPU%");
         ft.getRowFormatter().getElement(i++).setId("th");
 
         for (ConnectedServer cs : list) {
@@ -184,20 +185,28 @@ public class ServersWidget
                 memory.addClickHandler(getGCHistory);
                 memory.getElement().setAttribute("code", "" + cs.getServerCode());
 
-                ft.setWidget(i++, j++, memory);
+                ft.setWidget(i, j++, memory);
                 if (max > 30000L) {
-                    Style style = ft.getFlexCellFormatter().getElement(i - 1, j - 1).getStyle();
+                    Style style = ft.getFlexCellFormatter().getElement(i, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
                     style.setColor("white");
                 }
                 if (cs.getMemoryUsage().getPercentage() > 90) {
-                    ft.getRowFormatter().getElement(i - 1).setId("memoryVeryHigh");
+                    ft.getRowFormatter().getElement(i).setId("memoryVeryHigh");
                 } else if (cs.getMemoryUsage().getPercentage() > 80) {
-                    ft.getRowFormatter().getElement(i - 1).setId("memoryHigh");
+                    ft.getRowFormatter().getElement(i).setId("memoryHigh");
                 } else if (cs.getMemoryUsage().getPercentage() > 70) {
-                    ft.getRowFormatter().getElement(i - 1).setId("memoryWarn");
+                    ft.getRowFormatter().getElement(i).setId("memoryWarn");
                 }
+                
+                HTML cpu = new HTML(cs.getCpuUtilization().getLastPercent() + "%");
+                ft.setWidget(i++, j++, cpu);
+                StringBuffer cpuStr = new StringBuffer();
+                for (Double d : cs.getCpuUtilization().getPercentList()) {
+                    cpuStr.append(d).append("%\n");
+                }
+                cpu.setTitle(cpuStr.toString());
             } else {
                 final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
                 name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort());
@@ -206,9 +215,13 @@ public class ServersWidget
                 ft.setText(i, j++, "Offline");
                 ft.setText(i, j++, "Offline");
                 ft.setText(i, j++, "Offline");
+                ft.setText(i, j++, "0.0%");
                 ft.getRowFormatter().getElement(i++).setId("offline");
             }
         }
+        
+        ft.getColumnFormatter().setWidth(0, "100px");
+
 
     }
 }
