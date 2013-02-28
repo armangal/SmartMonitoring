@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -34,6 +35,7 @@ public class ServersWidget
     private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
 
     private FlowPanel serversList = new FlowPanel();
+    private ScrollPanel sp = new ScrollPanel();
 
     private ClickHandler getThreadDump = new ClickHandler() {
 
@@ -107,16 +109,17 @@ public class ServersWidget
         addStyleName("serversWidget");
         serversList.setStyleName("serversWidgetInternal");
         getDataPanel().add(serversList);
+        sp.setSize("100%", "100%");
+        serversList.add(sp);
     }
 
     public void update(ArrayList<ConnectedServer> list) {
-        serversList.clear();
+        Log.debug("ServersWidget sp:" + sp.getVerticalScrollPosition());
+        sp.clear();
 
         FlexTable ft = new FlexTable();
+        sp.add(ft);
         ft.getElement().setId("infoTable");
-        ScrollPanel sp = new ScrollPanel(ft);
-        sp.setSize("100%", "100%");
-        serversList.add(sp);
         ft.setCellPadding(0);
         ft.setCellSpacing(0);
 
@@ -144,7 +147,7 @@ public class ServersWidget
         ft.setText(i, j++, "Up Time");
         ft.setText(i, j++, "Memory");
         ft.setText(i, j++, "Usage %");
-        ft.setText(i, j++, "GC [sec:(times)]");
+        ft.setText(i, j++, "GC Avg Time");
         ft.setText(i, j++, "CPU%");
         ft.getRowFormatter().getElement(i++).setId("th");
 
@@ -172,11 +175,14 @@ public class ServersWidget
                 ft.setWidget(i, j++, percent);
 
                 String gcs = "";
-                long max = Long.MIN_VALUE;
+                double max = Double.MIN_VALUE;
                 for (GCHistory gch : cs.getGcHistories()) {
-                    gcs += ClientStringFormatter.formatMillisShort(gch.getCollectionTime()) + ":(" + gch.getCollectionCount() + ");";
-                    if (gch.getCollectionTime() > max) {
-                        max = gch.getCollectionTime();
+                    if (gch.getCollectionTime() > 0 && gch.getCollectionCount() > 0) {
+                        double time = (double) gch.getCollectionTime() / (double) gch.getCollectionCount() / 1000d;
+                        gcs += ClientStringFormatter.formatMillisShort(time) + ", ";
+                        if (time > max) {
+                            max = time;
+                        }
                     }
                 }
                 final HTML memory = new HTML(gcs);
@@ -186,12 +192,13 @@ public class ServersWidget
                 memory.getElement().setAttribute("code", "" + cs.getServerCode());
 
                 ft.setWidget(i, j++, memory);
-                if (max > 30000L) {
+                if (max > 5) {
                     Style style = ft.getFlexCellFormatter().getElement(i, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
                     style.setColor("white");
                 }
+                
                 if (cs.getMemoryUsage().getPercentage() > 90) {
                     ft.getRowFormatter().getElement(i).setId("memoryVeryHigh");
                 } else if (cs.getMemoryUsage().getPercentage() > 80) {
@@ -199,7 +206,7 @@ public class ServersWidget
                 } else if (cs.getMemoryUsage().getPercentage() > 70) {
                     ft.getRowFormatter().getElement(i).setId("memoryWarn");
                 }
-                
+
                 HTML cpu = new HTML(cs.getCpuUtilization().getLastPercent() + "%");
                 ft.setWidget(i++, j++, cpu);
                 StringBuffer cpuStr = new StringBuffer();
@@ -219,9 +226,8 @@ public class ServersWidget
                 ft.getRowFormatter().getElement(i++).setId("offline");
             }
         }
-        
-        ft.getColumnFormatter().setWidth(0, "100px");
 
+        ft.getColumnFormatter().setWidth(0, "100px");
 
     }
 }

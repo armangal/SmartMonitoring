@@ -389,24 +389,6 @@
 			<password>password</password>
 		</server><!-- -->
 		<server>
-			<name>pokerperf-poker1-balancer1.pokerperf.ptec</name>
-			<serverCode>3182</serverCode>
-			<ip>172.31.157.24</ip>
-			<jmxPort>10000</jmxPort>
-			<authenticate>false</authenticate>
-			<username>admin</username>
-			<password>password</password>
-		</server><!-- -->
-		<server>
-			<name>pokerperf-poker1-balancer2.pokerperf.ptec</name>
-			<serverCode>3183</serverCode>
-			<ip>172.31.157.25</ip>
-			<jmxPort>10000</jmxPort>
-			<authenticate>false</authenticate>
-			<username>admin</username>
-			<password>password</password>
-		</server><!-- -->
-		<server>
 			<name>pokerperf-poker1-lobby1.pokerperf.ptec</name>
 			<serverCode>3186</serverCode>
 			<ip>172.31.157.20</ip>
@@ -605,19 +587,10 @@
 			<password>password</password>
 		</server><!-- -->
 		<server>
-			<name>Xpokerperf-poker1-poker12.pokerperf.ptec</name>
-			<serverCode>3380</serverCode>
-			<ip>172.31.157.241</ip>
-			<jmxPort>10000</jmxPort>
-			<authenticate>false</authenticate>
-			<username>admin</username>
-			<password>password</password>
-		</server><!-- -->
-		<server>
 			<name>pokerperf-poker1-pokernode1.pokerperf.ptec</name>
 			<serverCode>3400</serverCode>
 			<ip>172.31.157.22</ip>
-			<jmxPort>10000</jmxPort>
+			<jmxPort>10001</jmxPort>
 			<authenticate>false</authenticate>
 			<username>admin</username>
 			<password>password</password>
@@ -680,7 +653,7 @@
 			<name>pokerperf-poker1-pokernode2.pokerperf.ptec</name>
 			<serverCode>3401</serverCode>
 			<ip>172.31.157.23</ip>
-			<jmxPort>10000</jmxPort>
+			<jmxPort>10001</jmxPort>
 			<authenticate>false</authenticate>
 			<username>admin</username>
 			<password>password</password>
