@@ -118,7 +118,7 @@ public class PlayersWidget
         channelScrollPanel.add(channelServers);
         channelServers.getElement().setId("infoTable");
 
-        channelServers.setText(0, 0, "Server");
+        channelServers.setText(0, 0, "Server (" + servers.size() + ")" );
         channelServers.setText(0, 1, "Online");
         channelServers.setText(0, 2, "Dropped");
         channelServers.setText(0, 3, "New");
@@ -127,6 +127,13 @@ public class PlayersWidget
         channelServers.getRowFormatter().getElement(0).setId("th");
 
         int row = 1, col = 0;
+        Collections.sort(servers, new Comparator<ConnectedServer>() {
+
+            @Override
+            public int compare(ConnectedServer o1, ConnectedServer o2) {
+                return o1.getServerCode() - o2.getServerCode();
+            }
+        });
         for (ConnectedServer cs : servers) {
             if (cs.getStatus() && cs.isChannelServer()) {
                 col = 0;

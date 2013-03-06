@@ -162,3 +162,4 @@ pip-log.txt
 /war\WEB-INF\classes
 /test-classes
 /.gwt
+/target

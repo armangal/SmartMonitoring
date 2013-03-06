@@ -79,6 +79,7 @@ public class StateUpdaterThread
                     getSmartThreadPoolStats(ss);
                     getChannelStatistics(ss);
                     getLobbyStatistics(ss);
+                    getGameServerStatistics(ss);
 
                     ss.setFirstTimeAccess(false);
                 }
@@ -108,7 +109,7 @@ public class StateUpdaterThread
             for (int i = 0; i < values.size(); i++) {
                 Future<ServerStataus> take = compService.take();
                 ServerStataus ss = take.get();
-                System.out.println("Updating:" + ss.getServerConfig().getName());
+                System.out.println("Finished updating:" + ss.getServerConfig().getName());
                 ServerConfig sc = ss.getServerConfig();
                 ConnectedServer cs = new ConnectedServer(sc.getName(),
                                                          sc.getServerCode(),
@@ -129,6 +130,29 @@ public class StateUpdaterThread
             e.printStackTrace();
         } finally {
             ConnectionSynch.connectionLock.unlock();
+        }
+    }
+
+    /**
+     * getting stats from game server about
+     * 
+     * @param ss
+     */
+    private void getGameServerStatistics(ServerStataus ss) {
+        try {
+            JMXConnector jmxConnector = ss.getConnector();
+            MBeanServerConnection mbsc = jmxConnector.getMBeanServerConnection();
+            ObjectName sessionStats = new ObjectName("com.playtech.poker.jmx:type=Stats,name=PokerGameServerStats");
+            if (mbsc.isRegistered(sessionStats)) {
+                if (ss.isFirstTimeAccess()) {
+
+                } else {
+
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -162,25 +186,25 @@ public class StateUpdaterThread
                 for (int i = data.length - 1; i >= 0; i--) {
                     CompositeData cd = data[i];
 
-                    LobbyChunkStats lcs = new LobbyChunkStats(getAtributeFromComposite(cd, "startTime"),
-                                                              getAtributeFromComposite(cd, "endTime"),
-                                                              getAtributeFromComposite(cd, "funTables"),
-                                                              getAtributeFromComposite(cd, "funActiveTables"),
-                                                              getAtributeFromComposite(cd, "funCashPlayers"),
-                                                              getAtributeFromComposite(cd, "funTournamentPlayers"),
-                                                              getAtributeFromComposite(cd, "funActiveTournaments"),
-                                                              getAtributeFromComposite(cd, "realSpeedRooms"),
-                                                              getAtributeFromComposite(cd, "realActiveSpeedRooms"),
-                                                              getAtributeFromComposite(cd, "realActiveSpeedRoomPlayers"),
-                                                              getAtributeFromComposite(cd, "realTables"),
-                                                              getAtributeFromComposite(cd, "realActiveTables"),
-                                                              getAtributeFromComposite(cd, "realCashPlayers"),
-                                                              getAtributeFromComposite(cd, "realActiveTournaments"),
-                                                              getAtributeFromComposite(cd, "realTournamentPlayers"),
-                                                              getAtributeFromComposite(cd, "realTournamentsInRegisterStatus"),
-                                                              getAtributeFromComposite(cd, "funTournamentsInRegisterStatus"),
-                                                              getAtributeFromComposite(cd, "realRegisteredPlayers"),
-                                                              getAtributeFromComposite(cd, "funRegisteredPlayers"));
+                    LobbyChunkStats lcs = new LobbyChunkStats(getIntAtributeFromComposite(cd, "startTime"),
+                                                              getIntAtributeFromComposite(cd, "endTime"),
+                                                              getIntAtributeFromComposite(cd, "funTables"),
+                                                              getIntAtributeFromComposite(cd, "funActiveTables"),
+                                                              getIntAtributeFromComposite(cd, "funCashPlayers"),
+                                                              getIntAtributeFromComposite(cd, "funTournamentPlayers"),
+                                                              getIntAtributeFromComposite(cd, "funActiveTournaments"),
+                                                              getIntAtributeFromComposite(cd, "realSpeedRooms"),
+                                                              getIntAtributeFromComposite(cd, "realActiveSpeedRooms"),
+                                                              getIntAtributeFromComposite(cd, "realActiveSpeedRoomPlayers"),
+                                                              getIntAtributeFromComposite(cd, "realTables"),
+                                                              getIntAtributeFromComposite(cd, "realActiveTables"),
+                                                              getIntAtributeFromComposite(cd, "realCashPlayers"),
+                                                              getIntAtributeFromComposite(cd, "realActiveTournaments"),
+                                                              getIntAtributeFromComposite(cd, "realTournamentPlayers"),
+                                                              getIntAtributeFromComposite(cd, "realTournamentsInRegisterStatus"),
+                                                              getIntAtributeFromComposite(cd, "funTournamentsInRegisterStatus"),
+                                                              getIntAtributeFromComposite(cd, "realRegisteredPlayers"),
+                                                              getIntAtributeFromComposite(cd, "funRegisteredPlayers"));
 
                     stats.addChunk(lcs);
                     System.out.println(lcs);
@@ -215,27 +239,27 @@ public class StateUpdaterThread
                 CompositeData[] data;
                 if (ss.isFirstTimeAccess()) {
                     // load all stats
-                    System.out.println("Requesting full stats from Channel");
+                    System.out.println("Requesting full stats from Channel:" + ss.getServerConfig().getServerCode());
 
                     data = (CompositeData[]) mbsc.getAttribute(sessionStats, "ServerStats");
 
                 } else {
                     // load delta
                     long startTime = stats.getLastChunk().getStartTime();
-                    System.out.println("Requesting delta Channel chunks from:" + startTime);
+                    System.out.println("Requesting delta Channel:" + ss.getServerConfig().getServerCode() + ", chunks from:" + startTime);
                     data = (CompositeData[]) mbsc.invoke(sessionStats, "getLastServerStats", new Object[] {startTime}, new String[] {"long"});
                 }
-                System.out.println("got :" + data.length + " chunks from channel");
+                System.out.println("got :" + data.length + " chunks from channel:" + ss.getServerConfig().getServerCode());
                 for (int i = data.length - 1; i >= 0; i--) {
                     CompositeData cd = data[i];
-                    ChannelChunkStats cscs = new ChannelChunkStats(getAtributeFromComposite(cd, "connectedBinarySessions"),
-                                                                   getAtributeFromComposite(cd, "connectedLegacySessions"),
-                                                                   getAtributeFromComposite(cd, "disconnectedBinarySessions"),
-                                                                   getAtributeFromComposite(cd, "disconnectedLegacySessions"),
-                                                                   getAtributeFromComposite(cd, "startTime"),
-                                                                   getAtributeFromComposite(cd, "endTime"),
-                                                                   getAtributeFromComposite(cd, "totalBinarySessions"),
-                                                                   getAtributeFromComposite(cd, "totalLegacySessions"));
+                    ChannelChunkStats cscs = new ChannelChunkStats(getIntAtributeFromComposite(cd, "connectedBinarySessions"),
+                                                                   getIntAtributeFromComposite(cd, "connectedLegacySessions"),
+                                                                   getIntAtributeFromComposite(cd, "disconnectedBinarySessions"),
+                                                                   getIntAtributeFromComposite(cd, "disconnectedLegacySessions"),
+                                                                   getIntAtributeFromComposite(cd, "startTime"),
+                                                                   getIntAtributeFromComposite(cd, "endTime"),
+                                                                   getIntAtributeFromComposite(cd, "totalBinarySessions"),
+                                                                   getIntAtributeFromComposite(cd, "totalLegacySessions"));
 
                     stats.addChunk(cscs);
                     System.out.println(cscs);
@@ -246,12 +270,21 @@ public class StateUpdaterThread
         }
     }
 
-    private Integer getAtributeFromComposite(CompositeData cd, String name) {
+    private Integer getIntAtributeFromComposite(CompositeData cd, String name) {
         try {
             return Integer.valueOf(cd.get(name).toString());
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
+        }
+    }
+
+    private Long getLongAtributeFromComposite(CompositeData cd, String name) {
+        try {
+            return Long.valueOf(cd.get(name).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1L;
         }
     }
 
@@ -271,32 +304,27 @@ public class StateUpdaterThread
             PoolsFeed pf = new PoolsFeed();
             pf.setPoolName(objectName.getKeyProperty("name"));
 
-            String chunks = (String) mbsc.getAttribute(objectName, "TimeChunks");
-            // System.out.println(chunks);
-            chunks = chunks.replace("[", "");
-            String[] split = chunks.split("]");
+            CompositeData[] times = (CompositeData[]) mbsc.getAttribute(objectName, "ExecutionTimeStats");
 
-            ChartFeed timesChartFeed = new ChartFeed(split.length, 3);
-            for (int i = 0; i < split.length; i++) {
-                String[] values = split[i].split(",");
-                timesChartFeed.getValues()[0][i] = Long.valueOf(values[0]);
-                timesChartFeed.getValues()[1][i] = Long.valueOf(values[1]);
-                timesChartFeed.getValues()[2][i] = Long.valueOf(values[2]);
+            ChartFeed timesChartFeed = new ChartFeed(times.length, 3);
+            for (int i = 0; i < times.length; i++) {
+                CompositeData timeStat = times[i];
+                timesChartFeed.getValues()[0][i] = getLongAtributeFromComposite(timeStat, "max");
+                timesChartFeed.getValues()[1][i] = getLongAtributeFromComposite(timeStat, "avg");
+                timesChartFeed.getValues()[2][i] = getLongAtributeFromComposite(timeStat, "min");
             }
             pf.setTimeChartFeeds(timesChartFeed);
             // /////////////////////////////////////////
-            chunks = (String) mbsc.getAttribute(objectName, "TasksChunks");
-            chunks = chunks.replace("[", "");
-            split = chunks.split("]");
 
-            ChartFeed tasksChartFeed = new ChartFeed(split.length, 5);
-            for (int i = 0; i < split.length; i++) {
-                String[] values = split[i].split(",");
-                tasksChartFeed.getValues()[0][i] = Long.valueOf(values[0]);
-                tasksChartFeed.getValues()[1][i] = Long.valueOf(values[1]);
-                tasksChartFeed.getValues()[2][i] = Long.valueOf(values[2]);
-                tasksChartFeed.getValues()[3][i] = Long.valueOf(values[3]);
-                tasksChartFeed.getValues()[4][i] = Long.valueOf(values[4]);
+            CompositeData[] tasks = (CompositeData[]) mbsc.getAttribute(objectName, "TaskExecutionStats");
+            ChartFeed tasksChartFeed = new ChartFeed(tasks.length, 5);
+            for (int i = 0; i < tasks.length; i++) {
+                CompositeData taskStat = tasks[i];
+                tasksChartFeed.getValues()[0][i] = getLongAtributeFromComposite(taskStat, "submitted");
+                tasksChartFeed.getValues()[1][i] = getLongAtributeFromComposite(taskStat, "executed");
+                tasksChartFeed.getValues()[2][i] = getLongAtributeFromComposite(taskStat, "completed");
+                tasksChartFeed.getValues()[3][i] = getLongAtributeFromComposite(taskStat, "failed");
+                tasksChartFeed.getValues()[4][i] = getLongAtributeFromComposite(taskStat, "rejected");
             }
             pf.setTasksChartFeeds(tasksChartFeed);
 

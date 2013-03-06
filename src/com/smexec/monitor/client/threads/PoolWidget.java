@@ -87,7 +87,6 @@ public class PoolWidget
 
         timesTable.getCellFormatter().getElement(0, 0).setId("th");
 
-
         timesTable.getFlexCellFormatter().setColSpan(0, 0, 2);
 
         timesTable.setText(1, 0, "Max Time:");
