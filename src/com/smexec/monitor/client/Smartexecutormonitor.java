@@ -78,7 +78,7 @@ public class Smartexecutormonitor
 
                     serversWidget.update(servers);
                     poolsWidget.refresh(result.getPoolFeedMap());
-                    tournamentsWidget.update();
+                    tournamentsWidget.update(result);
                     playersWidget.update(result);
                     alertsWidget.update();
                 } else {

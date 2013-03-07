@@ -11,6 +11,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
+import com.smexec.monitor.shared.LobbyChunkStats;
+import com.smexec.monitor.shared.LobbySeverStats;
+import com.smexec.monitor.shared.RefreshResult;
 
 public class TournamentsWidget
     extends AbstractMonitoringWidget {
@@ -45,15 +48,17 @@ public class TournamentsWidget
         interrupedPlayers.setTitle("Number of players affected by interruption");
     }
 
-    public void update() {
+    public void update(RefreshResult result) {
 
         Random r = new Random();
         int i = 1;
-        tournamentStatus.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(888)));
-        regPlayers.setText(ClientStringFormatter.formatNumber(r.nextInt(2000) + 8000));
+        LobbySeverStats lss = result.getLobbySeverStats();
+        LobbyChunkStats lc = lss.getLastChunk();
+        tournamentStatus.setText(i++, 1, ClientStringFormatter.formatNumber(lc.getRealTournamentsInRegisterStatus()));
+        regPlayers.setText(ClientStringFormatter.formatNumber(lc.getRealRegisteredPlayers()));
 
-        tournamentStatus.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(333)));
-        playingPlayers.setText(ClientStringFormatter.formatNumber(r.nextInt(2000) + 5000));
+        tournamentStatus.setText(i++, 1, ClientStringFormatter.formatNumber(lc.getRealActiveTournaments()));
+        playingPlayers.setText(ClientStringFormatter.formatNumber(lc.getRealTournamentPlayers()));
 
         tournamentStatus.setText(i++, 1, ClientStringFormatter.formatNumber(r.nextInt(33)));
         interrupedPlayers.setText(ClientStringFormatter.formatNumber(r.nextInt(5000)));

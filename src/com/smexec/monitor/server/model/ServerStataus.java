@@ -11,6 +11,7 @@ import javax.management.remote.JMXConnector;
 import com.smexec.monitor.shared.CPUUtilization;
 import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.GCHistory;
+import com.smexec.monitor.shared.GameServerStats;
 import com.smexec.monitor.shared.LobbySeverStats;
 import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.PoolsFeed;
@@ -58,6 +59,8 @@ public class ServerStataus {
      * stores locally CPU utilization
      */
     private CPUUtilization cpuUtilization = new CPUUtilization();
+
+    private GameServerStats gameServerStats;
 
     public ServerStataus(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
@@ -202,6 +205,17 @@ public class ServerStataus {
 
     public boolean hasLobbySeverStats() {
         return lobbySeverStats != null;
+    }
+
+    public boolean hasGameSeverStats() {
+        return gameServerStats != null;
+    }
+
+    public GameServerStats getGameSeverStats() {
+        if (gameServerStats == null) {
+            this.gameServerStats = new GameServerStats();
+        }
+        return gameServerStats;
     }
 
     public CPUUtilization getCpuUtilization() {

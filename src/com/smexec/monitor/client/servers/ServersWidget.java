@@ -154,7 +154,7 @@ public class ServersWidget
         for (ConnectedServer cs : list) {
             j = 0;
             if (cs.getStatus()) {
-                final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
+                final HTML name = new HTML("<a href=#>" + cs.getServerCode() + "," + cs.getName() + "</a>");
                 name.getElement().setAttribute("code", "" + cs.getServerCode());
                 name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort() + "\nClick to get Thread Dump");
                 name.addMouseOverHandler(handCursor);

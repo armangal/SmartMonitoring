@@ -9,6 +9,7 @@ import java.lang.management.MemoryUsage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,7 @@ import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 
+import com.google.gwt.dom.client.LinkElement;
 import com.smexec.monitor.server.model.ConnectedServersState;
 import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
@@ -41,9 +43,12 @@ import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.GCHistory;
+import com.smexec.monitor.shared.GameServerChunk;
+import com.smexec.monitor.shared.GameServerStats;
 import com.smexec.monitor.shared.LobbyChunkStats;
 import com.smexec.monitor.shared.LobbySeverStats;
 import com.smexec.monitor.shared.PoolsFeed;
+import com.smexec.monitor.shared.Tournament;
 import com.sun.management.OperatingSystemMXBean;
 
 public class StateUpdaterThread
@@ -144,10 +149,57 @@ public class StateUpdaterThread
             MBeanServerConnection mbsc = jmxConnector.getMBeanServerConnection();
             ObjectName sessionStats = new ObjectName("com.playtech.poker.jmx:type=Stats,name=PokerGameServerStats");
             if (mbsc.isRegistered(sessionStats)) {
+                CompositeData[] data;
+                GameServerStats gameSeverStats = ss.getGameSeverStats();
                 if (ss.isFirstTimeAccess()) {
+                    // load all stats from game server
+                    System.out.println("Requesting full stats from Game server:" + ss.getServerConfig().getServerCode());
+                    data = (CompositeData[]) mbsc.getAttribute(sessionStats, "ServerStats");
 
                 } else {
+                    // load delta
+                    long startTime = gameSeverStats.getLastChunk().getStartTime();
+                    System.out.println("Requesting delta Game chunks from:" + startTime);
+                    data = (CompositeData[]) mbsc.invoke(sessionStats, "getLastServerStats", new Object[] {startTime}, new String[] {"long"});
+                }
 
+                System.out.println("got :" + data.length + " chunks from Game:" + ss.getServerConfig().getServerCode());
+
+                for (int i = data.length - 1; i >= 0; i--) {
+                    CompositeData cd = data[i];
+
+                    GameServerChunk gch = new GameServerChunk(getIntAtributeFromComposite(cd, "startTime"), getIntAtributeFromComposite(cd, "endTime"));
+
+                    // load canceled tournaments
+                    CompositeData[] canceled = (CompositeData[]) cd.get("cancelledTournaments");
+                    if (canceled.length > 0) {
+                        LinkedList<Tournament> list = new LinkedList<Tournament>();
+                        for (CompositeData tr : canceled) {
+                            Tournament tournament = new Tournament(getLongAtributeFromComposite(tr, "code"),
+                                                                   tr.get("name").toString(),
+                                                                   tr.get("cancellationDate").toString(),
+                                                                   getIntAtributeFromComposite(tr, "reason"));
+                            list.add(tournament);
+                        }
+                        gch.setCanceled(list);
+                    }
+
+                    // load interrupted tournaments
+                    CompositeData[] interrupted = (CompositeData[]) cd.get("interruptedTournaments");
+                    if (interrupted.length > 0) {
+                        LinkedList<Tournament> list = new LinkedList<Tournament>();
+                        for (CompositeData tr : interrupted) {
+                            Tournament tournament = new Tournament(getLongAtributeFromComposite(tr, "code"),
+                                                                   tr.get("name").toString(),
+                                                                   tr.get("interruptionDate").toString(),
+                                                                   getIntAtributeFromComposite(tr, "reason"),
+                                                                   getIntAtributeFromComposite(tr, "registeredPlayers"));
+                            list.add(tournament);
+                        }
+                        gch.setInterrupted(list);
+                    }
+
+                    gameSeverStats.addChunk(gch);
                 }
 
             }

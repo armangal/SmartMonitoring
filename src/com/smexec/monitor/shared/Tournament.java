@@ -7,10 +7,6 @@ public class Tournament
 
     private static final long serialVersionUID = 1L;
 
-    private int startTime;
-
-    private int endTime;
-
     private long code;
 
     private String name;
@@ -23,25 +19,21 @@ public class Tournament
 
     public Tournament() {}
 
-    public Tournament(long code, String name, String date, int reason, int registeredPlayers, int startTime, int endTime) {
+    public Tournament(long code, String name, String date, int reason, int registeredPlayers) {
         super();
         this.code = code;
         this.name = name;
         this.date = date;
         this.reason = reason;
         this.registeredPlayers = registeredPlayers;
-        this.startTime = startTime;
-        this.endTime = endTime;
     }
 
-    public Tournament(long code, String name, String date, int reason, int startTime, int endTime) {
+    public Tournament(long code, String name, String date, int reason) {
         super();
         this.code = code;
         this.name = name;
         this.date = date;
         this.reason = reason;
-        this.startTime = startTime;
-        this.endTime = endTime;
 
     }
 
@@ -65,25 +57,15 @@ public class Tournament
         return registeredPlayers;
     }
 
-    public int getEndTime() {
-        return endTime;
-    }
-
-    public int getStartTime() {
-        return startTime;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (int) (code ^ (code >>> 32));
         result = prime * result + ((date == null) ? 0 : date.hashCode());
-        result = prime * result + endTime;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + reason;
         result = prime * result + registeredPlayers;
-        result = prime * result + startTime;
         return result;
     }
 
@@ -103,8 +85,6 @@ public class Tournament
                 return false;
         } else if (!date.equals(other.date))
             return false;
-        if (endTime != other.endTime)
-            return false;
         if (name == null) {
             if (other.name != null)
                 return false;
@@ -114,19 +94,13 @@ public class Tournament
             return false;
         if (registeredPlayers != other.registeredPlayers)
             return false;
-        if (startTime != other.startTime)
-            return false;
         return true;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Tournament [startTime=");
-        builder.append(startTime);
-        builder.append(", endTime=");
-        builder.append(endTime);
-        builder.append(", code=");
+        builder.append("Tournament [code=");
         builder.append(code);
         builder.append(", name=");
         builder.append(name);
