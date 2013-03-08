@@ -118,7 +118,7 @@ public class Smartexecutormonitor
                 RootPanel.get().add(refreshBtn);
                 refresh = true;
                 refresh();
-                Scheduler.get().scheduleFixedDelay(refreshCommand, 10000);
+                Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
             }
         });
 
@@ -147,7 +147,7 @@ public class Smartexecutormonitor
                     refreshBtn.getElement().setAttribute("state", "1");
                     refresh = true;
                     refresh();
-                    Scheduler.get().scheduleFixedDelay(refreshCommand, 10000);
+                    Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
                     refreshBtn.setText("Stop Refresh");
                 }
 

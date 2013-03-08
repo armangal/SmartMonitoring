@@ -7,7 +7,7 @@ import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.server.model.ConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
-import com.smexec.monitor.server.utils.JMXGetThreadDump;
+import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.RefreshResult;
 
 /**
@@ -29,7 +29,7 @@ public class MonitoringServiceImpl
     @Override
     public String getThreadDump(Integer serverCode) {
         checkAuthenticated();
-        return JMXGetThreadDump.getThreadDump(serverCode);
+        return JMXThreadDumpUtils.getThreadDump(serverCode);
     }
 
     @Override

@@ -17,19 +17,18 @@ public class Tournament
 
     private int registeredPlayers;
 
+    private int serverCode;
+
     public Tournament() {}
 
-    public Tournament(long code, String name, String date, int reason, int registeredPlayers) {
-        super();
-        this.code = code;
-        this.name = name;
-        this.date = date;
-        this.reason = reason;
+    public Tournament(int serverCode, long code, String name, String date, int reason, int registeredPlayers) {
+        this(serverCode, code, name, date, reason);
         this.registeredPlayers = registeredPlayers;
     }
 
-    public Tournament(long code, String name, String date, int reason) {
+    public Tournament(int serverCode, long code, String name, String date, int reason) {
         super();
+        this.serverCode = serverCode;
         this.code = code;
         this.name = name;
         this.date = date;
@@ -55,6 +54,10 @@ public class Tournament
 
     public int getRegisteredPlayers() {
         return registeredPlayers;
+    }
+
+    public int getServerCode() {
+        return serverCode;
     }
 
     @Override
@@ -100,17 +103,19 @@ public class Tournament
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Tournament [code=");
-        builder.append(code);
-        builder.append(", name=");
-        builder.append(name);
-        builder.append(", date=");
-        builder.append(date);
-        builder.append(", reason=");
-        builder.append(reason);
-        builder.append(", registeredPlayers=");
-        builder.append(registeredPlayers);
-        builder.append("]");
+        builder.append("Tournament [code=")
+               .append(code)
+               .append(", name=")
+               .append(name)
+               .append(", date=")
+               .append(date)
+               .append(", reason=")
+               .append(reason)
+               .append(", registeredPlayers=")
+               .append(registeredPlayers)
+               .append(", serverCode=")
+               .append(serverCode)
+               .append("]");
         return builder.toString();
     }
 

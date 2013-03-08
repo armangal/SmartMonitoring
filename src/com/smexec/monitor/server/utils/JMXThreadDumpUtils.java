@@ -13,7 +13,7 @@ import javax.management.MBeanServerConnection;
 import com.smexec.monitor.server.model.ConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 
-public class JMXGetThreadDump {
+public class JMXThreadDumpUtils {
 
     public static String getThreadDump(Integer serverCode) {
         StringBuilder response = new StringBuilder();
