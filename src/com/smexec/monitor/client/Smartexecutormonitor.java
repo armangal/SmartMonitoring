@@ -24,6 +24,7 @@ import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.threads.ThreadPoolsWidget;
 import com.smexec.monitor.client.tournaments.TournamentsWidget;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.RefreshResult;
 
 public class Smartexecutormonitor
@@ -48,6 +49,8 @@ public class Smartexecutormonitor
     private ThreadPoolsWidget poolsWidget = new ThreadPoolsWidget();
     private NettyWidget nettyWidget = new NettyWidget();
 
+    private int lastAlertId = 0;
+
     private RepeatingCommand refreshCommand = new RepeatingCommand() {
 
         @Override
@@ -66,11 +69,12 @@ public class Smartexecutormonitor
 
         Log.debug("Send refresh request.");
 
-        service.refresh(new AsyncCallback<RefreshResult>() {
+        service.refresh(lastAlertId, new AsyncCallback<FullRefreshResult>() {
 
             @Override
-            public void onSuccess(RefreshResult result) {
+            public void onSuccess(FullRefreshResult fullResult) {
 
+                RefreshResult result = fullResult.getRefreshResult();
                 title.setHTML("<h1>" + result.getTitle() + "</h1>");
                 ArrayList<ConnectedServer> servers = result.getServers();
                 if (servers != null && !servers.isEmpty()) {
@@ -80,12 +84,13 @@ public class Smartexecutormonitor
                     poolsWidget.refresh(result.getPoolFeedMap());
                     tournamentsWidget.update(result);
                     playersWidget.update(result);
-                    alertsWidget.update();
                 } else {
                     Log.debug("Received EMPTY response.");
 
                     poolsWidget.clear();
                 }
+
+                lastAlertId = alertsWidget.update(fullResult);
 
             }
 

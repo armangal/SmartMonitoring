@@ -2,8 +2,12 @@ package com.smexec.monitor.server.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.GameServerClientStats;
@@ -20,6 +24,10 @@ public final class ConnectedServersState {
      * Result ready to be used by clients
      */
     private static RefreshResult result = new RefreshResult();
+
+    private static Map<Integer, Alert> alertsMap = new HashMap<Integer, Alert>();
+
+    private static AtomicInteger alertCounter = new AtomicInteger();
 
     /**
      * current most up-to-date configurations
@@ -85,4 +93,26 @@ public final class ConnectedServersState {
     public static ServersConfig getServersConfig() {
         return serversConfig;
     }
+
+    public static Map<Integer, Alert> getAlertsMap() {
+        return alertsMap;
+    }
+
+    public static LinkedList<Alert> getAlertsAfter(int alertId) {
+        LinkedList<Alert> alerts = new LinkedList<Alert>();
+        for (int i = alertId + 1; i < Integer.MAX_VALUE; i++) {
+            if (alertsMap.containsKey(i)) {
+                alerts.add(alertsMap.get(i));
+            } else {
+                break;
+            }
+        }
+        return alerts;
+    }
+
+    public static void addAlert(Alert alert) {
+        alert.setId(alertCounter.getAndIncrement());
+        alertsMap.put(alert.getId(), alert);
+    }
+
 }

@@ -17,6 +17,9 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.xml.bind.JAXBContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.smexec.monitor.server.model.ConnectedServersState;
 import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
@@ -24,6 +27,8 @@ import com.smexec.monitor.server.model.ServersConfig;
 
 public class JMXConnectorThread
     implements Runnable {
+
+    private static Logger logger = LoggerFactory.getLogger(JMXConnectorThread.class);
 
     private static ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
 
@@ -56,20 +61,21 @@ public class JMXConnectorThread
     public void run() {
         String location = System.getProperty("servers.config", "servers.xml");
 
-        System.out.println("Loading configuraiotns:" + location);
+        logger.info("Loading configuraiotns:{}", location);
         try {
             File file = new File(location);
             if (!file.canRead()) {
-                System.err.println("Configuration file wasn't found at:" + location);
+                logger.error("Configuration file wasn't found at:{}", location);
             }
-            System.out.println("Configuration file:" + file);
+            logger.info("Configuration file:{}", file);
+
             InputStream configXML = new FileInputStream(file);
             JAXBContext context = JAXBContext.newInstance(ServersConfig.class);
             ServersConfig serversConfig = (ServersConfig) context.createUnmarshaller().unmarshal(configXML);
 
             serversConfig.validate();
 
-            System.out.println("Initilized:" + serversConfig);
+            logger.info("Initilized:{}", serversConfig);
             ConnectedServersState.setServersConfig(serversConfig);
 
             if (serversConfig.getServers().size() > 0) {
@@ -85,13 +91,12 @@ public class JMXConnectorThread
                 }
             }
 
-            System.out.println("Connection loop finished");
+            logger.info("Connection loop finished");
 
         } catch (Throwable e) {
-            System.out.println("Error loading config:" + e.getMessage());
-            System.err.println(e.getMessage());
-            e.printStackTrace();
-            Runtime.getRuntime().exit(111);
+            logger.error("Error loading config:{}" + e.getMessage());
+            logger.error(e.getMessage(), e);
+            Runtime.getRuntime().exit(1);
         }
     }
 
@@ -102,7 +107,7 @@ public class JMXConnectorThread
 
         try {
 
-            System.out.println("Coonecting to:" + sc);
+            logger.info("Coonecting to:{}", sc);
             JMXServiceURL u = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + sc.getIp() + ":" + sc.getJmxPort() + "/jmxrmi");
             if (sc.isAuthenticate()) {
                 Map<String, String[]> env = new HashMap<String, String[]>(0);
@@ -113,14 +118,14 @@ public class JMXConnectorThread
                 c = JMXConnectorFactory.connect(u);
             }
 
-            System.out.println("Conneted to:" + c);
+            logger.info("Conneted to:{}", c);
 
             c.addConnectionNotificationListener(new NotificationListener() {
 
                 @Override
                 public void handleNotification(Notification notification, Object key) {
-                    System.out.println("Notification for key:" + key);
-                    System.out.println("Notificatio" + "n:" + notification);
+                    logger.info("Notification for key:{}", key);
+                    logger.info("Notificatio n:{}" + notification);
                     if (notification.getType().contains("closed") || notification.getType().contains("failed")) {
                         ConnectedServersState.getMap().remove(((ServerConfig) key).getServerCode());
                     }
@@ -131,7 +136,7 @@ public class JMXConnectorThread
             ss.setConnected(true);
 
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
 
         try {

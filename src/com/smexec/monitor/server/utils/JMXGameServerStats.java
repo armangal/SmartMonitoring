@@ -78,6 +78,7 @@ public class JMXGameServerStats {
                         gch.setInterrupted(list);
                     }
 
+                    System.out.println(gch);
                     gameSeverStats.addChunk(gch);
                 }
 

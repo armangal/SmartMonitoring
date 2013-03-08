@@ -1,11 +1,11 @@
 package com.smexec.monitor.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smexec.monitor.shared.RefreshResult;
+import com.smexec.monitor.shared.FullRefreshResult;
 
 public interface MonitoringServiceAsync {
 
-    void refresh(AsyncCallback<RefreshResult> callback);
+    void refresh(int lastAlertId, AsyncCallback<FullRefreshResult> callback);
 
     void getThreadDump(Integer serverCode, AsyncCallback<String> callback);
 

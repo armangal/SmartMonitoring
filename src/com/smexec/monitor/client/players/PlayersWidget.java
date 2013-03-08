@@ -91,9 +91,9 @@ public class PlayersWidget
         LobbyChunkStats lobbyStats = lss.getLastChunk();
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealTables()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealActiveTables()));
+        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealCashPLayers()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getFunTables()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getFunActiveTables()));
-        playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealCashPLayers()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getFunCashPlayers()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealSpeedRooms()));
         playersTable.setText(i++, 1, ClientStringFormatter.formatNumber(lobbyStats.getRealActiveSpeedRoomPlayers()));
@@ -233,12 +233,12 @@ public class PlayersWidget
 
         playersTable.setText(i++, 0, "Real Tables");
         playersTable.setText(i++, 0, "Real Active Tab.");
+        playersTable.setText(i++, 0, "Real Players");
 
         playersTable.setText(i++, 0, "Fun Table");
         playersTable.setText(i++, 0, "Fun Active Tab.");
-
-        playersTable.setText(i++, 0, "Real Players");
         playersTable.setText(i++, 0, "Fun Player");
+
 
         playersTable.setText(i++, 0, "S.P. Rooms");
         playersTable.setText(i++, 0, "S.P. Players");
