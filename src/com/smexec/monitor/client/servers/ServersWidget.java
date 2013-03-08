@@ -114,7 +114,7 @@ public class ServersWidget
     }
 
     public void update(ArrayList<ConnectedServer> list) {
-        Log.debug("ServersWidget sp:" + sp.getVerticalScrollPosition());
+        Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
         sp.clear();
 
         FlexTable ft = new FlexTable();

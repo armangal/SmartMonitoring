@@ -6,8 +6,9 @@
 	<servers>
 <server><name>poker1.qa1</name><serverCode>2658</serverCode><ip>10.145.1.116</ip><jmxPort>10000</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
 <server><name>poker2.qa1</name><serverCode>2659</serverCode><ip>10.145.1.116</ip><jmxPort>10001</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>poker3.qa1</name><serverCode>2660</serverCode><ip>10.145.1.116</ip><jmxPort>10002</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>poker4.qa1</name><serverCode>2661</serverCode><ip>10.145.1.116</ip><jmxPort>10003</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<!-- <server><name>poker3.qa1</name><serverCode>2660</serverCode><ip>10.145.1.116</ip><jmxPort>10002</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server>-->
+<!-- <server><name>poker4.qa1</name><serverCode>2661</serverCode><ip>10.145.1.116</ip><jmxPort>10003</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server>-->
+ 
 <server><name>channel1.qa1</name><serverCode>2597</serverCode><ip>10.145.1.116</ip><jmxPort>10004</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
 <server><name>channel2.qa1</name><serverCode>2598</serverCode><ip>10.145.1.116</ip><jmxPort>10005</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
 <server><name>publisher1.qa1</name><serverCode>2870</serverCode><ip>10.145.1.116</ip><jmxPort>10006</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->

@@ -103,10 +103,8 @@ body {
 }
 
 .tournamentsWidget .right {
-	float: left;
-	padding-left: 3px;
-	border-left: thin solid green;
-	width: 99%;
+	float: right;
+	width: 59%;
 }
 
 .tournamentsWidgetInternal {
