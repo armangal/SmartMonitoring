@@ -3,22 +3,21 @@
 ----
 
 SmartExecutorMonitoring is a part of SmartExecutor project providing web-based monitoring UI.
+The project might be extended to include more monitoring abilities, the basic once are provided with this project.
 
 <h2 name="features">Features</h2>
-- GWT easy extendable application
+- GWT easy extendible application
 - Uses JMX to connect to running java processes.
 - Extensive statistics over the pools performance
 - JMX monitoring
+-- Monitoring connected servers, memory,
 - Can aggregate statistics from many servers at the same time.
  
 <h2>Members:</h2>
 <b>Owner: </b>
-- Arman Gal
+- Arman Gal, @armangal, arman@armangal.com
 
 <b>Contributors:</b>
-* Daniel Gyupchanov
-* Erdoan Veliev
-
 
 
 ----
