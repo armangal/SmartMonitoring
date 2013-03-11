@@ -164,3 +164,5 @@ pip-log.txt
 /.gwt
 /target
 *.log
+/.settings
+.project
