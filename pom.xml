@@ -34,16 +34,19 @@
 				<groupId>com.google.gwt</groupId>
 				<artifactId>gwt-servlet</artifactId>
 				<version>${gwt.version}</version>
+				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.allen-sauer.gwt.log</groupId>
 				<artifactId>gwt-log</artifactId>
 				<version>3.1.6</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.gwt-charts</groupId>
 				<artifactId>gwt-charts</artifactId>
 				<version>0.9.9</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<!-- server -->
@@ -59,16 +62,19 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>1.5.10</version>
+				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
 				<version>1.5.10</version>
+				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.2.14</version>
+				<scope>compile</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
