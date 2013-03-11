@@ -151,40 +151,4 @@ public class MonitoringLineChart
         return new double[] {max, min};
     }
 
-    @Deprecated
-    private void draw() {
-        String[] lines = new String[] {"line1", "line2", "line3"};
-        int[] paramsX = new int[] {2003, 2004, 2005, 2006, 2007, 2008};
-        int[][] paramsY = new int[][] { {1336060, 1538156, 1576579, 1600652, 1968113, 1901067}, {400361, 366849, 440514, 434552, 393032, 517206},
-                                       {1001582, 1119450, 993360, 1004163, 979198, 916965}};
-
-        // Prepare the data
-        DataTable dataTable = DataTable.create();
-        dataTable.addColumn(ColumnType.STRING, "Year");
-        for (int i = 0; i < lines.length; i++) {
-            dataTable.addColumn(ColumnType.NUMBER, lines[i]);
-        }
-
-        dataTable.addRows(paramsX.length);
-
-        for (int i = 0; i < paramsX.length; i++) {
-            dataTable.setValue(i, 0, String.valueOf(paramsX[i]));
-        }
-        for (int col = 0; col < paramsY.length; col++) {
-            for (int row = 0; row < paramsY[col].length; row++) {
-                dataTable.setValue(row, col + 1, paramsY[col][row]);
-            }
-        }
-
-        // Set options
-        LineChartOptions options = LineChartOptions.create();
-        options.setBackgroundColor("#f0f0f0");
-        options.setFontName("Tahoma");
-        options.setTitle("Yearly Coffee ");
-        options.setHAxis(HAxis.create("Year"));
-        options.setVAxis(VAxis.create("Cups"));
-
-        // Draw the chart
-        chart.draw(dataTable, options);
-    }
 }

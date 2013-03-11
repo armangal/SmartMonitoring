@@ -166,3 +166,4 @@ pip-log.txt
 *.log
 /.settings
 .project
+.classpath
