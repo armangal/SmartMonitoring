@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.smexec</groupId>
-	<artifactId>monitor</artifactId>
+	<artifactId>smartexecutormonitor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>Smart Executor Monitor</name>
@@ -140,12 +140,20 @@
 							<module>com.smexec.monitor.Smartexecutormonitor</module>
 							<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
 							<warSourceDirectory>war</warSourceDirectory>
+
 						</configuration>
 						<goals>
 							<goal>compile</goal>
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<runTarget>Smartexecutormonitor.html</runTarget>
+					<hostedWebapp>${webappDirectory}</hostedWebapp>
+					<!-- change it to point to correct server configuration file during 
+						development -->
+					<extraJvmArgs>-Dservers.config=resources/qa1_servers.xml</extraJvmArgs>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -172,7 +180,7 @@
 							<targetPath>WEB-INF/classes</targetPath>
 						</resource>
 					</webResources>
-					
+
 					<packagingExcludes>gwt-unitCache</packagingExcludes>
 
 					<warSourceDirectory>war</warSourceDirectory>

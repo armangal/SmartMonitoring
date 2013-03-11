@@ -94,7 +94,7 @@ public class JMXConnectorThread
             logger.info("Connection loop finished");
 
         } catch (Throwable e) {
-            logger.error("Error loading config:{}" + e.getMessage());
+            logger.error("Error loading config:{}", e.getMessage());
             logger.error(e.getMessage(), e);
             Runtime.getRuntime().exit(1);
         }
