@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.smexec</groupId>
-	<artifactId>monitoring</artifactId>
+	<artifactId>monitor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>Smart Executor Monitor</name>
@@ -25,12 +25,6 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.google.web.bindery</groupId>
-				<artifactId>requestfactory-server</artifactId>
-				<version>${gwt.version}</version>
-				<scope>runtime</scope>
-			</dependency>
-			<dependency>
 				<groupId>com.google.gwt</groupId>
 				<artifactId>gwt-user</artifactId>
 				<version>${gwt.version}</version>
@@ -41,6 +35,18 @@
 				<artifactId>gwt-servlet</artifactId>
 				<version>${gwt.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.allen-sauer.gwt.log</groupId>
+				<artifactId>gwt-log</artifactId>
+				<version>3.1.6</version>
+			</dependency>
+			<dependency>
+				<groupId>com.googlecode.gwt-charts</groupId>
+				<artifactId>gwt-charts</artifactId>
+				<version>0.9.9</version>
+			</dependency>
+
+			<!-- server -->
 
 			<dependency>
 				<groupId>junit</groupId>
@@ -77,17 +83,42 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<scope>runtime</scope>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-dev</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-servlet</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.allen-sauer.gwt.log</groupId>
+			<artifactId>gwt-log</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.gwt-charts</groupId>
+			<artifactId>gwt-charts</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -96,11 +127,13 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>1.1</version>
+				<version>2.5.1-rc1</version>
 				<executions>
 					<execution>
 						<configuration>
 							<module>com.smexec.monitor.Smartexecutormonitor</module>
+							<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+							<warSourceDirectory>war</warSourceDirectory>
 						</configuration>
 						<goals>
 							<goal>compile</goal>
@@ -114,15 +147,6 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>**/*GWTTest.java</exclude>
-					</excludes>
 				</configuration>
 			</plugin>
 			<!-- Maven WAR Plugin -->
@@ -142,6 +166,8 @@
 							<targetPath>WEB-INF/classes</targetPath>
 						</resource>
 					</webResources>
+					
+					<packagingExcludes>gwt-unitCache</packagingExcludes>
 
 					<warSourceDirectory>war</warSourceDirectory>
 
