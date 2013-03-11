@@ -163,3 +163,4 @@ pip-log.txt
 /test-classes
 /.gwt
 /target
+*.log
