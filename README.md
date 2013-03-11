@@ -9,8 +9,12 @@ The project might be extended to include more monitoring abilities, the basic on
 - GWT easy extendible application
 - Uses JMX to connect to running java processes.
 - Extensive statistics over the pools performance
-- JMX monitoring
--- Monitoring connected servers, memory,
+- JMX monitoring:
+-- Monitoring connected servers: memory, CPU, garbage collections.
+-- Give ability to get java process thread dump with one mouse click.
+-- Smart Thread Pool monitoring:
+--- Configured pools on all connected servers
+--- All statistics are aggregated, meaning if the same pool name is configured on tow or more servers, we will see one pool in UI with aggregated statistics. 
 - Can aggregate statistics from many servers at the same time.
  
 <h2>Members:</h2>
