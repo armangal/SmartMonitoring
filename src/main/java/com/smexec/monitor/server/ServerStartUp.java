@@ -11,8 +11,11 @@ import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
+import com.smexec.monitor.server.guice.GuiceUtils;
+import com.smexec.monitor.server.guice.MonitoringModule;
+import com.smexec.monitor.server.tasks.AbstractStateUpdaterThread;
 import com.smexec.monitor.server.tasks.JMXConnectorThread;
-import com.smexec.monitor.server.tasks.StateUpdaterThread;
 
 public class ServerStartUp
     implements ServletContextListener {
@@ -30,19 +33,27 @@ public class ServerStartUp
         }
     });
 
+    @Inject
+    private JMXConnectorThread jmxConnectorThread;
+
+    @Inject
+    private AbstractStateUpdaterThread stateUpdaterThread;
+
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
+        GuiceUtils.init(new MonitoringModule());
+
+        GuiceUtils.getInjector().injectMembers(this);
 
         logger.info("Starting JMXConnectorThread");
-        executor.scheduleAtFixedRate(new JMXConnectorThread(), 5, 30, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(jmxConnectorThread, 5, 30, TimeUnit.SECONDS);
 
         logger.info("Starting StateUpdaterThread");
-        executor.scheduleAtFixedRate(new StateUpdaterThread(), 20, 20, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(stateUpdaterThread, 20, 20, TimeUnit.SECONDS);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
         executor.shutdown();
-
     }
 }

@@ -36,7 +36,7 @@ import com.sun.management.OperatingSystemMXBean;
 @SuppressWarnings("restriction")
 public class JMXGeneralStats {
 
-    private static List<GCHistory> getGcHistory(List<GarbageCollectorMXBean> gcmbeans) {
+    private List<GCHistory> getGcHistory(List<GarbageCollectorMXBean> gcmbeans) {
         List<GCHistory> retList = new ArrayList<GCHistory>(0);
         for (GarbageCollectorMXBean gc : gcmbeans) {
             retList.add(new GCHistory(gc.getName(), gc.getCollectionCount(), gc.getCollectionTime(), gc.getMemoryPoolNames()));
@@ -44,7 +44,7 @@ public class JMXGeneralStats {
         return retList;
     }
 
-    private static String getMemoryState(List<MemoryPoolMXBean> pools) {
+    private String getMemoryState(List<MemoryPoolMXBean> pools) {
         try {
             StringBuilder sb = new StringBuilder();
             for (MemoryPoolMXBean p : pools) {
@@ -72,7 +72,7 @@ public class JMXGeneralStats {
      * @throws IOException
      * @throws MalformedObjectNameException
      */
-    public static void getMemoryStats(ServerStataus serverStataus)
+    public void getMemoryStats(ServerStataus serverStataus)
         throws MBeanException, AttributeNotFoundException, InstanceNotFoundException, ReflectionException, IOException, MalformedObjectNameException {
 
         MBeanServerConnection mbsc = serverStataus.getConnector().getMBeanServerConnection();

@@ -8,50 +8,52 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.smexec.monitor.shared.Alert;
-import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.GameServerClientStats;
-import com.smexec.monitor.shared.GameServerStats;
-import com.smexec.monitor.shared.LobbySeverStats;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.RefreshResult;
 
-public final class ConnectedServersState {
+public abstract class AbstractConnectedServersState<S extends ServerStataus, R extends RefreshResult<C>, C extends ConnectedServer> {
 
-    private static ConcurrentHashMap<Integer, ServerStataus> map = new ConcurrentHashMap<Integer, ServerStataus>();
+    private ConcurrentHashMap<Integer, S> map = new ConcurrentHashMap<Integer, S>();
 
     /**
      * Result ready to be used by clients
      */
-    private static RefreshResult result = new RefreshResult();
+    private RefreshResult<C> result = new RefreshResult<C>();
 
-    private static Map<Integer, Alert> alertsMap = new HashMap<Integer, Alert>();
+    private Map<Integer, Alert> alertsMap = new HashMap<Integer, Alert>();
 
-    private static AtomicInteger alertCounter = new AtomicInteger();
+    private AtomicInteger alertCounter = new AtomicInteger();
 
     /**
      * current most up-to-date configurations
      */
-    private static ServersConfig serversConfig;
+    private ServersConfig serversConfig;
 
-    public static ConcurrentHashMap<Integer, ServerStataus> getMap() {
+    /*
+     * (non-Javadoc)
+     * @see com.smexec.monitor.server.model.IConnectedServersState#getMap()
+     */
+    public ConcurrentHashMap<Integer, S> getMap() {
         return map;
     }
 
-    public static synchronized RefreshResult getRefreshResult() {
+    /*
+     * (non-Javadoc)
+     * @see com.smexec.monitor.server.model.IConnectedServersState#getRefreshResult()
+     */
+    public synchronized RefreshResult getRefreshResult() {
         return result;
     }
 
-    public static synchronized void mergeStats(ArrayList<ConnectedServer> servers) {
+    /*
+     * (non-Javadoc)
+     * @see com.smexec.monitor.server.model.IConnectedServersState#mergeStats(java.util.ArrayList)
+     */
+    public void mergeStats(ArrayList<C> servers) {
         HashMap<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>();
 
-        ChannelSeverStats aggregatedChannelSeverStats = new ChannelSeverStats();
-
-        LobbySeverStats lobbySeverStats = new LobbySeverStats();
-
-        GameServerClientStats gameServerClientStats = new GameServerClientStats();
-
-        for (ServerStataus ss : map.values()) {
+        for (S ss : map.values()) {
             if (ss.isConnected()) {
                 for (PoolsFeed pf : ss.getPoolFeedMap().values()) {
                     // go over all pools in each server
@@ -62,43 +64,30 @@ public final class ConnectedServersState {
                     }
                 }
 
-                // merge channel stats
-                if (ss.hasChannelSeverStats()) {
-                    aggregatedChannelSeverStats.merge(ss.getChannelSeverStats());
-                }
-
-                // merge lobby stats
-                if (ss.hasLobbySeverStats()) {
-                    if (ss.getLobbySeverStats().getLastChunk().getEndTime() > lobbySeverStats.getLastChunk().getEndTime()) {
-                        // replacing with more up-to-date stats
-                        lobbySeverStats = ss.getLobbySeverStats();
-                    }
-                }
-
-                if (ss.hasGameSeverStats()) {
-                    GameServerStats gameSeverStats = ss.getGameSeverStats();
-
-                    gameServerClientStats.getInterrupted().addAll(gameSeverStats.getInterrupted());
-                }
+                mergeExtraData(ss);
             }
         }
 
-        result = new RefreshResult(serversConfig.getName(), servers, poolFeedMap, aggregatedChannelSeverStats, lobbySeverStats, gameServerClientStats);
+        result = createNewRefreshResult(serversConfig.getName(), servers, poolFeedMap);
     }
 
-    public static void setServersConfig(ServersConfig sc) {
+    public abstract R createNewRefreshResult(String title, ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap);
+
+    public abstract void mergeExtraData(S ss);
+
+    public void setServersConfig(ServersConfig sc) {
         serversConfig = sc;
     }
 
-    public static ServersConfig getServersConfig() {
+    public ServersConfig getServersConfig() {
         return serversConfig;
     }
 
-    public static Map<Integer, Alert> getAlertsMap() {
+    public Map<Integer, Alert> getAlertsMap() {
         return alertsMap;
     }
 
-    public static LinkedList<Alert> getAlertsAfter(int alertId) {
+    public LinkedList<Alert> getAlertsAfter(int alertId) {
         LinkedList<Alert> alerts = new LinkedList<Alert>();
         for (int i = alertId + 1; i < Integer.MAX_VALUE; i++) {
             if (alertsMap.containsKey(i)) {
@@ -110,7 +99,7 @@ public final class ConnectedServersState {
         return alerts;
     }
 
-    public static void addAlert(Alert alert) {
+    public void addAlert(Alert alert) {
         alert.setId(alertCounter.getAndIncrement());
         alertsMap.put(alert.getId(), alert);
     }

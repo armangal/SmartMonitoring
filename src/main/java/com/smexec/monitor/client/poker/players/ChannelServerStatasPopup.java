@@ -1,4 +1,4 @@
-package com.smexec.monitor.client.players;
+package com.smexec.monitor.client.poker.players;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,20 +11,20 @@ import com.google.gwt.user.client.ui.HTML;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.LineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
-import com.smexec.monitor.shared.ChannelChunkStats;
-import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ChartFeed;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.GCHistory;
+import com.smexec.monitor.shared.poker.ChannelChunkStats;
+import com.smexec.monitor.shared.poker.ChannelSeverStats;
+import com.smexec.monitor.shared.poker.ConnectedServerPoker;
 
 public class ChannelServerStatasPopup
     extends DialogBox {
 
     private FlowPanel fp = new FlowPanel();
 
-    private ConnectedServer cs;
+    private ConnectedServerPoker cs;
 
-    public ChannelServerStatasPopup(ConnectedServer cs) {
+    public ChannelServerStatasPopup(ConnectedServerPoker cs) {
         this.cs = cs;
         setAnimationEnabled(true);
         setAutoHideEnabled(true);

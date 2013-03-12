@@ -9,10 +9,7 @@ import java.util.Map;
 import javax.management.remote.JMXConnector;
 
 import com.smexec.monitor.shared.CPUUtilization;
-import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.GCHistory;
-import com.smexec.monitor.shared.GameServerStats;
-import com.smexec.monitor.shared.LobbySeverStats;
 import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.StringFormatter;
@@ -45,22 +42,13 @@ public class ServerStataus {
 
     private long upTime;
 
-    /**
-     * if it's channle server, then here we will have the appropriate stats
-     */
-    private ChannelSeverStats channelSeverStats;
-
-    /**
-     * if it's lobby server, then here we will have the appropriate stats
-     */
-    private LobbySeverStats lobbySeverStats;
-
+    
     /**
      * stores locally CPU utilization
      */
     private CPUUtilization cpuUtilization = new CPUUtilization();
 
-    private GameServerStats gameServerStats;
+
 
     public ServerStataus(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
@@ -180,44 +168,7 @@ public class ServerStataus {
         this.upTime = uptime;
     }
 
-    /**
-     * returns channel server stats, will lazily initiate if needed
-     * 
-     * @return
-     */
-    public ChannelSeverStats getChannelSeverStats() {
-        if (channelSeverStats == null) {
-            this.channelSeverStats = new ChannelSeverStats();
-        }
-        return channelSeverStats;
-    }
-
-    public LobbySeverStats getLobbySeverStats() {
-        if (lobbySeverStats == null) {
-            this.lobbySeverStats = new LobbySeverStats();
-        }
-        return lobbySeverStats;
-    }
-
-    public boolean hasChannelSeverStats() {
-        return channelSeverStats != null;
-    }
-
-    public boolean hasLobbySeverStats() {
-        return lobbySeverStats != null;
-    }
-
-    public boolean hasGameSeverStats() {
-        return gameServerStats != null;
-    }
-
-    public GameServerStats getGameSeverStats() {
-        if (gameServerStats == null) {
-            this.gameServerStats = new GameServerStats();
-        }
-        return gameServerStats;
-    }
-
+   
     public CPUUtilization getCpuUtilization() {
         return cpuUtilization;
     }

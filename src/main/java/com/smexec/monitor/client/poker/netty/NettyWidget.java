@@ -1,4 +1,4 @@
-package com.smexec.monitor.client.netty;
+package com.smexec.monitor.client.poker.netty;
 
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 

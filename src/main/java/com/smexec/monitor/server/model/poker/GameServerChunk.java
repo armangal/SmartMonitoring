@@ -1,6 +1,8 @@
-package com.smexec.monitor.shared;
+package com.smexec.monitor.server.model.poker;
 
 import java.util.LinkedList;
+
+import com.smexec.monitor.shared.poker.Tournament;
 
 public class GameServerChunk {
 

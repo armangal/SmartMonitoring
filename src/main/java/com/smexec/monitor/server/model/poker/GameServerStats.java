@@ -1,12 +1,14 @@
-package com.smexec.monitor.shared;
+package com.smexec.monitor.server.model.poker;
 
 import java.util.LinkedList;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.smexec.monitor.server.model.ConnectedServersState;
+import com.google.inject.Inject;
+import com.smexec.monitor.server.guice.GuiceUtils;
+import com.smexec.monitor.server.model.AbstractConnectedServersState;
+import com.smexec.monitor.shared.Alert;
+import com.smexec.monitor.shared.poker.Tournament;
 
-public class GameServerStats
-    implements IsSerializable {
+public class GameServerStats {
 
     private LinkedList<GameServerChunk> chunks = new LinkedList<GameServerChunk>();
     /**
@@ -19,7 +21,12 @@ public class GameServerStats
      */
     private LinkedList<Tournament> cancelled = new LinkedList<Tournament>();
 
-    public GameServerStats() {}
+    @Inject
+    private AbstractConnectedServersState abstractConnectedServersState;
+
+    public GameServerStats() {
+        GuiceUtils.getInjector().injectMembers(this);
+    }
 
     public void addChunk(GameServerChunk gsc) {
         chunks.add(gsc);
@@ -37,7 +44,7 @@ public class GameServerStats
             for (Tournament t : gsc.getInterrupted()) {
                 Alert a = new Alert("Interrupted tournament:" + t.getCode(), t.getServerCode(), t.getDate());
                 a.setDetails(t.toString());
-                ConnectedServersState.addAlert(a);
+                abstractConnectedServersState.addAlert(a);
             }
         }
 
@@ -52,7 +59,7 @@ public class GameServerStats
             for (Tournament t : gsc.getCanceled()) {
                 Alert a = new Alert("Canceled tournament:" + t.getCode(), t.getServerCode(), t.getDate());
                 a.setDetails(t.toString());
-                ConnectedServersState.addAlert(a);
+                abstractConnectedServersState.addAlert(a);
             }
         }
     }

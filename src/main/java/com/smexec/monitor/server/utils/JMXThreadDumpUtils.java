@@ -10,15 +10,21 @@ import java.util.Date;
 
 import javax.management.MBeanServerConnection;
 
-import com.smexec.monitor.server.model.ConnectedServersState;
+import com.google.inject.Inject;
+import com.smexec.monitor.server.model.AbstractConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.RefreshResult;
 
 public class JMXThreadDumpUtils {
 
-    public static String getThreadDump(Integer serverCode) {
+    @Inject
+    private AbstractConnectedServersState<ServerStataus, RefreshResult<ConnectedServer>, ConnectedServer> abstractConnectedServersState;
+
+    public String getThreadDump(Integer serverCode) {
         StringBuilder response = new StringBuilder();
 
-        ServerStataus ss = ConnectedServersState.getMap().get(serverCode);
+        ServerStataus ss = abstractConnectedServersState.getMap().get(serverCode);
         if (ss == null || !ss.isConnected()) {
             response = new StringBuilder("Server:" + serverCode + " not found or not connected.");
         } else {

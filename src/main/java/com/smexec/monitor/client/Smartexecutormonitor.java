@@ -18,14 +18,15 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.smexec.monitor.client.alerts.AlertsWidget;
 import com.smexec.monitor.client.login.LoginWidget;
 import com.smexec.monitor.client.login.LoginWidget.LoggedInCallBack;
-import com.smexec.monitor.client.netty.NettyWidget;
-import com.smexec.monitor.client.players.PlayersWidget;
+import com.smexec.monitor.client.poker.netty.NettyWidget;
+import com.smexec.monitor.client.poker.players.PlayersWidget;
+import com.smexec.monitor.client.poker.tournaments.TournamentsWidget;
 import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.threads.ThreadPoolsWidget;
-import com.smexec.monitor.client.tournaments.TournamentsWidget;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.RefreshResult;
+import com.smexec.monitor.shared.poker.RefreshResultPoker;
 
 public class Smartexecutormonitor
     implements EntryPoint {
@@ -82,8 +83,8 @@ public class Smartexecutormonitor
 
                     serversWidget.update(servers);
                     poolsWidget.refresh(result.getPoolFeedMap());
-                    tournamentsWidget.update(result);
-                    playersWidget.update(result);
+                    tournamentsWidget.update((RefreshResultPoker) result);
+                    playersWidget.update((RefreshResultPoker) result);
                 } else {
                     Log.debug("Received EMPTY response.");
 

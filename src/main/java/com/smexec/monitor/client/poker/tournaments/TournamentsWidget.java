@@ -1,4 +1,4 @@
-package com.smexec.monitor.client.tournaments;
+package com.smexec.monitor.client.poker.tournaments;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,10 +14,10 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
-import com.smexec.monitor.shared.LobbyChunkStats;
-import com.smexec.monitor.shared.LobbySeverStats;
-import com.smexec.monitor.shared.RefreshResult;
-import com.smexec.monitor.shared.Tournament;
+import com.smexec.monitor.shared.poker.LobbyChunkStats;
+import com.smexec.monitor.shared.poker.LobbySeverStats;
+import com.smexec.monitor.shared.poker.RefreshResultPoker;
+import com.smexec.monitor.shared.poker.Tournament;
 
 public class TournamentsWidget
     extends AbstractMonitoringWidget {
@@ -52,7 +52,7 @@ public class TournamentsWidget
         interrupedPlayers.setTitle("Number of players affected by interruption");
     }
 
-    public void update(RefreshResult result) {
+    public void update(RefreshResultPoker result) {
 
         int i = 1;
         LobbySeverStats lss = result.getLobbySeverStats();

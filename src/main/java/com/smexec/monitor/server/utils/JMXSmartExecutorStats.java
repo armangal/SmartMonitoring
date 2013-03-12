@@ -22,7 +22,7 @@ import com.smexec.monitor.shared.PoolsFeed;
 
 public class JMXSmartExecutorStats {
 
-    public static void getSmartThreadPoolStats(ServerStataus ss)
+    public void getSmartThreadPoolStats(ServerStataus ss)
         throws AttributeNotFoundException, InstanceNotFoundException, MBeanException, ReflectionException, IOException, MalformedObjectNameException {
 
         Map<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>(0);

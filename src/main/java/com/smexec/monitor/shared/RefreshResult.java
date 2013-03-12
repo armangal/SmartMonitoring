@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class RefreshResult
+public class RefreshResult <C extends ConnectedServer>
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -17,38 +17,24 @@ public class RefreshResult
     /**
      * list of connected servers with internal stats
      */
-    private ArrayList<ConnectedServer> servers = new ArrayList<ConnectedServer>(0);
+    private ArrayList<C> servers = new ArrayList<C>(0);
 
     private String title;
 
-    private ChannelSeverStats channelSeverStats;
-
-    private LobbySeverStats lobbySeverStats;
-
-    private GameServerClientStats gameServerStats;
-
     public RefreshResult() {}
 
-    public RefreshResult(String title,
-                         ArrayList<ConnectedServer> servers,
-                         HashMap<String, PoolsFeed> poolFeedMap,
-                         ChannelSeverStats channelSeverStats,
-                         LobbySeverStats lobbySeverStats,
-                         GameServerClientStats gameServerStats) {
+    public RefreshResult(String title, ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap) {
         super();
         this.poolFeedMap = poolFeedMap;
         this.servers = servers;
         this.title = title;
-        this.channelSeverStats = channelSeverStats;
-        this.lobbySeverStats = lobbySeverStats;
-        this.gameServerStats = gameServerStats;
     }
 
     public HashMap<String, PoolsFeed> getPoolFeedMap() {
         return poolFeedMap;
     }
 
-    public ArrayList<ConnectedServer> getServers() {
+    public ArrayList<C> getServers() {
         return servers;
     }
 
@@ -56,15 +42,4 @@ public class RefreshResult
         return title;
     }
 
-    public ChannelSeverStats getChannelSeverStats() {
-        return channelSeverStats;
-    }
-
-    public LobbySeverStats getLobbySeverStats() {
-        return lobbySeverStats;
-    }
-
-    public GameServerClientStats getGameServerStats() {
-        return gameServerStats;
-    }
 }

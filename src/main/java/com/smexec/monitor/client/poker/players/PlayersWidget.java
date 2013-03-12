@@ -1,4 +1,4 @@
-package com.smexec.monitor.client.players;
+package com.smexec.monitor.client.poker.players;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,13 +17,14 @@ import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.LineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
-import com.smexec.monitor.shared.ChannelChunkStats;
-import com.smexec.monitor.shared.ChannelSeverStats;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.LobbyChunkStats;
-import com.smexec.monitor.shared.LobbySeverStats;
-import com.smexec.monitor.shared.RefreshResult;
+import com.smexec.monitor.shared.poker.ChannelChunkStats;
+import com.smexec.monitor.shared.poker.ChannelSeverStats;
+import com.smexec.monitor.shared.poker.ConnectedServerPoker;
+import com.smexec.monitor.shared.poker.LobbyChunkStats;
+import com.smexec.monitor.shared.poker.LobbySeverStats;
+import com.smexec.monitor.shared.poker.RefreshResultPoker;
 
 public class PlayersWidget
     extends AbstractMonitoringWidget {
@@ -35,15 +36,15 @@ public class PlayersWidget
 
     private FlexTable channelServers = new FlexTable();
     private ScrollPanel channelScrollPanel = new ScrollPanel();
-    private ArrayList<ConnectedServer> servers;
+    private ArrayList<ConnectedServerPoker> servers;
     private ClickHandler getServerStats = new ClickHandler() {
 
         @Override
         public void onClick(ClickEvent event) {
             String code = ((Widget) event.getSource()).getElement().getAttribute("code");
             if (servers != null && !servers.isEmpty()) {
-                ConnectedServer cs = null;
-                for (ConnectedServer cs1 : servers) {
+                ConnectedServerPoker cs = null;
+                for (ConnectedServerPoker cs1 : servers) {
                     if (cs1.getServerCode().equals(Integer.valueOf(code))) {
                         cs = cs1;
                         break;
@@ -74,9 +75,9 @@ public class PlayersWidget
         channelScrollPanel.setHeight("100%");
     }
 
-    public void update(RefreshResult result) {
+    public void update(RefreshResultPoker result) {
         ChannelSeverStats css = result.getChannelSeverStats();
-        ArrayList<ConnectedServer> servers = result.getServers();
+        ArrayList<ConnectedServerPoker> servers = result.getServers();
         LobbySeverStats lss = result.getLobbySeverStats();
 
         this.servers = servers;
@@ -112,13 +113,13 @@ public class PlayersWidget
 
     }
 
-    private void updateChannelServers(ArrayList<ConnectedServer> servers) {
+    private void updateChannelServers(ArrayList<ConnectedServerPoker> servers) {
         channelServers.removeFromParent();
         channelServers = new FlexTable();
         channelScrollPanel.add(channelServers);
         channelServers.getElement().setId("infoTable");
 
-        channelServers.setText(0, 0, "Server (" + servers.size() + ")" );
+        channelServers.setText(0, 0, "Server (" + servers.size() + ")");
         channelServers.setText(0, 1, "Online");
         channelServers.setText(0, 2, "Dropped");
         channelServers.setText(0, 3, "New");
@@ -134,7 +135,7 @@ public class PlayersWidget
                 return o1.getServerCode() - o2.getServerCode();
             }
         });
-        for (ConnectedServer cs : servers) {
+        for (ConnectedServerPoker cs : servers) {
             if (cs.getStatus() && cs.isChannelServer()) {
                 col = 0;
                 ChannelSeverStats css = cs.getChannelSeverStats();
@@ -238,7 +239,6 @@ public class PlayersWidget
         playersTable.setText(i++, 0, "Fun Table");
         playersTable.setText(i++, 0, "Fun Active Tab.");
         playersTable.setText(i++, 0, "Fun Player");
-
 
         playersTable.setText(i++, 0, "S.P. Rooms");
         playersTable.setText(i++, 0, "S.P. Players");

@@ -1,13 +1,14 @@
-package com.smexec.monitor.server.utils;
+package com.smexec.monitor.server.utils.poker;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 
-import com.smexec.monitor.server.model.ServerStataus;
-import com.smexec.monitor.shared.ChannelChunkStats;
-import com.smexec.monitor.shared.ChannelSeverStats;
+import com.smexec.monitor.server.model.poker.ServerStatausPoker;
+import com.smexec.monitor.server.utils.JMXUtils;
+import com.smexec.monitor.shared.poker.ChannelChunkStats;
+import com.smexec.monitor.shared.poker.ChannelSeverStats;
 
 public class JMXChannelServerStats {
 
@@ -16,7 +17,7 @@ public class JMXChannelServerStats {
      * 
      * @param ss
      */
-    public static void getChannelStatistics(ServerStataus ss) {
+    public static void getChannelStatistics(ServerStatausPoker ss) {
 
         try {
             JMXConnector jmxConnector = ss.getConnector();

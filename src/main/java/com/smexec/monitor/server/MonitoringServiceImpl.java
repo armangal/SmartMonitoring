@@ -8,12 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
 import com.smexec.monitor.client.MonitoringService;
-import com.smexec.monitor.server.model.ConnectedServersState;
+import com.smexec.monitor.server.guice.GuiceUtils;
+import com.smexec.monitor.server.model.AbstractConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.Alert;
+import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.RefreshResult;
 
@@ -29,11 +32,21 @@ public class MonitoringServiceImpl
 
     private static final String AUTHENTICATED = "authenticated";
 
+    @Inject
+    private AbstractConnectedServersState<ServerStataus, RefreshResult<ConnectedServer>, ConnectedServer> abstractConnectedServersState;
+
+    @Inject
+    private JMXThreadDumpUtils jmxThreadDumpUtils;
+
+    public MonitoringServiceImpl() {
+        GuiceUtils.getInjector().injectMembers(this);
+    }
+
     @Override
     public FullRefreshResult refresh(int lastAlertId) {
         checkAuthenticated();
-        RefreshResult refreshResult = ConnectedServersState.getRefreshResult();
-        LinkedList<Alert> alertsAfter = ConnectedServersState.getAlertsAfter(lastAlertId);
+        RefreshResult<ConnectedServer> refreshResult = abstractConnectedServersState.getRefreshResult();
+        LinkedList<Alert> alertsAfter = abstractConnectedServersState.getAlertsAfter(lastAlertId);
         FullRefreshResult frr = new FullRefreshResult(refreshResult, alertsAfter);
         return frr;
     }
@@ -41,13 +54,13 @@ public class MonitoringServiceImpl
     @Override
     public String getThreadDump(Integer serverCode) {
         checkAuthenticated();
-        return JMXThreadDumpUtils.getThreadDump(serverCode);
+        return jmxThreadDumpUtils.getThreadDump(serverCode);
     }
 
     @Override
     public String getGCHistory(Integer serverCode) {
         checkAuthenticated();
-        ServerStataus serverStataus = ConnectedServersState.getMap().get(serverCode);
+        ServerStataus serverStataus = abstractConnectedServersState.getMap().get(serverCode);
         if (serverStataus != null) {
             return serverStataus.getGCHistory();
         } else {
@@ -62,7 +75,7 @@ public class MonitoringServiceImpl
         HttpSession session = getThreadLocalRequest().getSession();
         userName = userName.trim();
         password = password.trim();
-        ServersConfig sc = ConnectedServersState.getServersConfig();
+        ServersConfig sc = abstractConnectedServersState.getServersConfig();
         if (sc.getUsername().equalsIgnoreCase(userName) && sc.getPassword().equals(password)) {
             session.setAttribute(AUTHENTICATED, Boolean.TRUE);
             logger.info("Authnticated user:{}, pass:{}", userName, password);

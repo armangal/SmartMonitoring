@@ -21,12 +21,6 @@ public class ConnectedServer
     private MemoryUsage memoryUsage;
     private ArrayList<GCHistory> gcHistories;
     private long upTime;
-    private boolean channelServer;
-
-    /**
-     * here we communicate none aggregated stats in order to be able to show them separatelly per server.
-     */
-    private ChannelSeverStats channelSeverStats;
 
     private CPUUtilization cpuUtilization;
 
@@ -40,7 +34,6 @@ public class ConnectedServer
                            MemoryUsage memoryUsage,
                            ArrayList<GCHistory> gcHistories,
                            long upTime,
-                           ChannelSeverStats channelSeverStats,
                            CPUUtilization cpuUtilization) {
         super();
         this.name = name;
@@ -51,9 +44,7 @@ public class ConnectedServer
         this.memoryUsage = memoryUsage;
         this.gcHistories = gcHistories;
         this.upTime = upTime;
-        this.channelSeverStats = channelSeverStats;
         this.cpuUtilization = cpuUtilization;
-        this.channelServer = channelSeverStats != null;
     }
 
     public String getName() {
@@ -88,18 +79,6 @@ public class ConnectedServer
         return upTime;
     }
 
-    public boolean isChannelServer() {
-        return channelServer;
-    }
-
-    public void setChannelServer(boolean channelServer) {
-        this.channelServer = channelServer;
-    }
-
-    public ChannelSeverStats getChannelSeverStats() {
-        return channelSeverStats;
-    }
-
     public CPUUtilization getCpuUtilization() {
         return cpuUtilization;
     }
@@ -123,10 +102,6 @@ public class ConnectedServer
                .append(gcHistories)
                .append(", upTime=")
                .append(upTime)
-               .append(", channelServer=")
-               .append(channelServer)
-               .append(", channelSeverStats=")
-               .append(channelSeverStats)
                .append(", cpuUtilization=")
                .append(cpuUtilization)
                .append("]");

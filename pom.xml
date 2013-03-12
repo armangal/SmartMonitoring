@@ -76,6 +76,19 @@
 				<version>1.2.14</version>
 				<scope>compile</scope>
 			</dependency>
+			<!-- Google Guice Dependencies -->
+			<dependency>
+				<groupId>com.google.inject</groupId>
+				<artifactId>guice</artifactId>
+				<version>3.0</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.google.inject.extensions</groupId>
+				<artifactId>guice-assistedinject</artifactId>
+				<version>3.0</version>
+				<scope>compile</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -99,6 +112,17 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Google Guice Dependencies -->
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-assistedinject</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -187,7 +211,7 @@
 
 					<webXml>war\WEB-INF\web.xml</webXml>
 
-					<warName>ROOT</warName>
+					<warName>monitoring</warName>
 				</configuration>
 			</plugin>
 		</plugins>

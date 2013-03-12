@@ -1,4 +1,4 @@
-package com.smexec.monitor.shared;
+package com.smexec.monitor.shared.poker;
 
 import java.util.Collections;
 import java.util.Comparator;
