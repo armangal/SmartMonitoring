@@ -14,36 +14,5 @@
 			<password>password</password>
 		</server>
 
-		<server>
-			<name>EDI_CHANNEL</name>
-			<serverCode>17</serverCode>
-			<ip>192.168.203.110</ip>
-			<jmxPort>9010</jmxPort>
-			<authenticate>false</authenticate>
-			<username>user</username>
-			<password>password</password>
-		</server>
-
-		<server>
-			<name>EDI_LOBBY</name>
-			<serverCode>18</serverCode>
-			<ip>192.168.203.110</ip>
-			<jmxPort>9020</jmxPort>
-			<authenticate>false</authenticate>
-			<username>user</username>
-			<password>password</password>
-		</server>
-
-		
-		<!-- <server> <name>4444</name> <serverCode>18</serverCode> <ip>127.0.0.1</ip> 
-			<jmxPort>9040</jmxPort> <authenticate>false</authenticate> <username>user</username> 
-			<password>password</password> </server> <server> <name>5555</name> <serverCode>19</serverCode> 
-			<ip>127.0.0.1</ip> <jmxPort>9050</jmxPort> <authenticate>false</authenticate> 
-			<username>user</username> <password>password</password> </server> <server> 
-			<name>666</name> <serverCode>20</serverCode> <ip>127.0.0.1</ip> <jmxPort>9060</jmxPort> 
-			<authenticate>false</authenticate> <username>user</username> <password>password</password> 
-			</server> <server> <name>7777</name> <serverCode>21</serverCode> <ip>127.0.0.1</ip> 
-			<jmxPort>9070</jmxPort> <authenticate>false</authenticate> <username>user</username> 
-			<password>password</password> </server> -->
 	</servers>
 </ServersConfig>
