@@ -42,13 +42,10 @@ public class ServerStataus {
 
     private long upTime;
 
-    
     /**
      * stores locally CPU utilization
      */
     private CPUUtilization cpuUtilization = new CPUUtilization();
-
-
 
     public ServerStataus(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
@@ -126,6 +123,10 @@ public class ServerStataus {
         return memoryUsage.size() > 0 ? memoryUsage.getLast() : null;
     }
 
+    public LinkedList<MemoryUsage> getMemoryUsage() {
+        return memoryUsage;
+    }
+
     public ServerConfig getServerConfig() {
         return serverConfig;
     }
@@ -168,7 +169,6 @@ public class ServerStataus {
         this.upTime = uptime;
     }
 
-   
     public CPUUtilization getCpuUtilization() {
         return cpuUtilization;
     }

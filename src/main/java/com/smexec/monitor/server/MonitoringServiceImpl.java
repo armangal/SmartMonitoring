@@ -18,6 +18,7 @@ import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
+import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.RefreshResult;
 
 /**
@@ -95,5 +96,16 @@ public class MonitoringServiceImpl
 
             throw new SecurityException("Session not authenticated, please refresh the browser.");
         }
+    }
+
+    @Override
+    public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode) {
+        checkAuthenticated();
+        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
+        if (serverStataus != null) {
+            return serverStataus.getMemoryUsage();
+        }
+        logger.warn("can't find server with code:{} for memory stats", serverCode);
+        return null;
     }
 }

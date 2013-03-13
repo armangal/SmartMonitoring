@@ -22,6 +22,7 @@ import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.GCHistory;
+import com.smexec.monitor.shared.MemoryUsage;
 
 public class ServerStatasPopup
     extends DialogBox {
@@ -60,7 +61,6 @@ public class ServerStatasPopup
     @Override
     public void center() {
         super.center();
-        updateMemoryChart();
         updateCpuChart();
         Button threadDump = new Button("Get Thread Dump");
         fp.add(threadDump);
@@ -93,6 +93,18 @@ public class ServerStatasPopup
             }
         });
 
+        service.getMemoryStats(cs.getServerCode(), new AsyncCallback<LinkedList<MemoryUsage>>() {
+
+            @Override
+            public void onSuccess(LinkedList<MemoryUsage> result) {
+                updateMemoryChart(result);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Log.error("error while getting server memory stats:" + caught.getMessage());
+            };
+        });
     }
 
     private void updateCpuChart() {
@@ -115,14 +127,20 @@ public class ServerStatasPopup
         cpuChart.updateChart(cpuHistory, true);
     }
 
-    private void updateMemoryChart() {
-        ChartFeed memoryHistory = new ChartFeed(1, 2);
+    private void updateMemoryChart(LinkedList<MemoryUsage> result) {
+
+        if (result == null) {
+            Log.warn("Empty result in memmory stats");
+            return;
+        }
+
+        ChartFeed memoryHistory = new ChartFeed(result.size(), 2);
         for (int k = 0; k < 2; k++) {
-            for (int j = 0; j < 1; j++) {
+            for (int j = 0; j < result.size(); j++) {
                 if (k == 0) {
-                    memoryHistory.getValues()[k][j] = 5;
+                    memoryHistory.getValues()[k][j] = (long) result.get(j).getPercentage();
                 } else if (k == 1) {
-                    memoryHistory.getValues()[k][j] = 1;
+                    memoryHistory.getValues()[k][j] = j;
                 }
             }
         }

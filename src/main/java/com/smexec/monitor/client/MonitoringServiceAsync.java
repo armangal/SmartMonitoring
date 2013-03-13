@@ -1,7 +1,10 @@
 package com.smexec.monitor.client;
 
+import java.util.LinkedList;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smexec.monitor.shared.FullRefreshResult;
+import com.smexec.monitor.shared.MemoryUsage;
 
 public interface MonitoringServiceAsync {
 
@@ -12,4 +15,6 @@ public interface MonitoringServiceAsync {
     void getGCHistory(Integer serverCode, AsyncCallback<String> callback);
 
     void authenticate(String userName, String password, AsyncCallback<Boolean> callback);
+
+    void getMemoryStats(Integer serverCode, AsyncCallback<LinkedList<MemoryUsage>> callback);
 }
