@@ -3,6 +3,8 @@ package com.smexec.monitor.client.login;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -31,6 +33,16 @@ public class LoginWidget
     private PasswordTextBox password = new PasswordTextBox();
     private Button login = new Button("Login");
 
+    private KeyPressHandler enterhandler = new KeyPressHandler() {
+
+        @Override
+        public void onKeyPress(KeyPressEvent event) {
+            if (event.getUnicodeCharCode() == 13) {
+                login();
+            }
+        }
+    };
+
     public LoginWidget() {
         if (!GWT.isScript()) {
             userName.setText("admin");
@@ -49,29 +61,37 @@ public class LoginWidget
         fp.add(password);
         fp.add(login);
 
+        password.addKeyPressHandler(enterhandler);
+        userName.addKeyPressHandler(enterhandler);
+
         login.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-                service.authenticate(userName.getText(), password.getText(), new AsyncCallback<Boolean>() {
-
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        if (result.booleanValue() == true) {
-                            callBack.loggedIn();
-                        } else {
-                            Window.alert("Can't login");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        Window.alert(caught.getMessage());
-                    }
-                });
+                login();
             }
+
         });
 
+    }
+
+    private void login() {
+        service.authenticate(userName.getText(), password.getText(), new AsyncCallback<Boolean>() {
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result.booleanValue() == true) {
+                    callBack.loggedIn();
+                } else {
+                    Window.alert("Can't login");
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+        });
     }
 
     public void registerCallBack(LoggedInCallBack callBack) {

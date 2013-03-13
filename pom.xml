@@ -205,7 +205,9 @@
 						</resource>
 					</webResources>
 
-					<packagingExcludes>gwt-unitCache</packagingExcludes>
+					<packagingExcludes>gwt-unitCache,*.log,**/.gitignore</packagingExcludes>
+
+					<warSourceExcludes>gwt-unitCache,*.log,**/.gitignore</warSourceExcludes>
 
 					<warSourceDirectory>war</warSourceDirectory>
 

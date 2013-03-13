@@ -49,7 +49,7 @@
   	
    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
      <!--errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/-->
-     <param name="File" value="monitoring_server.log"/>
+     <param name="File" value="logs/monitoring_server.log"/>
      <param name="Append" value="true"/>
      <param name="MaxFileSize" value="10000KB"/>
      <param name="MaxBackupIndex" value="10"/>
