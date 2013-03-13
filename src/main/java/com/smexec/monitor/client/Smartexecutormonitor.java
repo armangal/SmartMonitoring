@@ -22,7 +22,7 @@ import com.smexec.monitor.client.poker.netty.NettyWidget;
 import com.smexec.monitor.client.poker.players.PlayersWidget;
 import com.smexec.monitor.client.poker.tournaments.TournamentsWidget;
 import com.smexec.monitor.client.servers.ServersWidget;
-import com.smexec.monitor.client.threads.ThreadPoolsWidget;
+import com.smexec.monitor.client.smartpool.ThreadPoolsWidget;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.RefreshResult;
@@ -77,6 +77,7 @@ public class Smartexecutormonitor
 
                 RefreshResult result = fullResult.getRefreshResult();
                 title.setHTML("<h1>" + result.getTitle() + "</h1>");
+                Window.setTitle(result.getTitle());
                 ArrayList<ConnectedServer> servers = result.getServers();
                 if (servers != null && !servers.isEmpty()) {
                     Log.debug("Received FULL refresh response.");
