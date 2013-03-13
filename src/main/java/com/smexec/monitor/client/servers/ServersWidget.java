@@ -3,6 +3,8 @@ package com.smexec.monitor.client.servers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
@@ -42,27 +44,14 @@ public class ServersWidget
         @Override
         public void onClick(ClickEvent event) {
             String code = ((Widget) event.getSource()).getElement().getAttribute("code");
-            service.getThreadDump(Integer.valueOf(code), new AsyncCallback<String>() {
+            ConnectedServer cs = serversMap.get(Integer.valueOf(code));
+            if (cs != null) {
+                ServerStatasPopup ssp = new ServerStatasPopup(cs);
+                ssp.center();
+            } else {
+                Window.alert("Server couldn't be found:" + code);
+            }
 
-                @Override
-                public void onSuccess(String result) {
-                    DialogBox db = new DialogBox();
-                    db.setAnimationEnabled(true);
-                    db.setAutoHideEnabled(true);
-                    db.setModal(true);
-                    db.setSize("900px", "600px");
-                    TextArea textArea = new TextArea();
-                    textArea.setText(result);
-                    textArea.setSize("990px", "590px");
-                    db.setWidget(textArea);
-                    db.center();
-                }
-
-                @Override
-                public void onFailure(Throwable caught) {
-                    Window.alert("Can't get thread dump:" + caught.getMessage());
-                }
-            });
         }
     };
 
@@ -103,6 +92,8 @@ public class ServersWidget
         }
     };
 
+    private Map<Integer, ConnectedServer> serversMap = new HashMap<Integer, ConnectedServer>(0);
+
     public ServersWidget() {
 
         super("Connected Servers");
@@ -115,6 +106,8 @@ public class ServersWidget
 
     public void update(ArrayList<ConnectedServer> list) {
         Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
+        serversMap.clear();
+
         sp.clear();
 
         FlexTable ft = new FlexTable();
@@ -152,11 +145,13 @@ public class ServersWidget
         ft.getRowFormatter().getElement(i++).setId("th");
 
         for (ConnectedServer cs : list) {
+            serversMap.put(cs.getServerCode(), cs);
+
             j = 0;
             if (cs.getStatus()) {
                 final HTML name = new HTML("<a href=#>" + cs.getServerCode() + "," + cs.getName() + "</a>");
                 name.getElement().setAttribute("code", "" + cs.getServerCode());
-                name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort() + "\nClick to get Thread Dump");
+                name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort() + "\nClick for more info");
                 name.addMouseOverHandler(handCursor);
 
                 name.addClickHandler(getThreadDump);
@@ -198,7 +193,7 @@ public class ServersWidget
                     style.setFontWeight(FontWeight.BOLDER);
                     style.setColor("white");
                 }
-                
+
                 if (cs.getMemoryUsage().getPercentage() > 90) {
                     ft.getRowFormatter().getElement(i).setId("memoryVeryHigh");
                 } else if (cs.getMemoryUsage().getPercentage() > 80) {
@@ -209,11 +204,7 @@ public class ServersWidget
 
                 HTML cpu = new HTML(cs.getCpuUtilization().getLastPercent() + "%");
                 ft.setWidget(i++, j++, cpu);
-                StringBuffer cpuStr = new StringBuffer();
-                for (Double d : cs.getCpuUtilization().getPercentList()) {
-                    cpuStr.append(d).append("%\n");
-                }
-                cpu.setTitle(cpuStr.toString());
+                
             } else {
                 final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
                 name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort());

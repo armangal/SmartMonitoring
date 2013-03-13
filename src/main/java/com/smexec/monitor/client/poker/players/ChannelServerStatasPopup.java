@@ -87,7 +87,7 @@ public class ChannelServerStatasPopup
             }
         }
 
-        Log.debug("ChannelServerStatasPopup.Updating drops, values size:" + dropsAndConnections.getValuesLenght());
+        Log.debug("ServerStatasPopup.Updating drops, values size:" + dropsAndConnections.getValuesLenght());
         MonitoringLineChart reconnected = new MonitoringLineChart(new ILineType[] {PlayersLineType.DROPPED, PlayersLineType.OPENED},
                                                                   "Players",
                                                                   "Time",
@@ -109,7 +109,7 @@ public class ChannelServerStatasPopup
                 }
             }
         }
-        Log.debug("ChannelServerStatasPopup.Updating connected, values size:" + online.getValuesLenght());
+        Log.debug("ServerStatasPopup.Updating connected, values size:" + online.getValuesLenght());
         MonitoringLineChart connected = new MonitoringLineChart(new ILineType[] {PlayersLineType.CONNECTED}, "Players", "Time", "Online Players");
         connected.setStyleName("playersChart");
         fp.add(connected);
