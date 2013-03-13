@@ -11,7 +11,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.server.guice.GuiceUtils;
-import com.smexec.monitor.server.model.AbstractConnectedServersState;
+import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
@@ -33,7 +33,7 @@ public class MonitoringServiceImpl
     private static final String AUTHENTICATED = "authenticated";
 
     @Inject
-    private AbstractConnectedServersState<ServerStataus, RefreshResult<ConnectedServer>, ConnectedServer> abstractConnectedServersState;
+    private IConnectedServersState connectedServersState;
 
     @Inject
     private JMXThreadDumpUtils jmxThreadDumpUtils;
@@ -45,8 +45,8 @@ public class MonitoringServiceImpl
     @Override
     public FullRefreshResult refresh(int lastAlertId) {
         checkAuthenticated();
-        RefreshResult<ConnectedServer> refreshResult = abstractConnectedServersState.getRefreshResult();
-        LinkedList<Alert> alertsAfter = abstractConnectedServersState.getAlertsAfter(lastAlertId);
+        RefreshResult<ConnectedServer> refreshResult = connectedServersState.getRefreshResult();
+        LinkedList<Alert> alertsAfter = connectedServersState.getAlertsAfter(lastAlertId);
         FullRefreshResult frr = new FullRefreshResult(refreshResult, alertsAfter);
         return frr;
     }
@@ -60,7 +60,7 @@ public class MonitoringServiceImpl
     @Override
     public String getGCHistory(Integer serverCode) {
         checkAuthenticated();
-        ServerStataus serverStataus = abstractConnectedServersState.getMap().get(serverCode);
+        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
         if (serverStataus != null) {
             return serverStataus.getGCHistory();
         } else {
@@ -75,7 +75,7 @@ public class MonitoringServiceImpl
         HttpSession session = getThreadLocalRequest().getSession();
         userName = userName.trim();
         password = password.trim();
-        ServersConfig sc = abstractConnectedServersState.getServersConfig();
+        ServersConfig sc = connectedServersState.getServersConfig();
         if (sc.getUsername().equalsIgnoreCase(userName) && sc.getPassword().equals(password)) {
             session.setAttribute(AUTHENTICATED, Boolean.TRUE);
             logger.info("Authnticated user:{}, pass:{}", userName, password);
