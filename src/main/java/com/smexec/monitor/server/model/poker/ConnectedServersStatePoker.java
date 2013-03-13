@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.smexec.monitor.server.model.AbstractConnectedServersState;
+import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.poker.ChannelSeverStats;
 import com.smexec.monitor.shared.poker.ConnectedServerPoker;
@@ -12,7 +13,8 @@ import com.smexec.monitor.shared.poker.LobbySeverStats;
 import com.smexec.monitor.shared.poker.RefreshResultPoker;
 
 public class ConnectedServersStatePoker
-    extends AbstractConnectedServersState<ServerStatausPoker, RefreshResultPoker, ConnectedServerPoker> {
+    extends AbstractConnectedServersState<ServerStatausPoker, RefreshResultPoker, ConnectedServerPoker>
+    implements IConnectedServersState<ServerStatausPoker, ConnectedServerPoker> {
 
     ChannelSeverStats aggregatedChannelSeverStats = new ChannelSeverStats();
 

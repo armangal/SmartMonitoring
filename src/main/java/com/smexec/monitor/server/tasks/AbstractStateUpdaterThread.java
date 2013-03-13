@@ -15,13 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.smexec.monitor.server.model.AbstractConnectedServersState;
+import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
-public abstract class AbstractStateUpdaterThread<T extends ServerStataus, R extends Refresher<T>, C extends ConnectedServer, RR extends RefreshResult<C>>
-    implements Runnable {
+public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R extends Refresher<S>, C extends ConnectedServer, RR extends RefreshResult<C>>
+    implements IStateUpdaterThread {
 
     private static Logger logger = LoggerFactory.getLogger(StateUpdaterThread.class);
 
@@ -37,7 +37,7 @@ public abstract class AbstractStateUpdaterThread<T extends ServerStataus, R exte
     });
 
     @Inject
-    private AbstractConnectedServersState<T, RR, C> abstractConnectedServersState;
+    private IConnectedServersState connectedServersState;
 
     @Override
     public void run() {
@@ -48,25 +48,25 @@ public abstract class AbstractStateUpdaterThread<T extends ServerStataus, R exte
             System.out.println("Refreshing stats for all servers");
             ArrayList<C> serversList = new ArrayList<C>(0);
 
-            CompletionService<T> compService = new ExecutorCompletionService<T>(threadPool);
+            CompletionService<S> compService = new ExecutorCompletionService<S>(threadPool);
 
-            Collection<T> values = abstractConnectedServersState.getMap().values();
+            Collection<S> values = connectedServersState.getMap().values();
             // scheduling update threads
-            for (T ss : values) {
-                compService.submit((Callable<T>) getRefresher(ss));
+            for (S ss : values) {
+                compService.submit((Callable<S>) getRefresher(ss));
             }
 
             // Waiting for all threads to finish
             for (int i = 0; i < values.size(); i++) {
-                Future<T> take = compService.take();
-                T ss = take.get();
+                Future<S> take = compService.take();
+                S ss = take.get();
                 System.out.println("Finished updating:" + ss.getServerConfig().getName());
                 C cs = getConnectedServer(ss);
                 serversList.add(cs);
             }
 
             // finished querying all connected servers, now merging the results.
-            abstractConnectedServersState.mergeStats(serversList);
+            connectedServersState.mergeStats(serversList);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -76,7 +76,7 @@ public abstract class AbstractStateUpdaterThread<T extends ServerStataus, R exte
         }
     }
 
-    public abstract R getRefresher(T ss);
+    public abstract R getRefresher(S ss);
 
-    public abstract C getConnectedServer(T ss);
+    public abstract C getConnectedServer(S ss);
 }

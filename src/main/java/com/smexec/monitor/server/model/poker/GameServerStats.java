@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.AbstractConnectedServersState;
+import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.poker.Tournament;
 
@@ -22,7 +23,7 @@ public class GameServerStats {
     private LinkedList<Tournament> cancelled = new LinkedList<Tournament>();
 
     @Inject
-    private AbstractConnectedServersState abstractConnectedServersState;
+    private IConnectedServersState abstractConnectedServersState;
 
     public GameServerStats() {
         GuiceUtils.getInjector().injectMembers(this);

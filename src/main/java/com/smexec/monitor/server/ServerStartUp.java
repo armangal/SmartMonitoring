@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
-import com.smexec.monitor.server.guice.MonitoringModule;
-import com.smexec.monitor.server.tasks.AbstractStateUpdaterThread;
-import com.smexec.monitor.server.tasks.JMXConnectorThread;
+import com.smexec.monitor.server.guice.MonitoringModulePoker;
+import com.smexec.monitor.server.tasks.IJMXConnectorThread;
+import com.smexec.monitor.server.tasks.IStateUpdaterThread;
 
 public class ServerStartUp
     implements ServletContextListener {
@@ -34,18 +34,18 @@ public class ServerStartUp
     });
 
     @Inject
-    private JMXConnectorThread jmxConnectorThread;
+    private IJMXConnectorThread jmxConnectorThread;
 
     @Inject
-    private AbstractStateUpdaterThread stateUpdaterThread;
+    private IStateUpdaterThread stateUpdaterThread;
 
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
-        GuiceUtils.init(new MonitoringModule());
+        GuiceUtils.init(new MonitoringModulePoker());
 
         GuiceUtils.getInjector().injectMembers(this);
 
-        logger.info("Starting JMXConnectorThread");
+        logger.info("Starting AbstractJMXConnectorThread");
         executor.scheduleAtFixedRate(jmxConnectorThread, 5, 30, TimeUnit.SECONDS);
 
         logger.info("Starting StateUpdaterThread");

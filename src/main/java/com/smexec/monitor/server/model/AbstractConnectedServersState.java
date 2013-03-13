@@ -14,7 +14,7 @@ import com.smexec.monitor.shared.RefreshResult;
 
 public abstract class AbstractConnectedServersState<S extends ServerStataus, R extends RefreshResult<C>, C extends ConnectedServer> {
 
-    private ConcurrentHashMap<Integer, S> map = new ConcurrentHashMap<Integer, S>();
+    private ConcurrentHashMap<Integer, S> connectedServersMap = new ConcurrentHashMap<Integer, S>();
 
     /**
      * Result ready to be used by clients
@@ -25,35 +25,27 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
 
     private AtomicInteger alertCounter = new AtomicInteger();
 
+    public abstract R createNewRefreshResult(String title, ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap);
+
+    public abstract void mergeExtraData(S ss);
+
     /**
      * current most up-to-date configurations
      */
     private ServersConfig serversConfig;
 
-    /*
-     * (non-Javadoc)
-     * @see com.smexec.monitor.server.model.IConnectedServersState#getMap()
-     */
     public ConcurrentHashMap<Integer, S> getMap() {
-        return map;
+        return connectedServersMap;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.smexec.monitor.server.model.IConnectedServersState#getRefreshResult()
-     */
-    public synchronized RefreshResult getRefreshResult() {
+    public synchronized RefreshResult<C> getRefreshResult() {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.smexec.monitor.server.model.IConnectedServersState#mergeStats(java.util.ArrayList)
-     */
     public void mergeStats(ArrayList<C> servers) {
         HashMap<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>();
 
-        for (S ss : map.values()) {
+        for (S ss : connectedServersMap.values()) {
             if (ss.isConnected()) {
                 for (PoolsFeed pf : ss.getPoolFeedMap().values()) {
                     // go over all pools in each server
@@ -70,10 +62,6 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
 
         result = createNewRefreshResult(serversConfig.getName(), servers, poolFeedMap);
     }
-
-    public abstract R createNewRefreshResult(String title, ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap);
-
-    public abstract void mergeExtraData(S ss);
 
     public void setServersConfig(ServersConfig sc) {
         serversConfig = sc;

@@ -21,17 +21,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.smexec.monitor.server.model.AbstractConnectedServersState;
+import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
-import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.RefreshResult;
 
-public class JMXConnectorThread
-    implements Runnable {
+public abstract class AbstractJMXConnectorThread<SS extends ServerStataus>
+    implements IJMXConnectorThread {
 
-    private static Logger logger = LoggerFactory.getLogger(JMXConnectorThread.class);
+    public static Logger logger = LoggerFactory.getLogger(AbstractJMXConnectorThread.class);
 
     private static ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
 
@@ -45,7 +43,11 @@ public class JMXConnectorThread
     });
 
     @Inject
-    private AbstractConnectedServersState<ServerStataus, RefreshResult<ConnectedServer>, ConnectedServer> abstractConnectedServersState;
+    private IConnectedServersState connectedServersState;
+
+    public AbstractJMXConnectorThread() {
+        logger.info("AbstractJMXConnectorThread");
+    }
 
     private class Connector
         implements Runnable {
@@ -82,12 +84,12 @@ public class JMXConnectorThread
             serversConfig.validate();
 
             logger.info("Initilized:{}", serversConfig);
-            abstractConnectedServersState.setServersConfig(serversConfig);
+            connectedServersState.setServersConfig(serversConfig);
 
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {
-                    if (abstractConnectedServersState.getMap().containsKey(sc.getServerCode())) {
-                        ServerStataus serverStataus = abstractConnectedServersState.getMap().get(sc.getServerCode());
+                    if (connectedServersState.getMap().containsKey(sc.getServerCode())) {
+                        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(sc.getServerCode());
 
                         if (serverStataus.isConnected()) {
                             continue;
@@ -109,7 +111,7 @@ public class JMXConnectorThread
     private void connect(final ServerConfig sc) {
 
         JMXConnector c;
-        ServerStataus ss = new ServerStataus(sc);
+        ServerStataus ss = getServerStatus(sc);
 
         try {
 
@@ -133,7 +135,7 @@ public class JMXConnectorThread
                     logger.info("Notification for key:{}", key);
                     logger.info("Notificatio n:{}" + notification);
                     if (notification.getType().contains("closed") || notification.getType().contains("failed")) {
-                        abstractConnectedServersState.getMap().remove(((ServerConfig) key).getServerCode());
+                        connectedServersState.getMap().remove(((ServerConfig) key).getServerCode());
                     }
                 }
             }, null, sc);
@@ -147,10 +149,13 @@ public class JMXConnectorThread
 
         try {
             ConnectionSynch.connectionLock.lock();
-            abstractConnectedServersState.getMap().put(sc.getServerCode(), ss);
+            connectedServersState.getMap().put(sc.getServerCode(), ss);
         } finally {
             ConnectionSynch.connectionLock.unlock();
         }
 
-    };
+    }
+
+    @Override
+    public abstract SS getServerStatus(final ServerConfig sc);
 }

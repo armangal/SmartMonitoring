@@ -25,7 +25,7 @@ public class StateUpdaterThreadPoker
                                         ss.getLastMemoryUsage(),
                                         ss.getLastGCHistory(),
                                         ss.getUpTime(),
-                                        ss.getChannelSeverStats(),
+                                        ss.hasChannelSeverStats() ? ss.getChannelSeverStats() : null,
                                         ss.getCpuUtilization());
     }
 
