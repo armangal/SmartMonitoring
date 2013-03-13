@@ -20,7 +20,7 @@ public class JMXGameServerStats {
      * 
      * @param ss
      */
-    public static void getGameServerStatistics(ServerStatausPoker ss) {
+    public void getGameServerStatistics(ServerStatausPoker ss) {
         try {
             JMXConnector jmxConnector = ss.getConnector();
             MBeanServerConnection mbsc = jmxConnector.getMBeanServerConnection();

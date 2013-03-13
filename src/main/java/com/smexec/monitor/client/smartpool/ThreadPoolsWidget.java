@@ -1,4 +1,4 @@
-package com.smexec.monitor.client.threads;
+package com.smexec.monitor.client.smartpool;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +16,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
-import com.smexec.monitor.client.widgets.LineType;
 import com.smexec.monitor.shared.PoolsFeed;
 
 public class ThreadPoolsWidget
@@ -131,14 +130,14 @@ public class ThreadPoolsWidget
             name.getElement().setAttribute("name", feed.getPoolName());
             name.addClickHandler(setDefaultPoolClickHandler);
             poolsTable.setWidget(i, j++, name);
-            poolsTable.setText(i, j++, "" + feed.getSubmitted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getExecuted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getCompleted() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getRejected() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.REJECTED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getFailed() + " (" + feed.getTasksChartFeeds().getLastValues(LineType.FAILED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getMaxGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.MAX.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getAvgGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getMinGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getSubmitted() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.SUBMITED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getExecuted() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.EXECUTED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getCompleted() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.COMPLETED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getRejected() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.REJECTED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getFailed() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.FAILED.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getMaxGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.MAX.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getAvgGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.AVG.getIndex()) + ")");
+            poolsTable.setText(i, j++, "" + feed.getMinGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.MIN.getIndex()) + ")");
             poolsTable.setText(i, j++, "" + feed.getTotoalGenTime() / 1000 + "sec");
             poolsTable.setText(i, j++, "" + feed.getHosts());
             i++;

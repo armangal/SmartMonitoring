@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
-import com.smexec.monitor.client.widgets.LineType;
+import com.smexec.monitor.client.widgets.ILineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
@@ -30,8 +30,8 @@ public class PlayersWidget
     extends AbstractMonitoringWidget {
 
     private FlowPanel fp = new FlowPanel();
-    private MonitoringLineChart connected = new MonitoringLineChart(new LineType[] {LineType.CONNECTED}, "Players", "Time", "Online Players");
-    private MonitoringLineChart reconnected = new MonitoringLineChart(new LineType[] {LineType.DROPPED, LineType.OPENED}, "Players", "Time", "Drops vs. New");
+    private MonitoringLineChart connected = new MonitoringLineChart(new ILineType[] {PlayersLineType.CONNECTED}, "Players", "Time", "Online Players");
+    private MonitoringLineChart reconnected = new MonitoringLineChart(new ILineType[] {PlayersLineType.DROPPED, PlayersLineType.OPENED}, "Players", "Time", "Drops vs. New");
     private FlexTable playersTable = new FlexTable();
 
     private FlexTable channelServers = new FlexTable();

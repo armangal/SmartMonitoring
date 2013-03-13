@@ -19,7 +19,7 @@ public class MonitoringLineChart
     private LineChart chart;
     private FlowPanel fp = new FlowPanel();
 
-    private LineType[] lineTypes;
+    private ILineType[] lineTypes;
     private String title;
     private String yColumnName;
     private String xColumnname;
@@ -27,7 +27,7 @@ public class MonitoringLineChart
     private boolean lastRowAsColumn;
     private boolean initilized = false;
 
-    public MonitoringLineChart(LineType[] lineTypes, String yColumnName, String xColumnname, String title) {
+    public MonitoringLineChart(ILineType[] lineTypes, String yColumnName, String xColumnname, String title) {
         this.lineTypes = lineTypes;
         this.yColumnName = yColumnName;
         this.xColumnname = xColumnname;
@@ -134,12 +134,13 @@ public class MonitoringLineChart
         }
     }
 
-    private double[] drawLine(ChartFeed timeChartFeeds, LineType lineType, DataTable dataTable) {
+    private double[] drawLine(ChartFeed chartFeeds, ILineType lineType, DataTable dataTable) {
         double max = Double.MIN_VALUE;
         double min = Double.MAX_VALUE;
 
-        for (int i = 0; i < timeChartFeeds.getValuesLenght(); i++) {
-            double value = timeChartFeeds.getValues(lineType.getIndex(), i);
+        Log.debug("Adding line:" + lineType.getName() + ":" + lineType.getIndex() + " with values:" + chartFeeds.getValuesLenght());
+        for (int i = 0; i < chartFeeds.getValuesLenght(); i++) {
+            double value = chartFeeds.getValues(lineType.getIndex(), i);
             if (value > max)
                 max = value;
             if (value < min)

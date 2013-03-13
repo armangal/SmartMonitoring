@@ -17,7 +17,7 @@ public class JMXChannelServerStats {
      * 
      * @param ss
      */
-    public static void getChannelStatistics(ServerStatausPoker ss) {
+    public void getChannelStatistics(ServerStatausPoker ss) {
 
         try {
             JMXConnector jmxConnector = ss.getConnector();

@@ -1,4 +1,4 @@
-package com.smexec.monitor.client.threads;
+package com.smexec.monitor.client.smartpool;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.smexec.monitor.client.widgets.LineType;
+import com.smexec.monitor.client.widgets.ILineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.PoolsFeed;
 
@@ -15,13 +15,11 @@ public class PoolWidget
 
     private NumberFormat formatLong = NumberFormat.getDecimalFormat();
 
-    private MonitoringLineChart timeChart = new MonitoringLineChart(new LineType[] {LineType.MAX, LineType.AVG, LineType.MIN},
-                                                                    "Milis",
-                                                                    "Time",
-                                                                    "Execution Time");
+    private MonitoringLineChart timeChart = new MonitoringLineChart(new ILineType[] {ExecutionTimeLineType.MAX, ExecutionTimeLineType.AVG,
+                                                                                     ExecutionTimeLineType.MIN}, "Milis", "Time", "Execution Time");
 
-    private MonitoringLineChart tasksChart = new MonitoringLineChart(new LineType[] {LineType.SUBMITED, LineType.EXECUTED, LineType.COMPLETED, LineType.FAILED,
-                                                                                     LineType.REJECTED}, "Tasks", "Milis", "Tasks");
+    private MonitoringLineChart tasksChart = new MonitoringLineChart(new ILineType[] {TasksLineType.SUBMITED, TasksLineType.EXECUTED, TasksLineType.COMPLETED,
+                                                                                      TasksLineType.FAILED, TasksLineType.REJECTED}, "Tasks", "Time", "Tasks");
     private FlexTable tasksTable = new FlexTable();
     private FlexTable timesTable = new FlexTable();
 
@@ -116,20 +114,23 @@ public class PoolWidget
         this.pn = pf.getPoolName();
 
         Log.debug("TimeChart:" + pf.getTimeChartFeeds());
-        timeChart.updateChart(pf.getTimeChartFeeds());
+        timeChart.updateChart(pf.getTimeChartFeeds(), true);
 
         Log.debug("TasksChart:" + pf.getTasksChartFeeds());
-        tasksChart.updateChart(pf.getTasksChartFeeds());
+        tasksChart.updateChart(pf.getTasksChartFeeds(), true);
 
-        tasksTable.setText(1, 1, formatLong.format(pf.getSubmitted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.SUBMITED.getIndex()) + ")");
-        tasksTable.setText(2, 1, formatLong.format(pf.getExecuted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.EXECUTED.getIndex()) + ")");
-        tasksTable.setText(3, 1, formatLong.format(pf.getCompleted()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.COMPLETED.getIndex()) + ")");
-        tasksTable.setText(4, 1, formatLong.format(pf.getRejected()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.REJECTED.getIndex()) + ")");
-        tasksTable.setText(5, 1, formatLong.format(pf.getFailed()) + " (" + pf.getTasksChartFeeds().getLastValues(LineType.FAILED.getIndex()) + ")");
+        tasksTable.setText(1, 1, formatLong.format(pf.getSubmitted()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.SUBMITED.getIndex()) + ")");
+        tasksTable.setText(2, 1, formatLong.format(pf.getExecuted()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.EXECUTED.getIndex()) + ")");
+        tasksTable.setText(3, 1, formatLong.format(pf.getCompleted()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.COMPLETED.getIndex()) + ")");
+        tasksTable.setText(4, 1, formatLong.format(pf.getRejected()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.REJECTED.getIndex()) + ")");
+        tasksTable.setText(5, 1, formatLong.format(pf.getFailed()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.FAILED.getIndex()) + ")");
 
-        timesTable.setText(1, 1, formatLong.format(pf.getMaxGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.MAX.getIndex()) + ")");
-        timesTable.setText(2, 1, formatLong.format(pf.getAvgGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.AVG.getIndex()) + ")");
-        timesTable.setText(3, 1, formatLong.format(pf.getMinGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(LineType.MIN.getIndex()) + ")");
+        timesTable.setText(1, 1, formatLong.format(pf.getMaxGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.MAX.getIndex())
+                                 + ")");
+        timesTable.setText(2, 1, formatLong.format(pf.getAvgGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.AVG.getIndex())
+                                 + ")");
+        timesTable.setText(3, 1, formatLong.format(pf.getMinGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.MIN.getIndex())
+                                 + ")");
         timesTable.setText(4, 1, formatLong.format(pf.getTotoalGenTime()));
 
         poolNameWidget.setHTML(this.pn + " | " + formatLong.format(pf.getActiveThreads()) + " | " + formatLong.format(pf.getPoolSize()) + " | "

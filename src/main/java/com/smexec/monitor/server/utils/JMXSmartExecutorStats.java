@@ -40,18 +40,19 @@ public class JMXSmartExecutorStats {
 
             CompositeData[] times = (CompositeData[]) mbsc.getAttribute(objectName, "ExecutionTimeStats");
 
-            ChartFeed timesChartFeed = new ChartFeed(times.length, 3);
+            ChartFeed timesChartFeed = new ChartFeed(times.length, 4);
             for (int i = 0; i < times.length; i++) {
                 CompositeData timeStat = times[i];
                 timesChartFeed.getValues()[0][i] = JMXUtils.getLongAtributeFromComposite(timeStat, "max");
                 timesChartFeed.getValues()[1][i] = JMXUtils.getLongAtributeFromComposite(timeStat, "avg");
                 timesChartFeed.getValues()[2][i] = JMXUtils.getLongAtributeFromComposite(timeStat, "min");
+                timesChartFeed.getValues()[3][i] = JMXUtils.getLongAtributeFromComposite(timeStat, "chunkTime");
             }
             pf.setTimeChartFeeds(timesChartFeed);
             // /////////////////////////////////////////
 
             CompositeData[] tasks = (CompositeData[]) mbsc.getAttribute(objectName, "TaskExecutionStats");
-            ChartFeed tasksChartFeed = new ChartFeed(tasks.length, 5);
+            ChartFeed tasksChartFeed = new ChartFeed(tasks.length, 6);
             for (int i = 0; i < tasks.length; i++) {
                 CompositeData taskStat = tasks[i];
                 tasksChartFeed.getValues()[0][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "submitted");
@@ -59,6 +60,7 @@ public class JMXSmartExecutorStats {
                 tasksChartFeed.getValues()[2][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "completed");
                 tasksChartFeed.getValues()[3][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "failed");
                 tasksChartFeed.getValues()[4][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "rejected");
+                tasksChartFeed.getValues()[5][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "chunkTime");
             }
             pf.setTasksChartFeeds(tasksChartFeed);
 

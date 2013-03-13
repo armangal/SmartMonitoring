@@ -17,7 +17,7 @@ public class JMXLobbyServerStats {
      * 
      * @param ss2
      */
-    public static void getLobbyStatistics(ServerStatausPoker ss) {
+    public void getLobbyStatistics(ServerStatausPoker ss) {
         try {
             JMXConnector jmxConnector = ss.getConnector();
             MBeanServerConnection mbsc = jmxConnector.getMBeanServerConnection();

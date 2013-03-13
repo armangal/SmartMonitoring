@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
-import com.smexec.monitor.client.widgets.LineType;
+import com.smexec.monitor.client.widgets.ILineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.GCHistory;
@@ -88,29 +88,29 @@ public class ChannelServerStatasPopup
         }
 
         Log.debug("ChannelServerStatasPopup.Updating drops, values size:" + dropsAndConnections.getValuesLenght());
-        MonitoringLineChart reconnected = new MonitoringLineChart(new LineType[] {LineType.DROPPED, LineType.OPENED}, "Players", "Time", "Drops vs. New");
+        MonitoringLineChart reconnected = new MonitoringLineChart(new ILineType[] {PlayersLineType.DROPPED, PlayersLineType.OPENED},
+                                                                  "Players",
+                                                                  "Time",
+                                                                  "Drops vs. New");
         reconnected.setStyleName("reconnectionsChart");
         fp.add(reconnected);
         reconnected.updateChart(dropsAndConnections, true);
     }
 
     private void updateOnlinePlayers(ArrayList<ChannelChunkStats> values) {
-        ChartFeed online = new ChartFeed(values.size(), 3);
-        for (int k = 0; k < 3; k++) {
+        ChartFeed online = new ChartFeed(values.size(), 2);
+        for (int k = 0; k < 2; k++) {
             for (int j = 0; j < values.size(); j++) {
                 if (k == 0) {
                     // connected
                     online.getValues()[k][j] = values.get(j).getOpenBinarySessions() + values.get(j).getOpenStringSessions();
                 } else if (k == 1) {
-                    // playing
-                    online.getValues()[k][j] = -1;
-                } else if (k == 2) {
                     online.getValues()[k][j] = values.get(j).getStartTimeForChart();
                 }
             }
         }
         Log.debug("ChannelServerStatasPopup.Updating connected, values size:" + online.getValuesLenght());
-        MonitoringLineChart connected = new MonitoringLineChart(new LineType[] {LineType.CONNECTED, LineType.PLAYING}, "Players", "Time", "Online Players");
+        MonitoringLineChart connected = new MonitoringLineChart(new ILineType[] {PlayersLineType.CONNECTED}, "Players", "Time", "Online Players");
         connected.setStyleName("playersChart");
         fp.add(connected);
         connected.updateChart(online, true);
