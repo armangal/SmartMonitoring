@@ -20,6 +20,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.RefreshResult;
+import com.smexec.monitor.shared.Version;
 
 /**
  * The server side implementation of the RPC service.
@@ -48,7 +49,7 @@ public class MonitoringServiceImpl
         checkAuthenticated();
         RefreshResult<ConnectedServer> refreshResult = connectedServersState.getRefreshResult();
         LinkedList<Alert> alertsAfter = connectedServersState.getAlertsAfter(lastAlertId);
-        FullRefreshResult frr = new FullRefreshResult(refreshResult, alertsAfter);
+        FullRefreshResult frr = new FullRefreshResult(refreshResult, alertsAfter, Version.getVersion());
         return frr;
     }
 

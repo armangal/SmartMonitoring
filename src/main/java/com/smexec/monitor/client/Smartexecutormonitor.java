@@ -76,8 +76,8 @@ public class Smartexecutormonitor
             public void onSuccess(FullRefreshResult fullResult) {
 
                 RefreshResult result = fullResult.getRefreshResult();
-                title.setHTML("<h1>" + result.getTitle() + "</h1>");
-                Window.setTitle(result.getTitle());
+                title.setHTML("<h1>" + result.getTitle() + ", v:" + fullResult.getVersion() + "</h1>");
+                Window.setTitle(result.getTitle() + ", v:" + fullResult.getVersion());
                 ArrayList<ConnectedServer> servers = result.getServers();
                 if (servers != null && !servers.isEmpty()) {
                     Log.debug("Received FULL refresh response.");

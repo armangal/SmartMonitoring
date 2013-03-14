@@ -1,8 +1,10 @@
 package com.smexec.monitor.client.login;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
@@ -37,7 +39,8 @@ public class LoginWidget
 
         @Override
         public void onKeyPress(KeyPressEvent event) {
-            if (event.getUnicodeCharCode() == 13) {
+            Log.debug("Key:" + event.getNativeEvent().getKeyCode());
+            if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
                 login();
             }
         }

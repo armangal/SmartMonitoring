@@ -4,7 +4,7 @@
 
 	<groupId>org.smexec</groupId>
 	<artifactId>smartexecutormonitor</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<packaging>war</packaging>
 	<name>Smart Executor Monitor</name>
 
@@ -154,6 +154,7 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
@@ -187,6 +188,29 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.2</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<file>${project.basedir}/src/main/config/version_template.txt</file>
+					<outputFile>${project.basedir}/src/main/config/version.txt</outputFile>
+					<replacements>
+						<replacement>
+							<token>version</token>
+							<value>${project.version}</value>
+						</replacement>
+					</replacements>
+				</configuration>
+			</plugin>
 			<!-- Maven WAR Plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -200,6 +224,7 @@
 							<directory>${project.basedir}/src/main/config</directory>
 							<includes>
 								<include>log4j.xml</include>
+								<include>version.txt</include>
 							</includes>
 							<targetPath>WEB-INF/classes</targetPath>
 						</resource>

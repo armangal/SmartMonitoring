@@ -12,12 +12,15 @@ public class FullRefreshResult
 
     private LinkedList<Alert> alerts;
 
+    private String version;
+
     public FullRefreshResult() {}
 
-    public FullRefreshResult(RefreshResult refreshResult, LinkedList<Alert> alerts) {
+    public FullRefreshResult(RefreshResult refreshResult, LinkedList<Alert> alerts, String version) {
         super();
         this.refreshResult = refreshResult;
         this.alerts = alerts;
+        this.version = version;
     }
 
     public LinkedList<Alert> getAlerts() {
@@ -26,6 +29,10 @@ public class FullRefreshResult
 
     public RefreshResult getRefreshResult() {
         return refreshResult;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     @Override

@@ -49,7 +49,7 @@ public class MonitoringLineChart
                     }
 
                 } catch (Exception e) {
-                    Log.error(e.getMessage());
+                    Log.error(e.getMessage(), e);
                 }
             }
         });
@@ -121,8 +121,7 @@ public class MonitoringLineChart
             // Draw the chart
             chart.draw(dataTable, options);
         } catch (Exception e) {
-            e.printStackTrace();
-            Log.error("MonitoringLineChart.update:, " + e.getMessage());
+            Log.error("MonitoringLineChart.update:, " + e.getMessage(), e);
         }
     }
 
@@ -130,7 +129,7 @@ public class MonitoringLineChart
         try {
             chart.clearChart();
         } catch (Exception e) {
-            Log.error("MonitoringLineChart.clean:, " + e.getMessage());
+            //Log.error("MonitoringLineChart.clean:, " + e.getMessage(), e);
         }
     }
 

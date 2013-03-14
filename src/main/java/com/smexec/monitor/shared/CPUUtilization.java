@@ -39,10 +39,9 @@ public class CPUUtilization
     }
 
     public double getLastPercent() {
-        return percentList.getLast();
+        return percentList.isEmpty() ? 0.00d : percentList.getLast();
     }
-    
-    
+
     public LinkedList<Double> getPercentList() {
         return percentList;
     }
@@ -50,11 +49,7 @@ public class CPUUtilization
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("CPUUtilization [lastMeasurement=")
-               .append(lastMeasurement)
-               .append(", lastMeasureTime=")
-               .append(lastMeasureTime)
-               .append("]");
+        builder.append("CPUUtilization [lastMeasurement=").append(lastMeasurement).append(", lastMeasureTime=").append(lastMeasureTime).append("]");
         return builder.toString();
     }
 

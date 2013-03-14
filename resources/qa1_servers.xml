@@ -4,32 +4,23 @@
 	<username>admin</username>
 	<password>password</password>
 	<servers>
-<server><name>poker1.qa1</name><serverCode>2658</serverCode><ip>10.145.1.116</ip><jmxPort>10000</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>poker2.qa1</name><serverCode>2659</serverCode><ip>10.145.1.116</ip><jmxPort>10001</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<!-- <server><name>poker3.qa1</name><serverCode>2660</serverCode><ip>10.145.1.116</ip><jmxPort>10002</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server>-->
-<!-- <server><name>poker4.qa1</name><serverCode>2661</serverCode><ip>10.145.1.116</ip><jmxPort>10003</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server>-->
+<server><name>poker1</name><serverCode>2658</serverCode><ip>10.145.1.116</ip><jmxPort>6000</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>poker2</name><serverCode>2659</serverCode><ip>10.145.1.116</ip><jmxPort>6010</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<!-- <server><name>poker3</name><serverCode>2660</serverCode><ip>10.145.1.116</ip><jmxPort>6020</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server>-->
+<!-- <server><name>poker4</name><serverCode>2661</serverCode><ip>10.145.1.116</ip><jmxPort>6060</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server>-->
  
-<server><name>channel1.qa1</name><serverCode>2597</serverCode><ip>10.145.1.116</ip><jmxPort>10004</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>channel2.qa1</name><serverCode>2598</serverCode><ip>10.145.1.116</ip><jmxPort>10005</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>publisher1.qa1</name><serverCode>2870</serverCode><ip>10.145.1.116</ip><jmxPort>10006</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>publisher2.qa1</name><serverCode>2600</serverCode><ip>10.145.1.116</ip><jmxPort>10007</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>publisher3.qa1</name><serverCode>2958</serverCode><ip>10.145.1.116</ip><jmxPort>10008</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>publisher4.qa1</name><serverCode>2959</serverCode><ip>10.145.1.116</ip><jmxPort>10009</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>lobby1.qa1</name><serverCode>2920</serverCode><ip>10.145.1.116</ip><jmxPort>10012</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>lobby2.qa1</name><serverCode>2921</serverCode><ip>10.145.1.116</ip><jmxPort>10013</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>pogw1.qa1</name><serverCode>2922</serverCode><ip>10.145.1.116</ip><jmxPort>10014</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>pogw2.qa1</name><serverCode>2923</serverCode><ip>10.145.1.116</ip><jmxPort>10015</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>pokernode1.qa1</name><serverCode>3378</serverCode><ip>10.145.1.116</ip><jmxPort>10016</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
-<server><name>pokernode2.qa1</name><serverCode>3438</serverCode><ip>10.145.1.116</ip><jmxPort>10017</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>channel1</name><serverCode>2597</serverCode><ip>10.145.1.116</ip><jmxPort>6400</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>channel2</name><serverCode>2598</serverCode><ip>10.145.1.116</ip><jmxPort>6410</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>publisher1</name><serverCode>2870</serverCode><ip>10.145.1.116</ip><jmxPort>6600</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>publisher2</name><serverCode>2600</serverCode><ip>10.145.1.116</ip><jmxPort>6610</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>publisher3</name><serverCode>2958</serverCode><ip>10.145.1.116</ip><jmxPort>6620</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>publisher4</name><serverCode>2959</serverCode><ip>10.145.1.116</ip><jmxPort>6630</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>lobby1</name><serverCode>2920</serverCode><ip>10.145.1.116</ip><jmxPort>6900</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>lobby2</name><serverCode>2921</serverCode><ip>10.145.1.116</ip><jmxPort>6910</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>pogw1</name><serverCode>2922</serverCode><ip>10.145.1.116</ip><jmxPort>7000</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>pogw2</name><serverCode>2923</serverCode><ip>10.145.1.116</ip><jmxPort>7010</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>pokernode1</name><serverCode>3378</serverCode><ip>10.145.1.116</ip><jmxPort>6100</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
+<server><name>pokernode2</name><serverCode>3438</serverCode><ip>10.145.1.116</ip><jmxPort>6110</jmxPort><authenticate>false</authenticate><username>admin</username><password>password</password></server><!-- -->
 
-		<server>
-			<name>Local (1)</name>
-			<serverCode>15</serverCode>
-			<ip>127.0.0.1</ip>
-			<jmxPort>9010</jmxPort>
-			<authenticate>true</authenticate>
-			<username>admin</username>
-			<password>password</password>
-		</server>	
 	</servers>
 </ServersConfig>
