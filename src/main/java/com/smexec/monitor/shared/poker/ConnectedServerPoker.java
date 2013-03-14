@@ -3,7 +3,6 @@ package com.smexec.monitor.shared.poker;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.smexec.monitor.shared.CPUUtilization;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.MemoryUsage;
@@ -31,7 +30,7 @@ public class ConnectedServerPoker
                                 ArrayList<GCHistory> gcHistories,
                                 long upTime,
                                 ChannelSeverStats channelSeverStats,
-                                CPUUtilization cpuUtilization) {
+                                double cpuUtilization) {
         
         super(name, serverCode, ip, jmxPort, status, memoryUsage, gcHistories, upTime, cpuUtilization);
         this.channelSeverStats = channelSeverStats;

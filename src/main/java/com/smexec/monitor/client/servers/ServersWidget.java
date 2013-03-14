@@ -202,9 +202,9 @@ public class ServersWidget
                     ft.getRowFormatter().getElement(i).setId("memoryWarn");
                 }
 
-                HTML cpu = new HTML(cs.getCpuUtilization().getLastPercent() + "%");
+                HTML cpu = new HTML(cs.getCpuUtilization() + "%");
                 ft.setWidget(i++, j++, cpu);
-                
+
             } else {
                 final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
                 name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort());

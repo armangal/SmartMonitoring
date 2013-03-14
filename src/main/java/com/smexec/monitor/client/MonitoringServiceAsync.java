@@ -17,4 +17,6 @@ public interface MonitoringServiceAsync {
     void authenticate(String userName, String password, AsyncCallback<Boolean> callback);
 
     void getMemoryStats(Integer serverCode, AsyncCallback<LinkedList<MemoryUsage>> callback);
+
+    void getCpuUsageHistory(Integer serverCode, AsyncCallback<LinkedList<Double>> callback);
 }

@@ -23,4 +23,6 @@ public interface MonitoringService
     Boolean authenticate(String userName, String password);
     
     LinkedList<MemoryUsage> getMemoryStats(Integer serverCode);
+    
+    LinkedList<Double> getCpuUsageHistory(Integer serverCode);
 }

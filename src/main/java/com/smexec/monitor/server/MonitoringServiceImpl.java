@@ -108,4 +108,15 @@ public class MonitoringServiceImpl
         logger.warn("can't find server with code:{} for memory stats", serverCode);
         return null;
     }
+
+    @Override
+    public LinkedList<Double> getCpuUsageHistory(Integer serverCode) {
+        checkAuthenticated();
+        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
+        if (serverStataus != null) {
+            return serverStataus.getCpuUtilization().getPercentList();
+        }
+        logger.warn("can't find server with code:{} for cpu stats", serverCode);
+        return null;
+    }
 }

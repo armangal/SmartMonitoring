@@ -13,7 +13,6 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
@@ -61,7 +60,7 @@ public class ServerStatasPopup
     @Override
     public void center() {
         super.center();
-        updateCpuChart();
+
         Button threadDump = new Button("Get Thread Dump");
         fp.add(threadDump);
 
@@ -69,25 +68,27 @@ public class ServerStatasPopup
 
             @Override
             public void onClick(ClickEvent event) {
+                DialogBox db = new DialogBox();
+                db.setAnimationEnabled(true);
+                db.setAutoHideEnabled(true);
+                db.setModal(true);
+                db.setSize("900px", "600px");
+                final TextArea textArea = new TextArea();
+                textArea.setText("Wait....");
+                textArea.setSize("990px", "590px");
+                db.setWidget(textArea);
+                db.center();
+
                 service.getThreadDump(cs.getServerCode(), new AsyncCallback<String>() {
 
                     @Override
                     public void onSuccess(String result) {
-                        DialogBox db = new DialogBox();
-                        db.setAnimationEnabled(true);
-                        db.setAutoHideEnabled(true);
-                        db.setModal(true);
-                        db.setSize("900px", "600px");
-                        TextArea textArea = new TextArea();
                         textArea.setText(result);
-                        textArea.setSize("990px", "590px");
-                        db.setWidget(textArea);
-                        db.center();
                     }
 
                     @Override
                     public void onFailure(Throwable caught) {
-                        Window.alert("Can't get thread dump:" + caught.getMessage());
+                        textArea.setText("Can't get thread dump:" + caught.getMessage());
                     }
                 });
             }
@@ -105,10 +106,21 @@ public class ServerStatasPopup
                 Log.error("error while getting server memory stats:" + caught.getMessage());
             };
         });
+        service.getCpuUsageHistory(cs.getServerCode(), new AsyncCallback<LinkedList<Double>>() {
+
+            @Override
+            public void onSuccess(LinkedList<Double> result) {
+                updateCpuChart(result);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Log.error("error while getting server cpu stats:" + caught.getMessage());
+            }
+        });
     }
 
-    private void updateCpuChart() {
-        LinkedList<Double> percentList = cs.getCpuUtilization().getPercentList();
+    private void updateCpuChart(LinkedList<Double> percentList) {
         ChartFeed cpuHistory = new ChartFeed(percentList.size(), 2);
         for (int k = 0; k < 2; k++) {
             for (int j = 0; j < percentList.size(); j++) {
@@ -121,7 +133,7 @@ public class ServerStatasPopup
         }
 
         Log.debug("ServerStatasPopup.Updating CPU, values size:" + cpuHistory.getValuesLenght());
-        MonitoringLineChart cpuChart = new MonitoringLineChart(new ILineType[] {ServersLineType.CPU}, "CPU", "Time", "CPU Load");
+        MonitoringLineChart cpuChart = new MonitoringLineChart(new ILineType[] {ServersLineType.CPU}, "CPU%", "Time", "CPU Load");
         cpuChart.setStyleName("reconnectionsChart");
         fp.add(cpuChart);
         cpuChart.updateChart(cpuHistory, true);
@@ -145,7 +157,7 @@ public class ServerStatasPopup
             }
         }
         Log.debug("ServerStatasPopup.Updating memry, values size:" + memoryHistory.getValuesLenght());
-        MonitoringLineChart connected = new MonitoringLineChart(new ILineType[] {ServersLineType.MEMORY}, "Memory", "Time", "Memory Usage");
+        MonitoringLineChart connected = new MonitoringLineChart(new ILineType[] {ServersLineType.MEMORY}, "Memory%", "Time", "Memory Usage");
         connected.setStyleName("playersChart");
         fp.add(connected);
         connected.updateChart(memoryHistory, true);

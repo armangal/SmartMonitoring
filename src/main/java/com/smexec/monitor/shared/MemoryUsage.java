@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 import com.google.gwt.i18n.client.NumberFormat;
 
+/**
+ * represents one memory measurement
+ * 
+ * @author armang
+ */
 public class MemoryUsage
     implements Serializable {
 

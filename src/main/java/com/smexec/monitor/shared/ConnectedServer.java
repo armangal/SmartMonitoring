@@ -22,7 +22,7 @@ public class ConnectedServer
     private ArrayList<GCHistory> gcHistories;
     private long upTime;
 
-    private CPUUtilization cpuUtilization;
+    private double cpuUtilization;
 
     public ConnectedServer() {}
 
@@ -34,7 +34,7 @@ public class ConnectedServer
                            MemoryUsage memoryUsage,
                            ArrayList<GCHistory> gcHistories,
                            long upTime,
-                           CPUUtilization cpuUtilization) {
+                           double cpuUtilization) {
         super();
         this.name = name;
         this.serverCode = serverCode;
@@ -79,7 +79,7 @@ public class ConnectedServer
         return upTime;
     }
 
-    public CPUUtilization getCpuUtilization() {
+    public double getCpuUtilization() {
         return cpuUtilization;
     }
 
