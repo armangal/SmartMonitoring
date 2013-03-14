@@ -68,6 +68,9 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus>
 
     public void run() {
         String location = System.getProperty("servers.config", "servers.xml");
+        if (location == null || location.length() < 0) {
+            location = "/opt/local/bex/conf/monitoring.xml";
+        }
 
         logger.info("Loading configuraiotns:{}", location);
         try {
