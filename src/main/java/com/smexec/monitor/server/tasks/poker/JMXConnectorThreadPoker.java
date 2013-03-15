@@ -1,5 +1,7 @@
 package com.smexec.monitor.server.tasks.poker;
 
+import javax.xml.bind.JAXBException;
+
 import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.poker.ServerStatausPoker;
 import com.smexec.monitor.server.tasks.AbstractJMXConnectorThread;
@@ -9,7 +11,7 @@ public class JMXConnectorThreadPoker
     extends AbstractJMXConnectorThread<ServerStatausPoker>
     implements IJMXConnectorThread {
 
-    public JMXConnectorThreadPoker() {
+    public JMXConnectorThreadPoker() throws JAXBException {
         super();
         logger.info("JMXConnectorThreadPoker");
     }

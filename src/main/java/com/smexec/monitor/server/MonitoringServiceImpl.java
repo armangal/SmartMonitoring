@@ -26,9 +26,9 @@ import com.smexec.monitor.shared.Version;
  * The server side implementation of the RPC service.
  */
 @SuppressWarnings("serial")
-public class MonitoringServiceImpl
+public class MonitoringServiceImpl<CS extends ConnectedServer, R extends RefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends RemoteServiceServlet
-    implements MonitoringService {
+    implements MonitoringService<CS, R, FR> {
 
     private static Logger logger = LoggerFactory.getLogger(MonitoringServiceImpl.class);
 
@@ -45,11 +45,11 @@ public class MonitoringServiceImpl
     }
 
     @Override
-    public FullRefreshResult refresh(int lastAlertId) {
+    public FR refresh(int lastAlertId) {
         checkAuthenticated();
         RefreshResult<ConnectedServer> refreshResult = connectedServersState.getRefreshResult();
         LinkedList<Alert> alertsAfter = connectedServersState.getAlertsAfter(lastAlertId);
-        FullRefreshResult frr = new FullRefreshResult(refreshResult, alertsAfter, Version.getVersion());
+        FR frr = (FR) new FullRefreshResult(refreshResult, alertsAfter, Version.getVersion());
         return frr;
     }
 

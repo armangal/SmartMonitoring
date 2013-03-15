@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.RefreshResult;
 

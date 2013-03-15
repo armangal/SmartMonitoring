@@ -6,16 +6,18 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
+import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.Alert;
+import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
+import com.smexec.monitor.shared.RefreshResult;
 
 public class AlertsWidget
-    extends AbstractMonitoringWidget {
+    extends AbstractMonitoringWidget
+    implements IMonitoringWidget<ConnectedServer, RefreshResult<ConnectedServer>> {
 
     private ScrollPanel sp = new ScrollPanel();
     private FlexTable alertsTable = new FlexTable();
-
-    private int lastMsgId = 0;
 
     public AlertsWidget() {
         super("Alerts");
@@ -35,13 +37,11 @@ public class AlertsWidget
 
     }
 
-    public int update(FullRefreshResult fullRefreshResult) {
+    @Override
+    public void update(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> fullRefreshResult) {
 
         LinkedList<Alert> alerts = fullRefreshResult.getAlerts();
         for (Alert a : alerts) {
-            if (a.getId() > lastMsgId) {
-                lastMsgId = a.getId();
-            }
             int insertRow = alertsTable.insertRow(1);
             alertsTable.setText(insertRow, 0, "" + a.getId());
             HTML msg = new HTML(a.getMessage());
@@ -51,6 +51,10 @@ public class AlertsWidget
             alertsTable.setText(insertRow, 3, a.getAlertTime().toString());
         }
 
-        return lastMsgId;
+    }
+
+    @Override
+    public void clear(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> result) {
+
     }
 }

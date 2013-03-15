@@ -16,9 +16,11 @@ import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.ILineType;
+import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.poker.ChannelChunkStats;
 import com.smexec.monitor.shared.poker.ChannelSeverStats;
 import com.smexec.monitor.shared.poker.ConnectedServerPoker;
@@ -27,11 +29,15 @@ import com.smexec.monitor.shared.poker.LobbySeverStats;
 import com.smexec.monitor.shared.poker.RefreshResultPoker;
 
 public class PlayersWidget
-    extends AbstractMonitoringWidget {
+    extends AbstractMonitoringWidget
+    implements IMonitoringWidget<ConnectedServerPoker, RefreshResultPoker> {
 
     private FlowPanel fp = new FlowPanel();
     private MonitoringLineChart connected = new MonitoringLineChart(new ILineType[] {PlayersLineType.CONNECTED}, "Players", "Time", "Online Players");
-    private MonitoringLineChart reconnected = new MonitoringLineChart(new ILineType[] {PlayersLineType.DROPPED, PlayersLineType.OPENED}, "Players", "Time", "Drops vs. New");
+    private MonitoringLineChart reconnected = new MonitoringLineChart(new ILineType[] {PlayersLineType.DROPPED, PlayersLineType.OPENED},
+                                                                      "Players",
+                                                                      "Time",
+                                                                      "Drops vs. New");
     private FlexTable playersTable = new FlexTable();
 
     private FlexTable channelServers = new FlexTable();
@@ -75,7 +81,14 @@ public class PlayersWidget
         channelScrollPanel.setHeight("100%");
     }
 
-    public void update(RefreshResultPoker result) {
+    @Override
+    public void clear(FullRefreshResult<RefreshResultPoker, ConnectedServerPoker> result) {
+
+    }
+
+    @Override
+    public void update(FullRefreshResult<RefreshResultPoker, ConnectedServerPoker> fullResult) {
+        RefreshResultPoker result = fullResult.getRefreshResult();
         ChannelSeverStats css = result.getChannelSeverStats();
         ArrayList<ConnectedServerPoker> servers = result.getServers();
         LobbySeverStats lss = result.getLobbySeverStats();

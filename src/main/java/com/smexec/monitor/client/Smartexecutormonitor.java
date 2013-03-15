@@ -1,6 +1,7 @@
 package com.smexec.monitor.client;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
@@ -18,24 +19,22 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.smexec.monitor.client.alerts.AlertsWidget;
 import com.smexec.monitor.client.login.LoginWidget;
 import com.smexec.monitor.client.login.LoginWidget.LoggedInCallBack;
-import com.smexec.monitor.client.poker.netty.NettyWidget;
-import com.smexec.monitor.client.poker.players.PlayersWidget;
-import com.smexec.monitor.client.poker.tournaments.TournamentsWidget;
 import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.smartpool.ThreadPoolsWidget;
+import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.RefreshResult;
-import com.smexec.monitor.shared.poker.RefreshResultPoker;
 
-public class Smartexecutormonitor
+public class Smartexecutormonitor<CS extends ConnectedServer, R extends RefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     implements EntryPoint {
 
     /**
      * Create a remote service proxy to talk to the server-side service.
      */
-    private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
+    private final MonitoringServiceAsync<CS, R, FR> service = GWT.create(MonitoringService.class);
 
+    private LinkedList<IMonitoringWidget<CS, R>> widgets = new LinkedList<IMonitoringWidget<CS, R>>();
     final FlowPanel mainPanel = new FlowPanel();
 
     final Button refreshBtn = new Button("Stop Refresh");
@@ -43,12 +42,6 @@ public class Smartexecutormonitor
 
     private HTML title = new HTML("<h1>----------------------------</h1>");
     private LoginWidget loginWidget = new LoginWidget();
-    private AlertsWidget alertsWidget = new AlertsWidget();
-    private ServersWidget serversWidget = new ServersWidget();
-    private PlayersWidget playersWidget = new PlayersWidget();
-    private TournamentsWidget tournamentsWidget = new TournamentsWidget();
-    private ThreadPoolsWidget poolsWidget = new ThreadPoolsWidget();
-    private NettyWidget nettyWidget = new NettyWidget();
 
     private int lastAlertId = 0;
 
@@ -64,35 +57,49 @@ public class Smartexecutormonitor
         }
     };
 
-    public Smartexecutormonitor() {}
+    public Smartexecutormonitor() {
+
+    }
+
+    /**
+     * Add widget to the screen, the order matters.
+     * 
+     * @param widget
+     */
+    @SuppressWarnings("unchecked")
+    public void addMonitoringWidget(IMonitoringWidget<?, ?> widget) {
+        widgets.add((IMonitoringWidget<CS, R>) widget);
+    }
 
     private void refresh() {
 
         Log.debug("Send refresh request.");
 
-        service.refresh(lastAlertId, new AsyncCallback<FullRefreshResult>() {
+        service.refresh(lastAlertId, new AsyncCallback<FR>() {
 
             @Override
-            public void onSuccess(FullRefreshResult fullResult) {
+            public void onSuccess(FR fullResult) {
 
-                RefreshResult result = fullResult.getRefreshResult();
+                R result = fullResult.getRefreshResult();
                 title.setHTML("<h1>" + result.getTitle() + ", v:" + fullResult.getVersion() + "</h1>");
                 Window.setTitle(result.getTitle() + ", v:" + fullResult.getVersion());
-                ArrayList<ConnectedServer> servers = result.getServers();
+                ArrayList<CS> servers = result.getServers();
                 if (servers != null && !servers.isEmpty()) {
                     Log.debug("Received FULL refresh response.");
 
-                    serversWidget.update(servers);
-                    poolsWidget.refresh(result.getPoolFeedMap());
-                    tournamentsWidget.update((RefreshResultPoker) result);
-                    playersWidget.update((RefreshResultPoker) result);
+                    for (IMonitoringWidget<CS, R> widget : widgets) {
+                        widget.update(fullResult);
+                    }
+
                 } else {
                     Log.debug("Received EMPTY response.");
+                    for (IMonitoringWidget<CS, R> widget : widgets) {
+                        widget.clear(fullResult);
+                    }
 
-                    poolsWidget.clear();
                 }
 
-                lastAlertId = alertsWidget.update(fullResult);
+                lastAlertId = fullResult.getLastAlertId();
 
             }
 
@@ -132,12 +139,8 @@ public class Smartexecutormonitor
         mainPanel.setStyleName("mainPanel");
         mainPanel.add(title);
 
-        mainPanel.add(tournamentsWidget);
-        mainPanel.add(playersWidget);
-        mainPanel.add(poolsWidget);
-        mainPanel.add(serversWidget);
-        mainPanel.add(alertsWidget);
-        mainPanel.add(nettyWidget);
+        registerWidgets();
+        addMainWidgets();
 
         refreshBtn.getElement().setAttribute("state", "1");
 
@@ -161,5 +164,20 @@ public class Smartexecutormonitor
             }
         });
 
+    }
+
+    /**
+     * should be overridden by extension project, the order is matters
+     */
+    public void registerWidgets() {
+        addMonitoringWidget(new ThreadPoolsWidget());
+        addMonitoringWidget(new ServersWidget());
+        addMonitoringWidget(new AlertsWidget());
+    }
+
+    private void addMainWidgets() {
+        for (IMonitoringWidget<CS, R> widget : widgets) {
+            mainPanel.add(widget);
+        }
     }
 }

@@ -6,7 +6,6 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -20,13 +19,15 @@ import com.smexec.monitor.client.widgets.ILineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.MemoryUsage;
+import com.smexec.monitor.shared.RefreshResult;
 
 public class ServerStatasPopup
     extends DialogBox {
 
-    private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
+    private final MonitoringServiceAsync<ConnectedServer, RefreshResult<ConnectedServer>, FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer>> service = GWT.create(MonitoringService.class);
 
     private FlowPanel fp = new FlowPanel();
 

@@ -16,6 +16,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +43,14 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus>
 
     });
 
+    private JAXBContext context;
+
     @Inject
     private IConnectedServersState connectedServersState;
 
-    public AbstractJMXConnectorThread() {
+    public AbstractJMXConnectorThread() throws JAXBException {
         logger.info("AbstractJMXConnectorThread");
+        context = JAXBContext.newInstance(ServersConfig.class);
     }
 
     private class Connector
@@ -81,7 +85,6 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus>
             logger.info("Configuration file:{}", file);
 
             InputStream configXML = new FileInputStream(file);
-            JAXBContext context = JAXBContext.newInstance(ServersConfig.class);
             ServersConfig serversConfig = (ServersConfig) context.createUnmarshaller().unmarshal(configXML);
 
             serversConfig.validate();

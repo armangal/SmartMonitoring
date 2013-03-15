@@ -17,6 +17,9 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.client.MonitoringServiceAsync;
+import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.FullRefreshResult;
+import com.smexec.monitor.shared.RefreshResult;
 
 public class LoginWidget
     extends Composite {
@@ -26,7 +29,7 @@ public class LoginWidget
         void loggedIn();
     }
 
-    private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
+    private final MonitoringServiceAsync<ConnectedServer, RefreshResult<ConnectedServer>, FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer>> service = GWT.create(MonitoringService.class);
 
     private LoggedInCallBack callBack;
 

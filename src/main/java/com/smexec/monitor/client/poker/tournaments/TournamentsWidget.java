@@ -14,13 +14,17 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
+import com.smexec.monitor.client.widgets.IMonitoringWidget;
+import com.smexec.monitor.shared.FullRefreshResult;
+import com.smexec.monitor.shared.poker.ConnectedServerPoker;
 import com.smexec.monitor.shared.poker.LobbyChunkStats;
 import com.smexec.monitor.shared.poker.LobbySeverStats;
 import com.smexec.monitor.shared.poker.RefreshResultPoker;
 import com.smexec.monitor.shared.poker.Tournament;
 
 public class TournamentsWidget
-    extends AbstractMonitoringWidget {
+    extends AbstractMonitoringWidget
+    implements IMonitoringWidget<ConnectedServerPoker, RefreshResultPoker> {
 
     private DateTimeFormat format = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -52,7 +56,14 @@ public class TournamentsWidget
         interrupedPlayers.setTitle("Number of players affected by interruption");
     }
 
-    public void update(RefreshResultPoker result) {
+    @Override
+    public void clear(FullRefreshResult<RefreshResultPoker, ConnectedServerPoker> result) {
+
+    }
+
+    @Override
+    public void update(FullRefreshResult<RefreshResultPoker, ConnectedServerPoker> fullResult) {
+        RefreshResultPoker result = fullResult.getRefreshResult();
 
         int i = 1;
         LobbySeverStats lss = result.getLobbySeverStats();
@@ -83,7 +94,7 @@ public class TournamentsWidget
 
         Iterator<Tournament> it = interrupted.iterator();
         int intPlayers = 0;
-        for (i = 1; i < interrupted.size()+1; i++) {
+        for (i = 1; i < interrupted.size() + 1; i++) {
             Tournament t = it.next();
             HTML code = new HTML("" + t.getCode() + " (" + t.getServerCode() + ")");
             code.setTitle("" + t.getCode() + " (" + t.getServerCode() + "), " + t.getName() + ", reason:" + t.getReason());
@@ -137,6 +148,6 @@ public class TournamentsWidget
         interruptedTable.getRowFormatter().getElement(i).setId("th");
         spInterrupted.add(interruptedTable);
         spInterrupted.setHeight("100%");
-        
+
     }
 }

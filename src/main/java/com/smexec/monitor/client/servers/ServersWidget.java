@@ -28,13 +28,17 @@ import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
+import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.GCHistory;
+import com.smexec.monitor.shared.RefreshResult;
 
 public class ServersWidget
-    extends AbstractMonitoringWidget {
+    extends AbstractMonitoringWidget
+    implements IMonitoringWidget<ConnectedServer, RefreshResult<ConnectedServer>> {
 
-    private final MonitoringServiceAsync service = GWT.create(MonitoringService.class);
+    private final MonitoringServiceAsync<ConnectedServer, RefreshResult<ConnectedServer>, FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer>> service = GWT.create(MonitoringService.class);
 
     private FlowPanel serversList = new FlowPanel();
     private ScrollPanel sp = new ScrollPanel();
@@ -104,7 +108,16 @@ public class ServersWidget
         serversList.add(sp);
     }
 
-    public void update(ArrayList<ConnectedServer> list) {
+    @Override
+    public void clear(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> result) {
+
+    }
+
+    @Override
+    public void update(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> fullResult) {
+        RefreshResult<ConnectedServer> result = fullResult.getRefreshResult();
+
+        ArrayList<ConnectedServer> list = result.getServers();
         Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
         serversMap.clear();
 

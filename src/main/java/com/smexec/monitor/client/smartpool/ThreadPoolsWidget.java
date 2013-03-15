@@ -16,10 +16,15 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
+import com.smexec.monitor.client.widgets.IMonitoringWidget;
+import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.PoolsFeed;
+import com.smexec.monitor.shared.RefreshResult;
 
 public class ThreadPoolsWidget
-    extends AbstractMonitoringWidget {
+    extends AbstractMonitoringWidget
+    implements IMonitoringWidget<ConnectedServer, RefreshResult<ConnectedServer>> {
 
     private PoolWidget poolWidget = new PoolWidget();
 
@@ -63,13 +68,18 @@ public class ThreadPoolsWidget
         fp.add(poolsTable);
     }
 
-    public void clear() {
+    @Override
+    public void clear(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> result) {
         this.lastUpdate = null;
         fp.remove(poolsTable);
         poolWidget.clear();
     }
 
-    public void refresh(HashMap<String, PoolsFeed> map) {
+    @Override
+    public void update(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> fullResult) {
+        RefreshResult<ConnectedServer> result = fullResult.getRefreshResult();
+
+        HashMap<String, PoolsFeed> map = result.getPoolFeedMap();
         this.lastUpdate = map;
         fp.remove(poolsTable);
 
