@@ -19,7 +19,7 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
     /**
      * Result ready to be used by clients
      */
-    private RefreshResult<C> result = new RefreshResult<C>();
+    private R result;
 
     private Map<Integer, Alert> alertsMap = new HashMap<Integer, Alert>();
 
@@ -38,7 +38,7 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
         return connectedServersMap;
     }
 
-    public synchronized RefreshResult<C> getRefreshResult() {
+    public synchronized R getRefreshResult() {
         return result;
     }
 

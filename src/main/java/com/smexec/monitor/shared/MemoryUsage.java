@@ -2,8 +2,6 @@ package com.smexec.monitor.shared;
 
 import java.io.Serializable;
 
-import com.google.gwt.i18n.client.NumberFormat;
-
 /**
  * represents one memory measurement
  * 
@@ -61,19 +59,19 @@ public class MemoryUsage
 
     @Override
     public String toString() {
-        NumberFormat formatLong = NumberFormat.getDecimalFormat();
+//        NumberFormat formatLong = NumberFormat.getDecimalFormat();
 
         StringBuilder builder = new StringBuilder();
         builder.append("MemoryUsage [committed=");
-        builder.append(formatLong.format(committed));
-        builder.append(", init=");
-        builder.append(formatLong.format(init));
-        builder.append(", max=");
-        builder.append(formatLong.format(max));
-        builder.append(", used=");
-        builder.append(formatLong.format(used));
-        builder.append(", percent=");
-        builder.append(formatLong.format(getPercentage()));
+//        builder.append(formatLong.format(committed));
+//        builder.append(", init=");
+//        builder.append(formatLong.format(init));
+//        builder.append(", max=");
+//        builder.append(formatLong.format(max));
+//        builder.append(", used=");
+//        builder.append(formatLong.format(used));
+//        builder.append(", percent=");
+//        builder.append(formatLong.format(getPercentage()));
         builder.append("%]");
         return builder.toString();
     }

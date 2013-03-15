@@ -4,7 +4,7 @@
               http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5" xmlns="http://java.sun.com/xml/ns/javaee">
 
-	<!-- Servlets -->
+
 	<servlet>
 		<servlet-name>mainService</servlet-name>
 		<servlet-class>com.smexec.monitor.server.MonitoringServiceImpl</servlet-class>
@@ -15,7 +15,6 @@
 		<url-pattern>/mainService</url-pattern>
 	</servlet-mapping>
 
-	<!-- Default page to serve -->
 	<welcome-file-list>
 		<welcome-file>Smartexecutormonitor.html</welcome-file>
 	</welcome-file-list>
@@ -24,4 +23,25 @@
 		<listener-class>com.smexec.monitor.server.ServerStartUp</listener-class>
 	</listener>
 
+	<!-- POKER -->
+<!-- 
+	<servlet>
+		<servlet-name>mainService</servlet-name>
+		<servlet-class>com.smexec.monitor.server.poker.MonitoringServicePokerImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>mainService</servlet-name>
+		<url-pattern>/mainService</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>Pokermonitor.html</welcome-file>
+	</welcome-file-list>
+
+
+	<listener>
+		<listener-class>com.smexec.monitor.server.poker.ServerStartUpPoker</listener-class>
+	</listener>
+-->
 </web-app>

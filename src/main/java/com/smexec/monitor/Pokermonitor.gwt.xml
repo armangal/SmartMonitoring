@@ -7,7 +7,7 @@
 	<inherits name='com.smexec.monitor.Smartexecutormonitor' />
 
 	<!-- Specify the app entry point class. -->
-	<entry-point class='com.smexec.monitor.client.Pokermonitor' />
+	<entry-point class='com.smexec.monitor.client.poker.Pokermonitor' />
 
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />

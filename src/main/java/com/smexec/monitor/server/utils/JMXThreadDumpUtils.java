@@ -10,52 +10,47 @@ import java.util.Date;
 
 import javax.management.MBeanServerConnection;
 
-import com.google.inject.Inject;
-import com.smexec.monitor.server.model.IConnectedServersState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.smexec.monitor.server.model.ServerStataus;
 
 public class JMXThreadDumpUtils {
 
-    @Inject
-    private IConnectedServersState connectedServersState;
+    private static Logger logger = LoggerFactory.getLogger(JMXThreadDumpUtils.class);
 
-    public String getThreadDump(Integer serverCode) {
+    public <SS extends ServerStataus> String getThreadDump(SS ss) {
         StringBuilder response = new StringBuilder();
 
-        ServerStataus ss = (ServerStataus) connectedServersState.getMap().get(serverCode);
-        if (ss == null || !ss.isConnected()) {
-            response = new StringBuilder("Server:" + serverCode + " not found or not connected.");
-        } else {
-            try {
-                MBeanServerConnection mbsc = ss.getConnector().getMBeanServerConnection();
-                ThreadMXBean threadMXBean = newPlatformMXBeanProxy(mbsc, THREAD_MXBEAN_NAME, ThreadMXBean.class);
-                ThreadInfo[] dump = threadMXBean.dumpAllThreads(true, true);
+        try {
+            MBeanServerConnection mbsc = ss.getConnector().getMBeanServerConnection();
+            ThreadMXBean threadMXBean = newPlatformMXBeanProxy(mbsc, THREAD_MXBEAN_NAME, ThreadMXBean.class);
+            ThreadInfo[] dump = threadMXBean.dumpAllThreads(true, true);
 
-                response.append("Dump of " + dump.length + " thread at server:" + serverCode + ", time:"
-                                + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z").format(new Date(System.currentTimeMillis())) + "\n\n");
+            response.append("Dump of " + dump.length + " thread at server:" + ss.getServerConfig().getServerCode() + ", time:"
+                            + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z").format(new Date(System.currentTimeMillis())) + "\n\n");
 
-                for (ThreadInfo ti : dump) {
+            for (ThreadInfo ti : dump) {
 
-                    response.append("\"" + ti.getThreadName() + "\"  tid=" + ti.getThreadId() + " " + ti.getThreadState() + "\n");
+                response.append("\"" + ti.getThreadName() + "\"  tid=" + ti.getThreadId() + " " + ti.getThreadState() + "\n");
 
-                    response.append("    native=" + ti.isInNative() + ", suspended=" + ti.isSuspended() + ", block=" + ti.getBlockedCount() + ", wait="
-                                    + ti.getWaitedCount() + ", waitedTime=" + ti.getWaitedTime() + "\n");
+                response.append("    native=" + ti.isInNative() + ", suspended=" + ti.isSuspended() + ", block=" + ti.getBlockedCount() + ", wait="
+                                + ti.getWaitedCount() + ", waitedTime=" + ti.getWaitedTime() + "\n");
 
-                    response.append("    lock=" + ti.getLockName() + " owned by " + ti.getLockOwnerName() + " (" + ti.getLockOwnerId() + ") cpuTime="
-                                    + threadMXBean.getCurrentThreadCpuTime() + ", userTime=" + threadMXBean.getCurrentThreadUserTime() + "\n");
+                response.append("    lock=" + ti.getLockName() + " owned by " + ti.getLockOwnerName() + " (" + ti.getLockOwnerId() + ") cpuTime="
+                                + threadMXBean.getCurrentThreadCpuTime() + ", userTime=" + threadMXBean.getCurrentThreadUserTime() + "\n");
 
-                    for (StackTraceElement ste : ti.getStackTrace()) {
-                        response.append(extractStack(ste)).append("\n");
-                    }
-                    response.append("\n");
+                for (StackTraceElement ste : ti.getStackTrace()) {
+                    response.append(extractStack(ste)).append("\n");
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                response = new StringBuilder(e.getMessage());
+                response.append("\n");
             }
 
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            response = new StringBuilder(e.getMessage());
         }
+
         return response.toString();
     }
 

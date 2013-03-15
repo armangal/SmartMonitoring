@@ -18,7 +18,7 @@ import com.smexec.monitor.server.utils.JMXSmartExecutorStats;
  * @author armang
  */
 public class Refresher<S extends ServerStataus>
-    implements Callable<ServerStataus> {
+    implements Callable<S> {
 
     private static Logger logger = LoggerFactory.getLogger(Refresher.class);
 
@@ -35,7 +35,7 @@ public class Refresher<S extends ServerStataus>
     }
 
     @Override
-    public ServerStataus call()
+    public S call()
         throws Exception {
         try {
             if (ss.isConnected()) {

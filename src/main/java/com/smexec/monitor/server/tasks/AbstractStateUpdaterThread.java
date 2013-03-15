@@ -2,7 +2,6 @@ package com.smexec.monitor.server.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +36,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
     });
 
     @Inject
-    private IConnectedServersState connectedServersState;
+    private IConnectedServersState<S, C, RR> connectedServersState;
 
     @Override
     public void run() {
@@ -53,7 +52,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
             Collection<S> values = connectedServersState.getMap().values();
             // scheduling update threads
             for (S ss : values) {
-                compService.submit((Callable<S>) getRefresher(ss));
+                compService.submit(getRefresher(ss));
             }
 
             // Waiting for all threads to finish

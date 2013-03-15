@@ -3,12 +3,12 @@ package com.smexec.monitor.shared;
 import java.io.Serializable;
 import java.util.LinkedList;
 
-public class FullRefreshResult<R extends RefreshResult<CS>, CS extends ConnectedServer>
+public class FullRefreshResult<RR extends RefreshResult<CS>, CS extends ConnectedServer>
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private R refreshResult;
+    private RR refreshResult;
 
     private LinkedList<Alert> alerts;
 
@@ -16,7 +16,7 @@ public class FullRefreshResult<R extends RefreshResult<CS>, CS extends Connected
 
     public FullRefreshResult() {}
 
-    public FullRefreshResult(R refreshResult, LinkedList<Alert> alerts, String version) {
+    public FullRefreshResult(RR refreshResult, LinkedList<Alert> alerts, String version) {
         super();
         this.refreshResult = refreshResult;
         this.alerts = alerts;
@@ -27,7 +27,7 @@ public class FullRefreshResult<R extends RefreshResult<CS>, CS extends Connected
         return alerts;
     }
 
-    public R getRefreshResult() {
+    public RR getRefreshResult() {
         return refreshResult;
     }
 

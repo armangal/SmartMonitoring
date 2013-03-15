@@ -1,6 +1,7 @@
-package com.smexec.monitor.client;
+package com.smexec.monitor.client.poker;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.smexec.monitor.client.AbstractEntryPoint;
 import com.smexec.monitor.client.alerts.AlertsWidget;
 import com.smexec.monitor.client.poker.netty.NettyWidget;
 import com.smexec.monitor.client.poker.players.PlayersWidget;
@@ -12,7 +13,7 @@ import com.smexec.monitor.shared.poker.ConnectedServerPoker;
 import com.smexec.monitor.shared.poker.RefreshResultPoker;
 
 public class Pokermonitor
-    extends Smartexecutormonitor<ConnectedServerPoker, RefreshResultPoker, FullRefreshResult<RefreshResultPoker, ConnectedServerPoker>> {
+    extends AbstractEntryPoint<ConnectedServerPoker, RefreshResultPoker, FullRefreshResult<RefreshResultPoker, ConnectedServerPoker>> {
 
     public Pokermonitor() {
         super();

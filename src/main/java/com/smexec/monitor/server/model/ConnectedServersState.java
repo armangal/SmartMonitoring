@@ -9,7 +9,7 @@ import com.smexec.monitor.shared.RefreshResult;
 
 public class ConnectedServersState
     extends AbstractConnectedServersState<ServerStataus, RefreshResult<ConnectedServer>, ConnectedServer>
-    implements IConnectedServersState<ServerStataus, ConnectedServer> {
+    implements IConnectedServersState<ServerStataus, ConnectedServer, RefreshResult<ConnectedServer>> {
 
     @Override
     public void mergeExtraData(ServerStataus ss) {

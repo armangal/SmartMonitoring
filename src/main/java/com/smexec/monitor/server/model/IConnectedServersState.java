@@ -8,17 +8,17 @@ import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
-public interface IConnectedServersState<S extends ServerStataus, C extends ConnectedServer> {
+public interface IConnectedServersState<SS extends ServerStataus, CS extends ConnectedServer, RR extends RefreshResult<CS>> {
 
     void addAlert(Alert alert);
 
-    ConcurrentHashMap<Integer, S> getMap();
+    ConcurrentHashMap<Integer, SS> getMap();
 
-    void mergeStats(ArrayList<C> servers);
+    void mergeStats(ArrayList<CS> servers);
 
     void setServersConfig(ServersConfig sc);
 
-    RefreshResult<C> getRefreshResult();
+    RR getRefreshResult();
 
     LinkedList<Alert> getAlertsAfter(int alertId);
 

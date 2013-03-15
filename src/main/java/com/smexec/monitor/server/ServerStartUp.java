@@ -14,9 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
-import com.smexec.monitor.server.guice.MonitoringModulePoker;
+import com.smexec.monitor.server.guice.MonitoringModule;
+import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
+import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.RefreshResult;
 import com.smexec.monitor.shared.Version;
 
 public class ServerStartUp
@@ -24,7 +27,7 @@ public class ServerStartUp
 
     private static Logger logger = LoggerFactory.getLogger(ServerStartUp.class);
 
-    ScheduledExecutorService executor = Executors.newScheduledThreadPool(5, new ThreadFactory() {
+    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2, new ThreadFactory() {
 
         int count = 0;
 
@@ -41,9 +44,16 @@ public class ServerStartUp
     @Inject
     private IStateUpdaterThread stateUpdaterThread;
 
+    /**
+     * for extensions to override
+     */
+    public void initGuice() {
+        GuiceUtils.init(new MonitoringModule<ServerStataus, ConnectedServer, RefreshResult<ConnectedServer>>());
+    }
+
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
-        GuiceUtils.init(new MonitoringModulePoker());
+        initGuice();
 
         GuiceUtils.getInjector().injectMembers(this);
 

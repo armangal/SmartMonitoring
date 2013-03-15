@@ -4,11 +4,14 @@ import javax.xml.bind.JAXBException;
 
 import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.RefreshResult;
 
 public class JMXConnectorThread
-    extends AbstractJMXConnectorThread<ServerStataus> {
+    extends AbstractJMXConnectorThread<ServerStataus, ConnectedServer, RefreshResult<ConnectedServer>> {
 
-    public JMXConnectorThread() throws JAXBException {
+    public JMXConnectorThread()
+        throws JAXBException {
         super();
     }
 

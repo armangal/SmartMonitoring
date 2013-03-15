@@ -26,8 +26,10 @@ import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
+import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.RefreshResult;
 
-public abstract class AbstractJMXConnectorThread<SS extends ServerStataus>
+public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS extends ConnectedServer, RR extends RefreshResult<CS>>
     implements IJMXConnectorThread {
 
     public static Logger logger = LoggerFactory.getLogger(AbstractJMXConnectorThread.class);
@@ -46,9 +48,10 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus>
     private JAXBContext context;
 
     @Inject
-    private IConnectedServersState connectedServersState;
+    private IConnectedServersState<SS, CS, RR> connectedServersState;
 
-    public AbstractJMXConnectorThread() throws JAXBException {
+    public AbstractJMXConnectorThread()
+        throws JAXBException {
         logger.info("AbstractJMXConnectorThread");
         context = JAXBContext.newInstance(ServersConfig.class);
     }
@@ -117,7 +120,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus>
     private void connect(final ServerConfig sc) {
 
         JMXConnector c;
-        ServerStataus ss = getServerStatus(sc);
+        SS ss = getServerStatus(sc);
 
         try {
 

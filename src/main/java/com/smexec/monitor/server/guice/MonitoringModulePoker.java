@@ -1,16 +1,21 @@
 package com.smexec.monitor.server.guice;
 
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
+import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.poker.ConnectedServersStatePoker;
+import com.smexec.monitor.server.model.poker.ServerStatausPoker;
 import com.smexec.monitor.server.tasks.poker.JMXConnectorThreadPoker;
 import com.smexec.monitor.server.tasks.poker.StateUpdaterThreadPoker;
 import com.smexec.monitor.server.utils.poker.JMXChannelServerStats;
 import com.smexec.monitor.server.utils.poker.JMXGameServerStats;
 import com.smexec.monitor.server.utils.poker.JMXLobbyServerStats;
+import com.smexec.monitor.shared.poker.ConnectedServerPoker;
+import com.smexec.monitor.shared.poker.RefreshResultPoker;
 
 @SuppressWarnings({"rawtypes"})
 public class MonitoringModulePoker
-    extends MonitoringModule {
+    extends MonitoringModule<ServerStatausPoker, ConnectedServerPoker, RefreshResultPoker> {
 
     @Override
     protected void configure() {
@@ -31,6 +36,10 @@ public class MonitoringModulePoker
 
     public Class getJMXConnectorThreadClass() {
         return JMXConnectorThreadPoker.class;
+    }
+
+    public TypeLiteral<IConnectedServersState<ServerStatausPoker, ConnectedServerPoker, RefreshResultPoker>> getIconnectedKey() {
+        return new TypeLiteral<IConnectedServersState<ServerStatausPoker, ConnectedServerPoker, RefreshResultPoker>>() {};
     }
 
 }

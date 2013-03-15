@@ -6,12 +6,15 @@ import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.poker.ServerStatausPoker;
 import com.smexec.monitor.server.tasks.AbstractJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
+import com.smexec.monitor.shared.poker.ConnectedServerPoker;
+import com.smexec.monitor.shared.poker.RefreshResultPoker;
 
 public class JMXConnectorThreadPoker
-    extends AbstractJMXConnectorThread<ServerStatausPoker>
+    extends AbstractJMXConnectorThread<ServerStatausPoker, ConnectedServerPoker, RefreshResultPoker>
     implements IJMXConnectorThread {
 
-    public JMXConnectorThreadPoker() throws JAXBException {
+    public JMXConnectorThreadPoker()
+        throws JAXBException {
         super();
         logger.info("JMXConnectorThreadPoker");
     }

@@ -14,7 +14,7 @@ import com.smexec.monitor.shared.poker.RefreshResultPoker;
 
 public class ConnectedServersStatePoker
     extends AbstractConnectedServersState<ServerStatausPoker, RefreshResultPoker, ConnectedServerPoker>
-    implements IConnectedServersState<ServerStatausPoker, ConnectedServerPoker> {
+    implements IConnectedServersState<ServerStatausPoker, ConnectedServerPoker, RefreshResultPoker> {
 
     ChannelSeverStats aggregatedChannelSeverStats = new ChannelSeverStats();
 
