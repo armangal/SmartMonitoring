@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -22,26 +21,26 @@ import com.smexec.monitor.client.login.LoginWidget.LoggedInCallBack;
 import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.smartpool.ThreadPoolsWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
+import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.RefreshResult;
 
-public class AbstractEntryPoint<CS extends ConnectedServer, R extends RefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
+public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     implements EntryPoint {
 
     /**
      * Create a remote service proxy to talk to the server-side service.
      */
-    private final MonitoringServiceAsync<CS, R, FR> service = GWT.create(MonitoringService.class);
+    private final MonitoringServiceAsync<CS, R, FR> service;
+    private final LoginWidget<CS, R, FR> loginWidget;
 
-    private LinkedList<IMonitoringWidget<CS, R>> widgets = new LinkedList<IMonitoringWidget<CS, R>>();
+    private LinkedList<IMonitoringWidget<CS, R, FR>> widgets = new LinkedList<IMonitoringWidget<CS, R, FR>>();
     final FlowPanel mainPanel = new FlowPanel();
 
     final Button refreshBtn = new Button("Stop Refresh");
     boolean refresh = true;
 
     private HTML title = new HTML("<h1>----------------------------</h1>");
-    private LoginWidget loginWidget = new LoginWidget();
 
     private int lastAlertId = 0;
 
@@ -57,8 +56,50 @@ public class AbstractEntryPoint<CS extends ConnectedServer, R extends RefreshRes
         }
     };
 
-    public AbstractEntryPoint() {
+    public AbstractEntryPoint(MonitoringServiceAsync<CS, R, FR> service) {
+        this.service = service;
+        this.loginWidget = new LoginWidget<CS, R, FR>(service);
+        this.loginWidget.registerCallBack(new LoggedInCallBack() {
 
+            @Override
+            public void loggedIn() {
+                Log.debug("Authenticated");
+                RootPanel.get().clear();
+                addMainWidgets();
+                RootPanel.get().add(mainPanel);
+                RootPanel.get().add(refreshBtn);
+                refresh = true;
+                refresh();
+                Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
+            }
+        });
+
+        refreshBtn.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                String attribute = refreshBtn.getElement().getAttribute("state");
+                if ("1".equals(attribute)) {
+                    refreshBtn.getElement().setAttribute("state", "2");
+                    refresh = false;
+                    refreshBtn.setText("Start Refresh");
+                } else {
+                    refreshBtn.getElement().setAttribute("state", "1");
+                    refresh = true;
+                    refresh();
+                    Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
+                    refreshBtn.setText("Stop Refresh");
+                }
+
+            }
+        });
+
+        mainPanel.setStyleName("mainPanel");
+        mainPanel.add(title);
+        
+        registerWidgets();
+        
+        Log.debug("AbstractEntryPoint created.");
     }
 
     /**
@@ -67,8 +108,8 @@ public class AbstractEntryPoint<CS extends ConnectedServer, R extends RefreshRes
      * @param widget
      */
     @SuppressWarnings("unchecked")
-    public void addMonitoringWidget(IMonitoringWidget<?, ?> widget) {
-        widgets.add((IMonitoringWidget<CS, R>) widget);
+    public void addMonitoringWidget(IMonitoringWidget<?, ?, FR> widget) {
+        widgets.add((IMonitoringWidget<CS, R, FR>) widget);
     }
 
     private void refresh() {
@@ -83,21 +124,25 @@ public class AbstractEntryPoint<CS extends ConnectedServer, R extends RefreshRes
                     Log.debug("Received NULL response.");
                     return;
                 }
-
                 R result = fullResult.getRefreshResult();
+                if (result == null) {
+                    Log.debug("Received NULL response.");
+                    return;
+                }
+
                 title.setHTML("<h1>" + result.getTitle() + ", v:" + fullResult.getVersion() + "</h1>");
                 Window.setTitle(result.getTitle() + ", v:" + fullResult.getVersion());
                 ArrayList<CS> servers = result.getServers();
                 if (servers != null && !servers.isEmpty()) {
                     Log.debug("Received FULL refresh response.");
 
-                    for (IMonitoringWidget<CS, R> widget : widgets) {
+                    for (IMonitoringWidget<CS, R, FR> widget : widgets) {
                         widget.update(fullResult);
                     }
 
                 } else {
                     Log.debug("Received EMPTY response.");
-                    for (IMonitoringWidget<CS, R> widget : widgets) {
+                    for (IMonitoringWidget<CS, R, FR> widget : widgets) {
                         widget.clear(fullResult);
                     }
 
@@ -125,63 +170,28 @@ public class AbstractEntryPoint<CS extends ConnectedServer, R extends RefreshRes
         Log.debug("Starting monitoring client.");
 
         Window.setMargin("0px");
+        RootPanel.get().clear();
         RootPanel.get().add(loginWidget);
-        loginWidget.registerCallBack(new LoggedInCallBack() {
-
-            @Override
-            public void loggedIn() {
-                Log.debug("Authenticated");
-                loginWidget.removeFromParent();
-                RootPanel.get().add(mainPanel);
-                RootPanel.get().add(refreshBtn);
-                refresh = true;
-                refresh();
-                Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
-            }
-        });
-
-        mainPanel.setStyleName("mainPanel");
-        mainPanel.add(title);
-
-        registerWidgets();
-        addMainWidgets();
 
         refreshBtn.getElement().setAttribute("state", "1");
-
-        refreshBtn.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                String attribute = refreshBtn.getElement().getAttribute("state");
-                if ("1".equals(attribute)) {
-                    refreshBtn.getElement().setAttribute("state", "2");
-                    refresh = false;
-                    refreshBtn.setText("Start Refresh");
-                } else {
-                    refreshBtn.getElement().setAttribute("state", "1");
-                    refresh = true;
-                    refresh();
-                    Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
-                    refreshBtn.setText("Stop Refresh");
-                }
-
-            }
-        });
-
     }
 
     /**
      * should be overridden by extension project, the order is matters
      */
     public void registerWidgets() {
-        addMonitoringWidget(new ThreadPoolsWidget());
-        addMonitoringWidget(new ServersWidget());
-        addMonitoringWidget(new AlertsWidget());
+        addMonitoringWidget(new ThreadPoolsWidget<CS, R, FR>());
+        addMonitoringWidget(new ServersWidget<CS, R, FR>(service));
+        addMonitoringWidget(new AlertsWidget<CS, R, FR>());
     }
 
     private void addMainWidgets() {
-        for (IMonitoringWidget<CS, R> widget : widgets) {
+        for (IMonitoringWidget<CS, R, FR> widget : widgets) {
             mainPanel.add(widget);
         }
+    }
+
+    public MonitoringServiceAsync<CS, R, FR> getService() {
+        return service;
     }
 }

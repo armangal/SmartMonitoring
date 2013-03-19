@@ -9,26 +9,24 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
-import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
+import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.MemoryUsage;
-import com.smexec.monitor.shared.RefreshResult;
 import com.smexec.monitor.shared.Version;
 
 /**
  * The server side implementation of the monitoring RPC service.
  */
 @SuppressWarnings("serial")
-public abstract class AbstractMonitoringService<SS extends ServerStataus, CS extends ConnectedServer, RR extends RefreshResult<CS>, FR extends FullRefreshResult<RR, CS>>
-    extends RemoteServiceServlet
-    implements MonitoringService<CS, RR, FR> {
+public abstract class AbstractMonitoringService<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<RR, CS>>
+    extends RemoteServiceServlet {
 
     private static Logger logger = LoggerFactory.getLogger("MonitoringService");
 
@@ -44,7 +42,6 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         GuiceUtils.getInjector().injectMembers(this);
     }
 
-    @Override
     public FR refresh(int lastAlertId) {
         checkAuthenticated();
         RR refreshResult = connectedServersState.getRefreshResult();
@@ -55,7 +52,6 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public abstract FR createFullRefreshResult(RR refreshResult, LinkedList<Alert> alerts, String version);
 
-    @Override
     public String getThreadDump(Integer serverCode) {
         checkAuthenticated();
         SS ss = connectedServersState.getMap().get(serverCode);
@@ -67,7 +63,6 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         }
     }
 
-    @Override
     public String getGCHistory(Integer serverCode) {
         checkAuthenticated();
         ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
@@ -78,7 +73,6 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         }
     }
 
-    @Override
     public Boolean authenticate(String userName, String password) {
         logger.info("Authnticating user:{}, pass:{}", userName, password);
 
@@ -107,7 +101,6 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         }
     }
 
-    @Override
     public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode) {
         checkAuthenticated();
         ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
@@ -118,7 +111,6 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         return null;
     }
 
-    @Override
     public LinkedList<Double> getCpuUsageHistory(Integer serverCode) {
         checkAuthenticated();
         ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);

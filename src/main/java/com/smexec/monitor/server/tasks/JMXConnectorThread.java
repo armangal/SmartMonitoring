@@ -8,7 +8,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
 public class JMXConnectorThread
-    extends AbstractJMXConnectorThread<ServerStataus, ConnectedServer, RefreshResult<ConnectedServer>> {
+    extends AbstractJMXConnectorThread<ServerStataus, ConnectedServer, RefreshResult> {
 
     public JMXConnectorThread()
         throws JAXBException {

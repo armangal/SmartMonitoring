@@ -15,7 +15,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServer, RR extends RefreshResult<CS>>
+public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServer>
     extends AbstractModule {
 
     @Override
@@ -29,7 +29,7 @@ public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServ
     }
 
     public TypeLiteral<?> getIconnectedKey() {
-        return new TypeLiteral<IConnectedServersState<ServerStataus, ConnectedServer, RefreshResult<ConnectedServer>>>() {};
+        return new TypeLiteral<IConnectedServersState<ServerStataus, ConnectedServer, RefreshResult>>() {};
     }
 
     public Class getJMXConnectorThreadClass() {

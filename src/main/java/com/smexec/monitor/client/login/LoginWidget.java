@@ -15,13 +15,12 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
-import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.client.MonitoringServiceAsync;
+import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.RefreshResult;
 
-public class LoginWidget
+public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends Composite {
 
     public interface LoggedInCallBack {
@@ -29,7 +28,7 @@ public class LoginWidget
         void loggedIn();
     }
 
-    private final MonitoringServiceAsync<ConnectedServer, RefreshResult<ConnectedServer>, FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer>> service = GWT.create(MonitoringService.class);
+    private final MonitoringServiceAsync<CS, R, FR> service;
 
     private LoggedInCallBack callBack;
 
@@ -49,7 +48,9 @@ public class LoginWidget
         }
     };
 
-    public LoginWidget() {
+    public LoginWidget(MonitoringServiceAsync<CS, R, FR> service) {
+        this.service = service;
+
         if (!GWT.isScript()) {
             userName.setText("admin");
             password.setText("password");

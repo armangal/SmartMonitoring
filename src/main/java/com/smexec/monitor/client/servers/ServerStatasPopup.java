@@ -3,7 +3,6 @@ package com.smexec.monitor.client.servers;
 import java.util.LinkedList;
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -12,29 +11,29 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
-import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.ILineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
+import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.MemoryUsage;
-import com.smexec.monitor.shared.RefreshResult;
 
-public class ServerStatasPopup
+public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends DialogBox {
 
-    private final MonitoringServiceAsync<ConnectedServer, RefreshResult<ConnectedServer>, FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer>> service = GWT.create(MonitoringService.class);
+    private final MonitoringServiceAsync<CS, R, FR> service;
 
     private FlowPanel fp = new FlowPanel();
 
-    private ConnectedServer cs;
+    private CS cs;
 
-    public ServerStatasPopup(ConnectedServer cs) {
+    public ServerStatasPopup(MonitoringServiceAsync<CS, R, FR> service, CS cs) {
         this.cs = cs;
+        this.service = service;
         setAnimationEnabled(true);
         setAutoHideEnabled(true);
         setModal(true);

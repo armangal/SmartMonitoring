@@ -19,7 +19,6 @@ import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.RefreshResult;
 import com.smexec.monitor.shared.Version;
 
 public class ServerStartUp
@@ -48,7 +47,7 @@ public class ServerStartUp
      * for extensions to override
      */
     public void initGuice() {
-        GuiceUtils.init(new MonitoringModule<ServerStataus, ConnectedServer, RefreshResult<ConnectedServer>>());
+        GuiceUtils.init(new MonitoringModule<ServerStataus, ConnectedServer>());
     }
 
     @Override

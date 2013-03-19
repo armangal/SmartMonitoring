@@ -6,7 +6,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
 public class StateUpdaterThread
-    extends AbstractStateUpdaterThread<ServerStataus, Refresher<ServerStataus>, ConnectedServer, RefreshResult<ConnectedServer>> {
+    extends AbstractStateUpdaterThread<ServerStataus, Refresher<ServerStataus>, ConnectedServer, RefreshResult> {
 
     @Override
     public Refresher<ServerStataus> getRefresher(ServerStataus ss) {

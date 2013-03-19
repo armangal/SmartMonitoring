@@ -4,42 +4,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class RefreshResult <C extends ConnectedServer>
+public class RefreshResult
+    extends AbstractRefreshResult<ConnectedServer>
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * a map of aggregated thread pools statistic, ready to be presented by client
-     */
-    private HashMap<String, PoolsFeed> poolFeedMap;
+    public RefreshResult() {
 
-    /**
-     * list of connected servers with internal stats
-     */
-    private ArrayList<C> servers = new ArrayList<C>(0);
-
-    private String title;
-
-    public RefreshResult() {}
-
-    public RefreshResult(String title, ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap) {
-        super();
-        this.poolFeedMap = poolFeedMap;
-        this.servers = servers;
-        this.title = title;
     }
 
-    public HashMap<String, PoolsFeed> getPoolFeedMap() {
-        return poolFeedMap;
+    public RefreshResult(String title, ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+        super(title, servers, poolFeedMap);
     }
-
-    public ArrayList<C> getServers() {
-        return servers;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
 }

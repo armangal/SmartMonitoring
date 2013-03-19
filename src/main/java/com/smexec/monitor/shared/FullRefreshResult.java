@@ -3,7 +3,7 @@ package com.smexec.monitor.shared;
 import java.io.Serializable;
 import java.util.LinkedList;
 
-public class FullRefreshResult<RR extends RefreshResult<CS>, CS extends ConnectedServer>
+public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends ConnectedServer>
     implements Serializable {
 
     private static final long serialVersionUID = 1L;

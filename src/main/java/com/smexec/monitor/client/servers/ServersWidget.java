@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.FontWeight;
@@ -24,21 +23,20 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
-import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
+import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.GCHistory;
-import com.smexec.monitor.shared.RefreshResult;
 
-public class ServersWidget
+public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends AbstractMonitoringWidget
-    implements IMonitoringWidget<ConnectedServer, RefreshResult<ConnectedServer>> {
+    implements IMonitoringWidget<CS, R, FR> {
 
-    private final MonitoringServiceAsync<ConnectedServer, RefreshResult<ConnectedServer>, FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer>> service = GWT.create(MonitoringService.class);
+    private final MonitoringServiceAsync<CS, R, FR> service;
 
     private FlowPanel serversList = new FlowPanel();
     private ScrollPanel sp = new ScrollPanel();
@@ -48,9 +46,9 @@ public class ServersWidget
         @Override
         public void onClick(ClickEvent event) {
             String code = ((Widget) event.getSource()).getElement().getAttribute("code");
-            ConnectedServer cs = serversMap.get(Integer.valueOf(code));
+            CS cs = serversMap.get(Integer.valueOf(code));
             if (cs != null) {
-                ServerStatasPopup ssp = new ServerStatasPopup(cs);
+                ServerStatasPopup<CS, R, FR> ssp = new ServerStatasPopup<CS, R, FR>(service, cs);
                 ssp.center();
             } else {
                 Window.alert("Server couldn't be found:" + code);
@@ -96,11 +94,12 @@ public class ServersWidget
         }
     };
 
-    private Map<Integer, ConnectedServer> serversMap = new HashMap<Integer, ConnectedServer>(0);
+    private Map<Integer, CS> serversMap = new HashMap<Integer, CS>(0);
 
-    public ServersWidget() {
-
+    public ServersWidget(MonitoringServiceAsync<CS, R, FR> service) {
         super("Connected Servers");
+        this.service = service;
+
         addStyleName("serversWidget");
         serversList.setStyleName("serversWidgetInternal");
         getDataPanel().add(serversList);
@@ -109,15 +108,15 @@ public class ServersWidget
     }
 
     @Override
-    public void clear(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> result) {
+    public void clear(FR result) {
 
     }
 
     @Override
-    public void update(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> fullResult) {
-        RefreshResult<ConnectedServer> result = fullResult.getRefreshResult();
+    public void update(FR fullResult) {
+        R result = fullResult.getRefreshResult();
 
-        ArrayList<ConnectedServer> list = result.getServers();
+        ArrayList<CS> list = (ArrayList<CS>) result.getServers();
         Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
         serversMap.clear();
 
@@ -129,10 +128,10 @@ public class ServersWidget
         ft.setCellPadding(0);
         ft.setCellSpacing(0);
 
-        Collections.sort(list, new Comparator<ConnectedServer>() {
+        Collections.sort(list, new Comparator<CS>() {
 
             @Override
-            public int compare(ConnectedServer o1, ConnectedServer o2) {
+            public int compare(CS o1, CS o2) {
                 double o1p = 0, o2p = 0;
                 if (o1.getStatus() && o2.getStatus()) {
                     o1p = o1.getMemoryUsage().getPercentage();
@@ -157,7 +156,7 @@ public class ServersWidget
         ft.setText(i, j++, "CPU%");
         ft.getRowFormatter().getElement(i++).setId("th");
 
-        for (ConnectedServer cs : list) {
+        for (CS cs : list) {
             serversMap.put(cs.getServerCode(), cs);
 
             j = 0;

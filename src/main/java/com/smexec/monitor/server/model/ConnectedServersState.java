@@ -8,8 +8,8 @@ import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.RefreshResult;
 
 public class ConnectedServersState
-    extends AbstractConnectedServersState<ServerStataus, RefreshResult<ConnectedServer>, ConnectedServer>
-    implements IConnectedServersState<ServerStataus, ConnectedServer, RefreshResult<ConnectedServer>> {
+    extends AbstractConnectedServersState<ServerStataus, RefreshResult, ConnectedServer>
+    implements IConnectedServersState<ServerStataus, ConnectedServer, RefreshResult> {
 
     @Override
     public void mergeExtraData(ServerStataus ss) {
@@ -17,7 +17,7 @@ public class ConnectedServersState
     }
 
     @Override
-    public RefreshResult<ConnectedServer> createNewRefreshResult(String title, ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
-        return new RefreshResult<ConnectedServer>(title, servers, poolFeedMap);
+    public RefreshResult createNewRefreshResult(String title, ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+        return new RefreshResult(title, servers, poolFeedMap);
     }
 }

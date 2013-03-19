@@ -31,6 +31,10 @@
 	<!-- Loggers Disabled by default -->
 	<set-property name="log_WindowLogger" value="DISABLED" />
 
+
+	<stylesheet src="../css/reset.css" />
+	<stylesheet src="../css/Smartexecutormonitor.css" />
+	
 	<!-- Specify the app entry point class. -->
 	<entry-point class='com.smexec.monitor.client.Smartexecutormonitor' />
 

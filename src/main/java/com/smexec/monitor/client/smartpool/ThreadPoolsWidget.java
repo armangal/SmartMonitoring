@@ -17,14 +17,14 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
+import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.PoolsFeed;
-import com.smexec.monitor.shared.RefreshResult;
 
-public class ThreadPoolsWidget
+public class ThreadPoolsWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends AbstractMonitoringWidget
-    implements IMonitoringWidget<ConnectedServer, RefreshResult<ConnectedServer>> {
+    implements IMonitoringWidget<CS, R, FR> {
 
     private PoolWidget poolWidget = new PoolWidget();
 
@@ -69,15 +69,15 @@ public class ThreadPoolsWidget
     }
 
     @Override
-    public void clear(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> result) {
+    public void clear(FR result) {
         this.lastUpdate = null;
         fp.remove(poolsTable);
         poolWidget.clear();
     }
 
     @Override
-    public void update(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> fullResult) {
-        RefreshResult<ConnectedServer> result = fullResult.getRefreshResult();
+    public void update(FR fullResult) {
+        R result = fullResult.getRefreshResult();
 
         HashMap<String, PoolsFeed> map = result.getPoolFeedMap();
         this.lastUpdate = map;

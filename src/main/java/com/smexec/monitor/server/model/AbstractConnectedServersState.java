@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.PoolsFeed;
-import com.smexec.monitor.shared.RefreshResult;
 
-public abstract class AbstractConnectedServersState<S extends ServerStataus, R extends RefreshResult<C>, C extends ConnectedServer> {
+public abstract class AbstractConnectedServersState<S extends ServerStataus, R extends AbstractRefreshResult<C>, C extends ConnectedServer> {
 
     private ConcurrentHashMap<Integer, S> connectedServersMap = new ConcurrentHashMap<Integer, S>();
 

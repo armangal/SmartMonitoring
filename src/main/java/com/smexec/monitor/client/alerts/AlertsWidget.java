@@ -7,14 +7,14 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
+import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.RefreshResult;
 
-public class AlertsWidget
+public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends AbstractMonitoringWidget
-    implements IMonitoringWidget<ConnectedServer, RefreshResult<ConnectedServer>> {
+    implements IMonitoringWidget<CS, R, FR> {
 
     private ScrollPanel sp = new ScrollPanel();
     private FlexTable alertsTable = new FlexTable();
@@ -38,7 +38,7 @@ public class AlertsWidget
     }
 
     @Override
-    public void update(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> fullRefreshResult) {
+    public void update(FR fullRefreshResult) {
 
         LinkedList<Alert> alerts = fullRefreshResult.getAlerts();
         for (Alert a : alerts) {
@@ -54,7 +54,7 @@ public class AlertsWidget
     }
 
     @Override
-    public void clear(FullRefreshResult<RefreshResult<ConnectedServer>, ConnectedServer> result) {
+    public void clear(FR result) {
 
     }
 }
