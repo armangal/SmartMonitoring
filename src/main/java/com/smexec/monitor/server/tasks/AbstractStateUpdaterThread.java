@@ -44,7 +44,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
             // During threads scheduling, do not allow updates to servers
             ConnectionSynch.connectionLock.lock();
 
-            System.out.println("Refreshing stats for all servers");
+            logger.info("Refreshing stats for all servers");
             ArrayList<C> serversList = new ArrayList<C>(0);
 
             CompletionService<S> compService = new ExecutorCompletionService<S>(threadPool);
@@ -59,7 +59,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
             for (int i = 0; i < values.size(); i++) {
                 Future<S> take = compService.take();
                 S ss = take.get();
-                System.out.println("Finished updating:" + ss.getServerConfig().getName());
+                logger.info("Finished updating:" + ss.getServerConfig().getName());
                 C cs = getConnectedServer(ss);
                 serversList.add(cs);
             }

@@ -62,6 +62,10 @@ public class ServersConfig {
         return builder.toString();
     }
 
+    /**
+     * test
+     * @param args
+     */
     public static void main(String[] args) {
         try {
             JAXBContext context = JAXBContext.newInstance(ServersConfig.class);
