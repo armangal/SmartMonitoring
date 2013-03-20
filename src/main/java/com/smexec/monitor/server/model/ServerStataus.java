@@ -1,6 +1,7 @@
 package com.smexec.monitor.server.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -77,6 +78,14 @@ public class ServerStataus {
 
             LinkedHashMap<Long, GCHistory> cycles = gcHistoryMap.get(gcHistory.getCollectorName());
             if (!cycles.containsKey(gcHistory.getCollectionCount())) {
+                if (cycles.size() > 0) {
+                    LinkedList<Long> list = new LinkedList<Long>(cycles.keySet());
+                    Collections.sort(list);
+                    GCHistory gcH = cycles.get(list.getLast());
+                    long lastColleactionTime = (gcHistory.getCollectionTime() - gcH.getCollectionTime())
+                                               / (gcHistory.getCollectionCount() - gcH.getCollectionCount());
+                    gcHistory.setLastColleactionTime(lastColleactionTime);
+                }
                 cycles.put(gcHistory.getCollectionCount(), gcHistory);
             }
         }
@@ -94,6 +103,10 @@ public class ServerStataus {
         cpuUtilization.evolve(lastMeasurementAfter, lastMeasureTimeAfter);
     }
 
+    /**
+     * will return last measurements for each pool
+     * @return
+     */
     public ArrayList<GCHistory> getLastGCHistory() {
         ArrayList<GCHistory> list = new ArrayList<GCHistory>(0);
         for (LinkedHashMap<Long, GCHistory> poolGcStats : gcHistoryMap.values()) {
@@ -111,7 +124,8 @@ public class ServerStataus {
             LinkedHashMap<Long, GCHistory> map = gcHistoryMap.get(poolName);
             for (GCHistory gch : map.values()) {
                 sb.append("[Count=" + gch.getCollectionCount());
-                sb.append(" GCTime=" + StringFormatter.formatMillis(gch.getCollectionTime()));
+                sb.append(" GCTimeTotal=" + StringFormatter.formatMillis(gch.getCollectionTime()));
+                sb.append(" LastCollTime=" + StringFormatter.formatMillis(gch.getLastColleactionTime()));
                 sb.append("]\n");
             }
             sb.append("\n");

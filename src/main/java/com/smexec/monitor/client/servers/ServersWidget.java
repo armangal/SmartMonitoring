@@ -183,9 +183,11 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
                 String gcs = "";
                 double max = Double.MIN_VALUE;
+
+                // Iterating over all available pools
                 for (GCHistory gch : cs.getGcHistories()) {
-                    if (gch.getCollectionTime() > 0 && gch.getCollectionCount() > 0) {
-                        double time = (double) gch.getCollectionTime() / (double) gch.getCollectionCount() / 1000d;
+                    if (gch.getLastColleactionTime() > 0 && gch.getCollectionCount() > 0) {
+                        double time = gch.getLastColleactionTime() / 1000d;
                         gcs += ClientStringFormatter.formatMillisShort(time) + ", ";
                         if (time > max) {
                             max = time;
