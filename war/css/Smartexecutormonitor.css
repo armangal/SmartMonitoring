@@ -29,6 +29,21 @@ body {
 	font-style: italic;
 }
 
+.login #version {
+   border-top: thin solid orange;
+    font-size: small;
+    font-style: italic;
+    font-weight: normal;
+    margin-top: 18px;
+    padding-top: 8px;
+    width: 100%;
+}
+
+.login #input {
+	width: 93%;
+}
+
+
 .mainPanel {
 	width: 1260px;
 	height: 980px;

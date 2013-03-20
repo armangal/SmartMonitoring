@@ -26,4 +26,6 @@ public interface MonitoringService<CS extends ConnectedServer, R extends Abstrac
     LinkedList<MemoryUsage> getMemoryStats(Integer serverCode);
 
     LinkedList<Double> getCpuUsageHistory(Integer serverCode);
+    
+    String getVersion();
 }

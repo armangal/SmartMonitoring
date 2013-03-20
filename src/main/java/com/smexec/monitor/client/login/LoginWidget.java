@@ -12,6 +12,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -69,7 +70,10 @@ public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshRe
         fp.add(login);
 
         password.addKeyPressHandler(enterhandler);
+        password.getElement().setId("input");
+        
         userName.addKeyPressHandler(enterhandler);
+        userName.getElement().setId("input");
 
         login.addClickHandler(new ClickHandler() {
 
@@ -80,6 +84,28 @@ public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshRe
 
         });
 
+        final HTML version = new HTML();
+        version.getElement().setId("version");
+        fp.add(version);
+        service.getVersion(new AsyncCallback<String>() {
+
+            @Override
+            public void onSuccess(String result) {
+                version.setText("Version:" + result);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                version.setText("Error getting version:" + caught.getMessage());
+            }
+        });
+
+    }
+    
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        userName.setFocus(true);
     }
 
     private void login() {

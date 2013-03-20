@@ -124,4 +124,8 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
     public IConnectedServersState<SS, CS, RR> getConnectedServersState() {
         return connectedServersState;
     }
+
+    public String getVersion() {
+        return Version.getVersion();
+    }
 }

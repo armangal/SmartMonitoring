@@ -21,4 +21,6 @@ public interface MonitoringServiceAsync<CS extends ConnectedServer, R extends Ab
     void getMemoryStats(Integer serverCode, AsyncCallback<LinkedList<MemoryUsage>> callback);
 
     void getCpuUsageHistory(Integer serverCode, AsyncCallback<LinkedList<Double>> callback);
+
+    void getVersion(AsyncCallback<String> callback);
 }
