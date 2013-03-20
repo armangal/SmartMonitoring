@@ -242,7 +242,7 @@
 					<warSourceExcludes>gwt-unitCache,*.log,**/.gitignore</warSourceExcludes>
 					<warSourceDirectory>war</warSourceDirectory>
 					<webXml>war\WEB-INF\web.xml</webXml>
-					<warName>monitoring</warName>
+					<warName>monitoring-${project.version}</warName>
 				</configuration>
 			</plugin>
 			<plugin>
