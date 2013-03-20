@@ -4,7 +4,7 @@
 
 	<groupId>org.smexec</groupId>
 	<artifactId>smartexecutormonitor</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<packaging>war</packaging>
 	<name>Smart Executor Monitor</name>
 
@@ -39,7 +39,7 @@
 			<dependency>
 				<groupId>com.allen-sauer.gwt.log</groupId>
 				<artifactId>gwt-log</artifactId>
-				<version>3.1.6</version>
+				<version>3.1.8</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -153,6 +153,15 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.java</include>
+					<include>**/*.gwt.xml</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 
 			<plugin>
@@ -165,9 +174,9 @@
 							<module>com.smexec.monitor.Smartexecutormonitor</module>
 							<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
 							<warSourceDirectory>war</warSourceDirectory>
-
 						</configuration>
 						<goals>
+							<goal>clean</goal>
 							<goal>compile</goal>
 						</goals>
 					</execution>
@@ -175,11 +184,10 @@
 				<configuration>
 					<runTarget>Smartexecutormonitor.html</runTarget>
 					<hostedWebapp>${webappDirectory}</hostedWebapp>
-					<!-- change it to point to correct server configuration file during 
-						development -->
-					<extraJvmArgs>-Dservers.config=resources/qa1_servers.xml</extraJvmArgs>
+					<extraJvmArgs>-Dservers.config=resources/monitoring.xml</extraJvmArgs>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -188,6 +196,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<!-- creating version file for deployed version to  -->
 			<plugin>
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>replacer</artifactId>
@@ -229,68 +238,64 @@
 							<targetPath>WEB-INF/classes</targetPath>
 						</resource>
 					</webResources>
-
 					<packagingExcludes>gwt-unitCache,*.log,**/.gitignore</packagingExcludes>
-
 					<warSourceExcludes>gwt-unitCache,*.log,**/.gitignore</warSourceExcludes>
-
 					<warSourceDirectory>war</warSourceDirectory>
-
 					<webXml>war\WEB-INF\web.xml</webXml>
-
 					<warName>monitoring</warName>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.2</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- maven-jar-plugin -->
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
 
-	<!-- Repositories Properties -->
-	<repositories>
-		<repository>
-			<id>gwt-maven</id>
-			<url>
-					http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/
-				</url>
-		</repository>
-	</repositories>
 
-	<!-- profiles (with activation per platform) -->
-	<profiles>
-		<profile>
-			<id>gwt-dev-windows</id>
-			<properties>
-				<platform>windows</platform>
-			</properties>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-				<os>
-					<family>windows</family>
-				</os>
-			</activation>
-		</profile>
-		<profile>
-			<id>gwt-dev-mac</id>
-			<properties>
-				<platform>mac</platform>
-			</properties>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<os>
-					<family>mac</family>
-				</os>
-			</activation>
-		</profile>
-		<profile>
-			<id>gwt-dev-linux</id>
-			<properties>
-				<platform>linux</platform>
-			</properties>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<os>
-					<name>linux</name>
-				</os>
-			</activation>
-		</profile>
-	</profiles>
 </project>
