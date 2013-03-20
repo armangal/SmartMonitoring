@@ -182,15 +182,15 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                 ft.setWidget(i, j++, percent);
 
                 String gcs = "";
-                double max = Double.MIN_VALUE;
+                double gcMax = Double.MIN_VALUE;
 
                 // Iterating over all available pools
                 for (GCHistory gch : cs.getGcHistories()) {
                     if (gch.getLastColleactionTime() > 0 && gch.getCollectionCount() > 0) {
                         double time = gch.getLastColleactionTime() / 1000d;
                         gcs += ClientStringFormatter.formatMillisShort(time) + ", ";
-                        if (time > max) {
-                            max = time;
+                        if (time > gcMax) {
+                            gcMax = time;
                         }
                     }
                 }
@@ -201,7 +201,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                 memory.getElement().setAttribute("code", "" + cs.getServerCode());
 
                 ft.setWidget(i, j++, memory);
-                if (max > 5) {
+                if (gcMax > 5) {
                     Style style = ft.getFlexCellFormatter().getElement(i, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
