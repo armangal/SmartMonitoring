@@ -13,6 +13,7 @@ import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
+import com.smexec.monitor.server.services.AlertService;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.Alert;
@@ -38,6 +39,9 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
     @Inject
     private JMXThreadDumpUtils jmxThreadDumpUtils;
 
+    @Inject
+    private AlertService alertService;
+
     public AbstractMonitoringService() {
         GuiceUtils.getInjector().injectMembers(this);
     }
@@ -45,7 +49,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
     public FR refresh(int lastAlertId) {
         checkAuthenticated();
         RR refreshResult = connectedServersState.getRefreshResult();
-        LinkedList<Alert> alertsAfter = connectedServersState.getAlertsAfter(lastAlertId);
+        LinkedList<Alert> alertsAfter = alertService.getAlertsAfter(lastAlertId);
 
         return createFullRefreshResult(refreshResult, alertsAfter, Version.getVersion());
     }

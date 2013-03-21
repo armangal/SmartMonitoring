@@ -1,6 +1,8 @@
 package com.smexec.monitor.client.alerts;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -18,6 +20,8 @@ public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshR
 
     private ScrollPanel sp = new ScrollPanel();
     private FlexTable alertsTable = new FlexTable();
+
+    private Map<Integer, Alert> map = new HashMap<Integer, Alert>();
 
     public AlertsWidget() {
         super("Alerts");
@@ -42,13 +46,17 @@ public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshR
 
         LinkedList<Alert> alerts = fullRefreshResult.getAlerts();
         for (Alert a : alerts) {
-            int insertRow = alertsTable.insertRow(1);
-            alertsTable.setText(insertRow, 0, "" + a.getId());
-            HTML msg = new HTML(a.getMessage());
-            msg.setTitle(a.getDetails());
-            alertsTable.setWidget(insertRow, 1, msg);
-            alertsTable.setText(insertRow, 2, "" + a.getServerCode());
-            alertsTable.setText(insertRow, 3, a.getAlertTime().toString());
+            if (!map.containsKey(a.getId())) {
+                int insertRow = alertsTable.insertRow(1);
+                alertsTable.setText(insertRow, 0, "" + a.getId());
+                HTML msg = new HTML(a.getMessage());
+                msg.setTitle(a.getDetails());
+                alertsTable.setWidget(insertRow, 1, msg);
+                alertsTable.setText(insertRow, 2, "" + a.getServerCode());
+                alertsTable.setText(insertRow, 3, a.getAlertTime().toString());
+
+                map.put(a.getId(), a);
+            }
         }
 
     }

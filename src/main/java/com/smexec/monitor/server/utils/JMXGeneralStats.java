@@ -12,7 +12,9 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.RuntimeMXBean;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +27,11 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
+import com.google.inject.Inject;
+import com.smexec.monitor.server.model.AlertType;
 import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.services.AlertService;
+import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.StringFormatter;
 import com.sun.management.OperatingSystemMXBean;
@@ -35,6 +41,11 @@ import com.sun.management.OperatingSystemMXBean;
  */
 @SuppressWarnings("restriction")
 public class JMXGeneralStats {
+
+    @Inject
+    private AlertService alertService;
+
+    public JMXGeneralStats() {}
 
     private List<GCHistory> getGcHistory(List<GarbageCollectorMXBean> gcmbeans) {
         List<GCHistory> retList = new ArrayList<GCHistory>(0);
@@ -118,11 +129,18 @@ public class JMXGeneralStats {
 
         serverStataus.setUptime(rmbean.getUptime());
 
-        serverStataus.updateMemoryUsage(heapMemoryUsage.getInit(),
-                                        heapMemoryUsage.getUsed(),
-                                        heapMemoryUsage.getCommitted(),
-                                        heapMemoryUsage.getMax(),
-                                        memoryState);
+        com.smexec.monitor.shared.MemoryUsage mu = serverStataus.updateMemoryUsage(heapMemoryUsage.getInit(),
+                                                                                   heapMemoryUsage.getUsed(),
+                                                                                   heapMemoryUsage.getCommitted(),
+                                                                                   heapMemoryUsage.getMax(),
+                                                                                   memoryState);
+        if (mu.getPercentage() > 80d) {
+            Alert alert = new Alert("Memory Usage Alert, load is:" + new DecimalFormat("###.##").format(mu.getPercentage()) + "%",
+                                    serverStataus.getServerConfig().getServerCode(),
+                                    new Date().toString(),
+                                    AlertType.MEMORY);
+            alertService.addAlert(alert);
+        }
 
         List<GCHistory> gcHistoryList = getGcHistory(gcmbeans);
         for (GCHistory gch : gcHistoryList) {
@@ -130,7 +148,14 @@ public class JMXGeneralStats {
         }
 
         OperatingSystemMXBean operatingSystemMXBean = newPlatformMXBeanProxy(mbsc, ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
-        serverStataus.updateCPUutilization(operatingSystemMXBean.getProcessCpuTime(), System.nanoTime());
+
+        double load = serverStataus.updateCPUutilization(operatingSystemMXBean.getProcessCpuTime(), System.nanoTime());
+
+        if (load > 80d) {
+            Alert alert = new Alert("CPU Alert, load is:" + new DecimalFormat("###.##").format(load), serverStataus.getServerConfig().getServerCode(), new Date().toString(), AlertType.CPU);
+            alertService.addAlert(alert);
+        }
+
     }
 
 }

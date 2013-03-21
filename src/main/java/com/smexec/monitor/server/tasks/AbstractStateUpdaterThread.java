@@ -59,7 +59,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
             for (int i = 0; i < values.size(); i++) {
                 Future<S> take = compService.take();
                 S ss = take.get();
-                logger.info("Finished updating:" + ss.getServerConfig().getName());
+                logger.info("Finished updating:{}, {} from {}", new Object[] {ss.getServerConfig().getName(), i, values.size()});
                 C cs = getConnectedServer(ss);
                 serversList.add(cs);
             }

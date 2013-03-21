@@ -12,14 +12,16 @@ public class Alert
     private String details;
     private int serverCode;
     private String alertTime;
+    private String type;
 
     public Alert() {}
 
-    public Alert(String message, int serverCode, String alertTime) {
+    public Alert(String message, int serverCode, String alertTime, String type) {
         super();
         this.message = message;
         this.serverCode = serverCode;
         this.alertTime = alertTime;
+        this.type = type;
     }
 
     public void setId(int id) {
@@ -59,6 +61,7 @@ public class Alert
         result = prime * result + id;
         result = prime * result + ((message == null) ? 0 : message.hashCode());
         result = prime * result + serverCode;
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
 
@@ -90,23 +93,30 @@ public class Alert
             return false;
         if (serverCode != other.serverCode)
             return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Alert [id=")
-               .append(id)
-               .append(", message=")
-               .append(message)
-               .append(", details=")
-               .append(details)
-               .append(", serverCode=")
-               .append(serverCode)
-               .append(", alertTime=")
-               .append(alertTime)
-               .append("]");
+        builder.append("Alert [id=");
+        builder.append(id);
+        builder.append(", message=");
+        builder.append(message);
+        builder.append(", details=");
+        builder.append(details);
+        builder.append(", serverCode=");
+        builder.append(serverCode);
+        builder.append(", alertTime=");
+        builder.append(alertTime);
+        builder.append(", type=");
+        builder.append(type);
+        builder.append("]");
         return builder.toString();
     }
 

@@ -2,17 +2,18 @@ package com.smexec.monitor.server.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.smexec.monitor.shared.AbstractRefreshResult;
-import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.PoolsFeed;
 
 public abstract class AbstractConnectedServersState<S extends ServerStataus, R extends AbstractRefreshResult<C>, C extends ConnectedServer> {
+
+    private static Logger logger = LoggerFactory.getLogger(AbstractConnectedServersState.class);
 
     private ConcurrentHashMap<Integer, S> connectedServersMap = new ConcurrentHashMap<Integer, S>();
 
@@ -20,10 +21,6 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
      * Result ready to be used by clients
      */
     private R result;
-
-    private Map<Integer, Alert> alertsMap = new HashMap<Integer, Alert>();
-
-    private AtomicInteger alertCounter = new AtomicInteger();
 
     public abstract R createNewRefreshResult(String title, ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap);
 
@@ -42,9 +39,15 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
         return result;
     }
 
+    /**
+     * might be overridden to initiate additional result objects
+     * 
+     * @param servers
+     */
     public void mergeStats(ArrayList<C> servers) {
         HashMap<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>();
 
+        logger.info("Merging stats");
         for (S ss : connectedServersMap.values()) {
             if (ss.isConnected()) {
                 for (PoolsFeed pf : ss.getPoolFeedMap().values()) {
@@ -69,27 +72,6 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
 
     public ServersConfig getServersConfig() {
         return serversConfig;
-    }
-
-    public Map<Integer, Alert> getAlertsMap() {
-        return alertsMap;
-    }
-
-    public LinkedList<Alert> getAlertsAfter(int alertId) {
-        LinkedList<Alert> alerts = new LinkedList<Alert>();
-        for (int i = alertId + 1; i < Integer.MAX_VALUE; i++) {
-            if (alertsMap.containsKey(i)) {
-                alerts.add(alertsMap.get(i));
-            } else {
-                break;
-            }
-        }
-        return alerts;
-    }
-
-    public void addAlert(Alert alert) {
-        alert.setId(alertCounter.getAndIncrement());
-        alertsMap.put(alert.getId(), alert);
     }
 
 }

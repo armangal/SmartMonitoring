@@ -92,19 +92,22 @@ public class ServerStataus {
 
     }
 
-    public void updateMemoryUsage(long init, long used, long committed, long max, String memoryState) {
-        memoryUsage.add(new MemoryUsage(init, used, committed, max, memoryState));
+    public MemoryUsage updateMemoryUsage(long init, long used, long committed, long max, String memoryState) {
+        MemoryUsage mu = new MemoryUsage(init, used, committed, max, memoryState);
+        memoryUsage.add(mu);
         if (memoryUsage.size() > 100) {
             memoryUsage.remove();
         }
+        return mu;
     }
 
-    public void updateCPUutilization(final long lastMeasurementAfter, final long lastMeasureTimeAfter) {
-        cpuUtilization.evolve(lastMeasurementAfter, lastMeasureTimeAfter);
+    public double updateCPUutilization(final long lastMeasurementAfter, final long lastMeasureTimeAfter) {
+        return cpuUtilization.evolve(lastMeasurementAfter, lastMeasureTimeAfter);
     }
 
     /**
      * will return last measurements for each pool
+     * 
      * @return
      */
     public ArrayList<GCHistory> getLastGCHistory() {

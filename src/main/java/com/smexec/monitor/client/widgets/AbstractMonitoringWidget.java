@@ -18,6 +18,8 @@ public abstract class AbstractMonitoringWidget
 
     private FlowPanel dataPanel = new FlowPanel();
 
+    private HTML lable = new HTML();
+
     private ClickHandler zoom = new ClickHandler() {
 
         @Override
@@ -49,7 +51,7 @@ public abstract class AbstractMonitoringWidget
         img.addMouseOverHandler(handCursor);
 
         header.add(img);
-        HTML lable = new HTML(name);
+        lable.setText(name);
         lable.setStyleName("lable");
         header.add(lable);
         mainPanel.add(header);
@@ -63,5 +65,9 @@ public abstract class AbstractMonitoringWidget
 
     public FlowPanel getDataPanel() {
         return dataPanel;
+    }
+
+    public void updateTitle(String title) {
+        this.lable.setText(title);
     }
 }

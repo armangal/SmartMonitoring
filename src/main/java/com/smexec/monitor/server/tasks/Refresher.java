@@ -30,16 +30,18 @@ public class Refresher<S extends ServerStataus>
     private S ss;
 
     public Refresher(S ss) {
-        setSs(ss);
+        this.ss = ss;
         GuiceUtils.getInjector().injectMembers(this);
     }
 
     @Override
     public S call()
         throws Exception {
+        String old = Thread.currentThread().getName();
         try {
+            Thread.currentThread().setName("REF_" + ss.getServerConfig().getName());
             if (ss.isConnected()) {
-                System.out.println("Refreshing:" + ss.getServerConfig().getName());
+                logger.info("Refreshing:{}", ss.getServerConfig().getName());
                 jmxGeneralStats.getMemoryStats(ss);
                 jmxSmartExecutorStats.getSmartThreadPoolStats(ss);
                 fillExtraData(ss);
@@ -48,16 +50,19 @@ public class Refresher<S extends ServerStataus>
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        } finally {
+            Thread.currentThread().setName(old);
         }
         return ss;
     }
 
+    /**
+     * might be overridden to collect more information from the server
+     * 
+     * @param ss
+     */
     public void fillExtraData(S ss) {
-
-    }
-
-    public void setSs(S ss) {
-        this.ss = ss;
+        // Nothing
     }
 
 }
