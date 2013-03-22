@@ -28,6 +28,7 @@ import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.Version;
 
 public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>>
     implements IJMXConnectorThread {
@@ -94,6 +95,8 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
             logger.info("Initilized:{}", serversConfig);
             connectedServersState.setServersConfig(serversConfig);
+            
+            Version.setEnvName(serversConfig.getName());
 
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {

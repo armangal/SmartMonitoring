@@ -21,14 +21,17 @@ public class GCHistory
 
     private String[] memoryPoolNames;
 
+    private String time;
+
     public GCHistory() {}
 
-    public GCHistory(String collectorName, long collectionCount, long collectionTime, String[] memoryPoolNames) {
+    public GCHistory(String collectorName, long collectionCount, long collectionTime, String[] memoryPoolNames, String time) {
         super();
         this.collectorName = collectorName;
         this.collectionCount = collectionCount;
         this.collectionTime = collectionTime;
         this.memoryPoolNames = memoryPoolNames;
+        this.time = time;
     }
 
     public String getCollectorName() {
@@ -53,6 +56,10 @@ public class GCHistory
 
     public void setLastColleactionTime(long lastColleactionTime) {
         this.lastColleactionTime = lastColleactionTime;
+    }
+
+    public String getTime() {
+        return time;
     }
 
     @Override
@@ -95,16 +102,17 @@ public class GCHistory
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("GCHistory [collectorName=");
+        builder.append("GCHistory [cn=");
         builder.append(collectorName);
-        builder.append(", collectionCount=");
+        builder.append(", cc=");
         builder.append(collectionCount);
-        builder.append(", collectionTime=");
+        builder.append(", ct=");
         builder.append(collectionTime);
-        builder.append(", lastColleactionTime=");
+        builder.append(", lct=");
         builder.append(lastColleactionTime);
-        builder.append(", memoryPoolNames=");
+        builder.append(", pn=");
         builder.append(Arrays.toString(memoryPoolNames));
+        builder.append(", t=").append(time);
         builder.append("]");
         return builder.toString();
     }

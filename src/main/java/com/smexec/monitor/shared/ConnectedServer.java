@@ -86,23 +86,23 @@ public class ConnectedServer
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ConnectedServer [name=")
+        builder.append("ConnectedServer [n=")
                .append(name)
-               .append(", serverCode=")
+               .append(", sc=")
                .append(serverCode)
                .append(", ip=")
                .append(ip)
-               .append(", jmxPort=")
+               .append(", jp=")
                .append(jmxPort)
-               .append(", status=")
+               .append(", st=")
                .append(status)
-               .append(", memoryUsage=")
+               .append(", mu=")
                .append(memoryUsage)
-               .append(", gcHistories=")
+               .append(", gc=")
                .append(gcHistories)
-               .append(", upTime=")
+               .append(", ut=")
                .append(upTime)
-               .append(", cpuUtilization=")
+               .append(", cp=")
                .append(cpuUtilization)
                .append("]");
         return builder.toString();

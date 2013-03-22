@@ -101,8 +101,8 @@ public class ServerStataus {
         return mu;
     }
 
-    public double updateCPUutilization(final long lastMeasurementAfter, final long lastMeasureTimeAfter) {
-        return cpuUtilization.evolve(lastMeasurementAfter, lastMeasureTimeAfter);
+    public double updateCPUutilization(final long lastMeasurementAfter, final int availableProcessors, final long lastMeasureTimeAfter) {
+        return cpuUtilization.evolve(lastMeasurementAfter, availableProcessors, lastMeasureTimeAfter);
     }
 
     /**
@@ -126,9 +126,9 @@ public class ServerStataus {
             sb.append("Collector Name:").append(poolName).append("\n");
             LinkedHashMap<Long, GCHistory> map = gcHistoryMap.get(poolName);
             for (GCHistory gch : map.values()) {
-                sb.append("[Count=" + gch.getCollectionCount());
-                sb.append(" GCTimeTotal=" + StringFormatter.formatMillis(gch.getCollectionTime()));
-                sb.append(" LastCollTime=" + StringFormatter.formatMillis(gch.getLastColleactionTime()));
+                sb.append("[T:").append(gch.getTime()).append(" CNT=" + gch.getCollectionCount());
+                sb.append(" TT=" + StringFormatter.formatMillis(gch.getCollectionTime()));
+                sb.append(" LT=" + StringFormatter.formatMillis(gch.getLastColleactionTime()));
                 sb.append("]\n");
             }
             sb.append("\n");

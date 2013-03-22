@@ -13,6 +13,7 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.RuntimeMXBean;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -48,9 +49,11 @@ public class JMXGeneralStats {
     public JMXGeneralStats() {}
 
     private List<GCHistory> getGcHistory(List<GarbageCollectorMXBean> gcmbeans) {
+        final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = DATE_FORMAT.format(new Date());
         List<GCHistory> retList = new ArrayList<GCHistory>(0);
         for (GarbageCollectorMXBean gc : gcmbeans) {
-            retList.add(new GCHistory(gc.getName(), gc.getCollectionCount(), gc.getCollectionTime(), gc.getMemoryPoolNames()));
+            retList.add(new GCHistory(gc.getName(), gc.getCollectionCount(), gc.getCollectionTime(), gc.getMemoryPoolNames(), time));
         }
         return retList;
     }
@@ -85,6 +88,10 @@ public class JMXGeneralStats {
      */
     public void getMemoryStats(ServerStataus serverStataus)
         throws MBeanException, AttributeNotFoundException, InstanceNotFoundException, ReflectionException, IOException, MalformedObjectNameException {
+
+        final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##");
+
+        final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         MBeanServerConnection mbsc = serverStataus.getConnector().getMBeanServerConnection();
         RuntimeMXBean rmbean = newPlatformMXBeanProxy(mbsc, RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
@@ -134,10 +141,11 @@ public class JMXGeneralStats {
                                                                                    heapMemoryUsage.getCommitted(),
                                                                                    heapMemoryUsage.getMax(),
                                                                                    memoryState);
-        if (mu.getPercentage() > 80d) {
-            Alert alert = new Alert("Memory Usage Alert, load is:" + new DecimalFormat("###.##").format(mu.getPercentage()) + "%",
+
+        if (mu.getPercentage() > 90d) {
+            Alert alert = new Alert("Memory Usage Alert, load is:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
                                     serverStataus.getServerConfig().getServerCode(),
-                                    new Date().toString(),
+                                    DATE_FORMAT.format(new Date()),
                                     AlertType.MEMORY);
             alertService.addAlert(alert);
         }
@@ -149,10 +157,15 @@ public class JMXGeneralStats {
 
         OperatingSystemMXBean operatingSystemMXBean = newPlatformMXBeanProxy(mbsc, ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
 
-        double load = serverStataus.updateCPUutilization(operatingSystemMXBean.getProcessCpuTime(), System.nanoTime());
+        double load = serverStataus.updateCPUutilization(operatingSystemMXBean.getProcessCpuTime(),
+                                                         operatingSystemMXBean.getAvailableProcessors(),
+                                                         System.nanoTime());
 
         if (load > 80d) {
-            Alert alert = new Alert("CPU Alert, load is:" + new DecimalFormat("###.##").format(load), serverStataus.getServerConfig().getServerCode(), new Date().toString(), AlertType.CPU);
+            Alert alert = new Alert("CPU Alert, load is:" + DECIMAL_FORMAT.format(load),
+                                    serverStataus.getServerConfig().getServerCode(),
+                                    DATE_FORMAT.format(new Date()),
+                                    AlertType.CPU);
             alertService.addAlert(alert);
         }
 

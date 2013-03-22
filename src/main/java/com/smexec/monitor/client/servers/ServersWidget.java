@@ -201,7 +201,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                 memory.getElement().setAttribute("code", "" + cs.getServerCode());
 
                 ft.setWidget(i, j++, memory);
-                if (gcMax > 5) {
+                if (gcMax > 10) {
                     Style style = ft.getFlexCellFormatter().getElement(i, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
@@ -212,12 +212,16 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                     ft.getRowFormatter().getElement(i).setId("memoryVeryHigh");
                 } else if (cs.getMemoryUsage().getPercentage() > 80) {
                     ft.getRowFormatter().getElement(i).setId("memoryHigh");
-                } else if (cs.getMemoryUsage().getPercentage() > 70) {
-                    ft.getRowFormatter().getElement(i).setId("memoryWarn");
                 }
 
                 HTML cpu = new HTML(cs.getCpuUtilization() + "%");
                 ft.setWidget(i++, j++, cpu);
+                if (cs.getCpuUtilization() > 90d) {
+                    Style style = ft.getFlexCellFormatter().getElement(i - 1, j - 1).getStyle();
+                    style.setBackgroundColor("#C00000");
+                    style.setFontWeight(FontWeight.BOLDER);
+                    style.setColor("white");
+                }
 
             } else {
                 final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");

@@ -130,6 +130,6 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
     }
 
     public String getVersion() {
-        return Version.getVersion();
+        return Version.getEnvName() + "," + Version.getVersion();
     }
 }

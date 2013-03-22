@@ -38,7 +38,7 @@ public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("FullRefreshResult [refreshResult=").append(refreshResult).append(", alerts=").append(alerts).append("]");
+        builder.append("FullRefreshResult [rr=").append(refreshResult).append(", alerts=").append(alerts).append("]");
         return builder.toString();
     }
 

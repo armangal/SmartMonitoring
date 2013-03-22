@@ -14,11 +14,11 @@ public class CPUUtilization
 
     public CPUUtilization() {}
 
-    public double evolve(final long lastMeasurementAfter, final long lastMeasureTimeAfter) {
+    public double evolve(final long lastMeasurementAfter,final int availableProcessors, final long lastMeasureTimeAfter) {
         double percent;
 
         if (lastMeasureTimeAfter > lastMeasureTime) {
-            percent = ((lastMeasurementAfter - lastMeasurement) * 100L) / (lastMeasureTimeAfter - lastMeasureTime);
+            percent = ((lastMeasurementAfter - lastMeasurement) * 100L) / (lastMeasureTimeAfter - lastMeasureTime) / availableProcessors;
         } else {
             percent = 0;
         }

@@ -9,6 +9,8 @@ public class Version
 
     private static String version = "XXX";
 
+    private static String envName = "XXX";
+
     public Version() {}
 
     public static String getVersion() {
@@ -19,11 +21,21 @@ public class Version
         Version.version = version;
     }
 
+    public static String getEnvName() {
+        return envName;
+    }
+
+    public static void setEnvName(String envName) {
+        Version.envName = envName;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Version [");
         builder.append(version);
+        builder.append(", envName");
+        builder.append(envName);
         builder.append("]");
         return builder.toString();
     }

@@ -59,19 +59,17 @@ public class MemoryUsage
 
     @Override
     public String toString() {
-//        NumberFormat formatLong = NumberFormat.getDecimalFormat();
-
         StringBuilder builder = new StringBuilder();
-        builder.append("MemoryUsage [committed=");
-//        builder.append(formatLong.format(committed));
-//        builder.append(", init=");
-//        builder.append(formatLong.format(init));
-//        builder.append(", max=");
-//        builder.append(formatLong.format(max));
-//        builder.append(", used=");
-//        builder.append(formatLong.format(used));
-//        builder.append(", percent=");
-//        builder.append(formatLong.format(getPercentage()));
+        builder.append("MemoryUsage [cm=");
+        builder.append((committed));
+        builder.append(", in=");
+        builder.append((init));
+        builder.append(", max=");
+        builder.append((max));
+        builder.append(", us=");
+        builder.append((used));
+        builder.append(", pr=");
+        builder.append((getPercentage()));
         builder.append("%]");
         return builder.toString();
     }

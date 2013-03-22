@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -44,19 +45,33 @@ public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshR
     @Override
     public void update(FR fullRefreshResult) {
 
-        LinkedList<Alert> alerts = fullRefreshResult.getAlerts();
-        for (Alert a : alerts) {
-            if (!map.containsKey(a.getId())) {
-                int insertRow = alertsTable.insertRow(1);
-                alertsTable.setText(insertRow, 0, "" + a.getId());
-                HTML msg = new HTML(a.getMessage());
-                msg.setTitle(a.getDetails());
-                alertsTable.setWidget(insertRow, 1, msg);
-                alertsTable.setText(insertRow, 2, "" + a.getServerCode());
-                alertsTable.setText(insertRow, 3, a.getAlertTime().toString());
+        try {
+            LinkedList<Alert> alerts = fullRefreshResult.getAlerts();
+            for (Alert a : alerts) {
+                if (!map.containsKey(a.getId())) {
+                    int insertRow = alertsTable.insertRow(1);
+                    alertsTable.setText(insertRow, 0, "" + a.getId());
+                    HTML msg = new HTML(a.getMessage());
+                    msg.setTitle(a.getDetails());
+                    alertsTable.setWidget(insertRow, 1, msg);
+                    alertsTable.setText(insertRow, 2, "" + a.getServerCode());
+                    alertsTable.setText(insertRow, 3, a.getAlertTime().toString());
+                    alertsTable.getRowFormatter().getElement(insertRow).setAttribute("id", "" + a.getId());
 
-                map.put(a.getId(), a);
+                    map.put(a.getId(), a);
+                }
             }
+
+            if (alertsTable.getRowCount() > 1000) {
+                // clean
+                for (int i = alertsTable.getRowCount() - 1; i > 1000; i--) {
+                    int id = Integer.valueOf(alertsTable.getRowFormatter().getElement(i).getAttribute("id"));
+                    alertsTable.removeRow(i);
+                    map.remove(id);
+                }
+            }
+        } catch (Exception e) {
+            Log.error(e.getMessage(), e);
         }
 
     }

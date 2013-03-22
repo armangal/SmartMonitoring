@@ -8,7 +8,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +58,21 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
             }
 
             // Waiting for all threads to finish
-            for (int i = 0; i < values.size(); i++) {
+            int i = 0;
+            do {
                 Future<S> take = compService.take();
-                S ss = take.get();
-                logger.info("Finished updating:{}, {} from {}", new Object[] {ss.getServerConfig().getName(), i, values.size()});
-                C cs = getConnectedServer(ss);
-                serversList.add(cs);
-            }
+                i++;
+                try {
+                    S ss = take.get(10, TimeUnit.SECONDS);
+                    logger.info("Finished updating:{}, {} from {}", new Object[] {ss.getServerConfig().getName(), i, values.size()});
+                    C cs = getConnectedServer(ss);
+                    serversList.add(cs);
+                } catch (Exception e) {
+                    take.cancel(true);
+                    logger.warn(e.getMessage(), e);
+                }
+
+            } while (i < values.size());
 
             // finished querying all connected servers, now merging the results.
             connectedServersState.mergeStats(serversList);

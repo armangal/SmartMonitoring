@@ -13,7 +13,7 @@ import com.smexec.monitor.shared.Alert;
 public class AlertService {
 
     private static Logger logger = LoggerFactory.getLogger(AlertService.class);
-    
+
     private Map<Integer, Alert> alertsMap = new HashMap<Integer, Alert>();
 
     private static AtomicInteger alertCounter = new AtomicInteger();
@@ -28,9 +28,14 @@ public class AlertService {
         return alerts;
     }
 
+    /**
+     * use it to add alert message
+     * 
+     * @param alert
+     */
     public void addAlert(Alert alert) {
         alert.setId(alertCounter.getAndIncrement());
-        logger.info("Alert added:{}", alert);
+        logger.warn("Alert added:{}", alert);
         alertsMap.put(alert.getId(), alert);
     }
 }

@@ -42,4 +42,19 @@ public class AbstractRefreshResult <C extends ConnectedServer>
         return title;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ARR [pfm=");
+        builder.append(poolFeedMap.size());
+        builder.append(", ser=");
+        builder.append(servers);
+        builder.append(", ttl=");
+        builder.append(title);
+        builder.append("]");
+        return builder.toString();
+    }
+    
+    
+
 }
