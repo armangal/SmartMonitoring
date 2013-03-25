@@ -17,7 +17,7 @@ public class ConnectedServersState
     }
 
     @Override
-    public RefreshResult createNewRefreshResult(String title, ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
-        return new RefreshResult(title, servers, poolFeedMap);
+    public RefreshResult createNewRefreshResult(ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+        return new RefreshResult(servers, poolFeedMap);
     }
 }

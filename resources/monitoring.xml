@@ -3,6 +3,7 @@
 	<name>Demo Monitoring</name>
 	<username>admin</username>
 	<password>password</password>
+	<inMemoryAlerts>10000</inMemoryAlerts>
 	<servers>
 		<server>
 			<name>Local (1)</name>

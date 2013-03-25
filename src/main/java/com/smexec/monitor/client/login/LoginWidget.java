@@ -20,16 +20,18 @@ import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
+import com.smexec.monitor.shared.config.ClientConfigurations;
 
 public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends Composite {
 
     public interface LoggedInCallBack {
 
-        void loggedIn();
+        void loggedIn(ClientConfigurations cc);
     }
 
     private final MonitoringServiceAsync<CS, R, FR> service;
+    private ClientConfigurations cc;
 
     private LoggedInCallBack callBack;
 
@@ -71,7 +73,7 @@ public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshRe
 
         password.addKeyPressHandler(enterhandler);
         password.getElement().setId("input");
-        
+
         userName.addKeyPressHandler(enterhandler);
         userName.getElement().setId("input");
 
@@ -87,11 +89,14 @@ public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshRe
         final HTML version = new HTML();
         version.getElement().setId("version");
         fp.add(version);
-        service.getVersion(new AsyncCallback<String>() {
+        service.getClientConfigurations(new AsyncCallback<ClientConfigurations>() {
 
             @Override
-            public void onSuccess(String result) {
-                version.setText("Version:" + result);
+            public void onSuccess(ClientConfigurations result) {
+                version.setText("Env:" + result.getTitle() + ", Version:" + result.getVersion());
+                Window.setTitle(result.getTitle() + ", v:" + result.getVersion());
+                cc = result;
+
             }
 
             @Override
@@ -101,7 +106,7 @@ public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshRe
         });
 
     }
-    
+
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -114,7 +119,7 @@ public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshRe
             @Override
             public void onSuccess(Boolean result) {
                 if (result.booleanValue() == true) {
-                    callBack.loggedIn();
+                    callBack.loggedIn(cc);
                 } else {
                     Window.alert("Can't login");
                 }

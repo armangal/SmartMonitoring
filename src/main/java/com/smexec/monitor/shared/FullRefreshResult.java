@@ -12,15 +12,12 @@ public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends 
 
     private LinkedList<Alert> alerts;
 
-    private String version;
-
     public FullRefreshResult() {}
 
-    public FullRefreshResult(RR refreshResult, LinkedList<Alert> alerts, String version) {
+    public FullRefreshResult(RR refreshResult, LinkedList<Alert> alerts) {
         super();
         this.refreshResult = refreshResult;
         this.alerts = alerts;
-        this.version = version;
     }
 
     public LinkedList<Alert> getAlerts() {
@@ -29,10 +26,6 @@ public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends 
 
     public RR getRefreshResult() {
         return refreshResult;
-    }
-
-    public String getVersion() {
-        return version;
     }
 
     @Override

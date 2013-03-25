@@ -1,5 +1,7 @@
 package com.smexec.monitor.server.tasks;
 
+import java.util.Date;
+
 import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.shared.ConnectedServer;
@@ -9,8 +11,8 @@ public class StateUpdaterThread
     extends AbstractStateUpdaterThread<ServerStataus, Refresher<ServerStataus>, ConnectedServer, RefreshResult> {
 
     @Override
-    public Refresher<ServerStataus> getRefresher(ServerStataus ss) {
-        return new Refresher<ServerStataus>(ss);
+    public Refresher<ServerStataus> getRefresher(ServerStataus ss, Date executionDate, int excutionNumber) {
+        return new Refresher<ServerStataus>(ss, executionDate, excutionNumber);
     }
 
     @Override

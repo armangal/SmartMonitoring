@@ -25,6 +25,8 @@ public class ServersConfig {
     private String username;
     private String password;
 
+    private Integer inMemoryAlerts = 10000;
+
     public ServersConfig() {}
 
     public List<ServerConfig> getServers() {
@@ -47,6 +49,10 @@ public class ServersConfig {
         return username;
     }
 
+    public Integer getInMemoryAlerts() {
+        return inMemoryAlerts;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -58,12 +64,15 @@ public class ServersConfig {
         builder.append(username);
         builder.append(", password=");
         builder.append(password);
+        builder.append(", inMemoryAlerts=");
+        builder.append(inMemoryAlerts);
         builder.append("]");
         return builder.toString();
     }
 
     /**
      * test
+     * 
      * @param args
      */
     public static void main(String[] args) {

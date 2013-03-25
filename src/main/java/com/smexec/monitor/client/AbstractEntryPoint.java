@@ -24,6 +24,7 @@ import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
+import com.smexec.monitor.shared.config.ClientConfigurations;
 
 public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     implements EntryPoint {
@@ -42,7 +43,10 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
 
     private HTML title = new HTML("<h1>----------------------------</h1>");
 
-    private int lastAlertId = 0;
+    /**
+     * used to filter alerts coming from server
+     */
+    private int lastAlertId = -1;
 
     private RepeatingCommand refreshCommand = new RepeatingCommand() {
 
@@ -62,7 +66,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
         this.loginWidget.registerCallBack(new LoggedInCallBack() {
 
             @Override
-            public void loggedIn() {
+            public void loggedIn(ClientConfigurations cc) {
                 Log.debug("Authenticated");
                 RootPanel.get().clear();
                 addMainWidgets();
@@ -71,6 +75,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
                 refresh = true;
                 refresh();
                 Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
+                title.setHTML("<h1>" + cc.getTitle() + ", v:" + cc.getVersion() + "</h1>");
+
             }
         });
 
@@ -96,9 +102,9 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
 
         mainPanel.setStyleName("mainPanel");
         mainPanel.add(title);
-        
+
         registerWidgets();
-        
+
         Log.debug("AbstractEntryPoint created.");
     }
 
@@ -130,8 +136,6 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
                     return;
                 }
 
-                title.setHTML("<h1>" + result.getTitle() + ", v:" + fullResult.getVersion() + "</h1>");
-                Window.setTitle(result.getTitle() + ", v:" + fullResult.getVersion());
                 ArrayList<CS> servers = result.getServers();
                 if (servers != null && !servers.isEmpty()) {
                     Log.debug("Received FULL refresh response.");

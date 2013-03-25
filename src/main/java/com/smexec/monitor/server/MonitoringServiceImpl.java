@@ -20,7 +20,7 @@ public class MonitoringServiceImpl
     public MonitoringServiceImpl() {}
 
     @Override
-    public FullRefreshResult<RefreshResult, ConnectedServer> createFullRefreshResult(RefreshResult refreshResult, LinkedList<Alert> alerts, String version) {
-        return new FullRefreshResult<RefreshResult, ConnectedServer>(refreshResult, alerts, version);
+    public FullRefreshResult<RefreshResult, ConnectedServer> createFullRefreshResult(RefreshResult refreshResult, LinkedList<Alert> alerts) {
+        return new FullRefreshResult<RefreshResult, ConnectedServer>(refreshResult, alerts);
     }
 }

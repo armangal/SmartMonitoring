@@ -22,14 +22,9 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
      */
     private R result;
 
-    public abstract R createNewRefreshResult(String title, ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap);
+    public abstract R createNewRefreshResult(ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap);
 
     public abstract void mergeExtraData(S ss);
-
-    /**
-     * current most up-to-date configurations
-     */
-    private ServersConfig serversConfig;
 
     public ConcurrentHashMap<Integer, S> getMap() {
         return connectedServersMap;
@@ -63,15 +58,7 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
             }
         }
 
-        result = createNewRefreshResult(serversConfig.getName(), servers, poolFeedMap);
-    }
-
-    public void setServersConfig(ServersConfig sc) {
-        serversConfig = sc;
-    }
-
-    public ServersConfig getServersConfig() {
-        return serversConfig;
+        result = createNewRefreshResult(servers, poolFeedMap);
     }
 
 }

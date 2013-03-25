@@ -26,6 +26,7 @@ import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
+import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.Version;
@@ -50,6 +51,9 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
     @Inject
     private IConnectedServersState<SS, CS, RR> connectedServersState;
+
+    @Inject
+    private ConfigurationService configurationService;
 
     public AbstractJMXConnectorThread()
         throws JAXBException {
@@ -94,8 +98,8 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
             serversConfig.validate();
 
             logger.info("Initilized:{}", serversConfig);
-            connectedServersState.setServersConfig(serversConfig);
-            
+            configurationService.setServersConfig(serversConfig);
+
             Version.setEnvName(serversConfig.getName());
 
             if (serversConfig.getServers().size() > 0) {

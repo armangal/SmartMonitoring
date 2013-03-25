@@ -7,6 +7,7 @@ import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.MemoryUsage;
+import com.smexec.monitor.shared.config.ClientConfigurations;
 
 public interface MonitoringServiceAsync<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>> {
 
@@ -22,5 +23,5 @@ public interface MonitoringServiceAsync<CS extends ConnectedServer, R extends Ab
 
     void getCpuUsageHistory(Integer serverCode, AsyncCallback<LinkedList<Double>> callback);
 
-    void getVersion(AsyncCallback<String> callback);
+    void getClientConfigurations(AsyncCallback<ClientConfigurations> callback);
 }

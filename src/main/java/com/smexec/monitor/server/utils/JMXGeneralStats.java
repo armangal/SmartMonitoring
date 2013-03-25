@@ -29,12 +29,12 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 import com.google.inject.Inject;
-import com.smexec.monitor.server.model.AlertType;
 import com.smexec.monitor.server.model.ServerStataus;
-import com.smexec.monitor.server.services.AlertService;
+import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.StringFormatter;
+import com.smexec.monitor.shared.alert.AlertType;
 import com.sun.management.OperatingSystemMXBean;
 
 /**

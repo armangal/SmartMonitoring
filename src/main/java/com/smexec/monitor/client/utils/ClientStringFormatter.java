@@ -16,14 +16,15 @@ public class ClientStringFormatter {
         int seconds = (int) (ms / 1000) % 60;
         int minutes = (int) ((ms / (1000 * 60)) % 60);
         int hours = (int) ((ms / (1000 * 60 * 60)) % 24);
-        return hours + "h, " + minutes + "m, " + seconds + "sec";
+        int days = (int) ((ms / (1000 * 60 * 60 * 24)));
+        return (days > 0 ? days + "d, " : "") + hours + "h, " + minutes + "m, " + seconds + "s";
 
     }
 
     public static String formatMillisShort(double ms) {
         return NumberFormat.getFormat("#,##0.0#").format(ms);
     }
-    
+
     public static String formatNumber(Integer ms) {
         return NumberFormat.getFormat("#,##0").format(ms);
     }

@@ -14,7 +14,7 @@ public class RefreshResult
 
     }
 
-    public RefreshResult(String title, ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
-        super(title, servers, poolFeedMap);
+    public RefreshResult(ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+        super(servers, poolFeedMap);
     }
 }

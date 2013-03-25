@@ -12,9 +12,6 @@ public interface IConnectedServersState<SS extends ServerStataus, CS extends Con
 
     void mergeStats(ArrayList<CS> servers);
 
-    void setServersConfig(ServersConfig sc);
-
     RR getRefreshResult();
 
-    ServersConfig getServersConfig();
 }

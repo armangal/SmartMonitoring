@@ -2,6 +2,7 @@ package com.smexec.monitor.server.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -10,7 +11,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +25,8 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
     implements IStateUpdaterThread {
 
     private static Logger logger = LoggerFactory.getLogger(StateUpdaterThread.class);
+
+    private AtomicInteger executionNumber = new AtomicInteger(0);
 
     static ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
 
@@ -52,9 +54,10 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
             CompletionService<S> compService = new ExecutorCompletionService<S>(threadPool);
 
             Collection<S> values = connectedServersState.getMap().values();
+
             // scheduling update threads
             for (S ss : values) {
-                compService.submit(getRefresher(ss));
+                compService.submit(getRefresher(ss, new Date(), executionNumber.getAndIncrement()));
             }
 
             // Waiting for all threads to finish
@@ -85,7 +88,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
         }
     }
 
-    public abstract R getRefresher(S ss);
+    public abstract R getRefresher(S ss, Date executionDate, int excutionNumber);
 
     public abstract C getConnectedServer(S ss);
 }

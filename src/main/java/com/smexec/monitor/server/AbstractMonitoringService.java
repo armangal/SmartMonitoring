@@ -13,7 +13,8 @@ import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
-import com.smexec.monitor.server.services.AlertService;
+import com.smexec.monitor.server.services.alert.AlertService;
+import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.Alert;
@@ -21,6 +22,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.Version;
+import com.smexec.monitor.shared.config.ClientConfigurations;
 
 /**
  * The server side implementation of the monitoring RPC service.
@@ -42,6 +44,9 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
     @Inject
     private AlertService alertService;
 
+    @Inject
+    private ConfigurationService configurationService;
+
     public AbstractMonitoringService() {
         GuiceUtils.getInjector().injectMembers(this);
     }
@@ -51,10 +56,10 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         RR refreshResult = connectedServersState.getRefreshResult();
         LinkedList<Alert> alertsAfter = alertService.getAlertsAfter(lastAlertId);
 
-        return createFullRefreshResult(refreshResult, alertsAfter, Version.getVersion());
+        return createFullRefreshResult(refreshResult, alertsAfter);
     }
 
-    public abstract FR createFullRefreshResult(RR refreshResult, LinkedList<Alert> alerts, String version);
+    public abstract FR createFullRefreshResult(RR refreshResult, LinkedList<Alert> alerts);
 
     public String getThreadDump(Integer serverCode) {
         checkAuthenticated();
@@ -83,7 +88,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         HttpSession session = getThreadLocalRequest().getSession();
         userName = userName.trim();
         password = password.trim();
-        ServersConfig sc = connectedServersState.getServersConfig();
+        ServersConfig sc = configurationService.getServersConfig();
         if (sc.getUsername().equalsIgnoreCase(userName) && sc.getPassword().equals(password)) {
             session.setAttribute(AUTHENTICATED, Boolean.TRUE);
             logger.info("Authnticated user:{}, pass:{}", userName, password);
@@ -129,7 +134,8 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         return connectedServersState;
     }
 
-    public String getVersion() {
-        return Version.getEnvName() + "," + Version.getVersion();
+    public ClientConfigurations getClientConfigurations() {
+
+        return new ClientConfigurations(Version.getEnvName(), Version.getVersion());
     }
 }

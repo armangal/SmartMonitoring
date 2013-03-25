@@ -2,6 +2,8 @@ package com.smexec.monitor.shared;
 
 import java.io.Serializable;
 
+import com.smexec.monitor.shared.alert.IAlertType;
+
 public class Alert
     implements Serializable {
 
@@ -12,16 +14,16 @@ public class Alert
     private String details;
     private int serverCode;
     private String alertTime;
-    private String type;
+    private IAlertType alertType;
 
     public Alert() {}
 
-    public Alert(String message, int serverCode, String alertTime, String type) {
+    public Alert(String message, int serverCode, String alertTime, IAlertType alertType) {
         super();
         this.message = message;
         this.serverCode = serverCode;
         this.alertTime = alertTime;
-        this.type = type;
+        this.alertType = alertType;
     }
 
     public void setId(int id) {
@@ -52,6 +54,10 @@ public class Alert
         return alertTime;
     }
 
+    public IAlertType getAlertType() {
+        return alertType;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -61,7 +67,7 @@ public class Alert
         result = prime * result + id;
         result = prime * result + ((message == null) ? 0 : message.hashCode());
         result = prime * result + serverCode;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((alertType == null) ? 0 : alertType.hashCode());
         return result;
     }
 
@@ -93,10 +99,10 @@ public class Alert
             return false;
         if (serverCode != other.serverCode)
             return false;
-        if (type == null) {
-            if (other.type != null)
+        if (alertType == null) {
+            if (other.alertType != null)
                 return false;
-        } else if (!type.equals(other.type))
+        } else if (!alertType.equals(other.alertType))
             return false;
         return true;
     }
@@ -115,7 +121,7 @@ public class Alert
         builder.append(", at=");
         builder.append(alertTime);
         builder.append(", t=");
-        builder.append(type);
+        builder.append(alertType);
         builder.append("]");
         return builder.toString();
     }

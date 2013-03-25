@@ -1,5 +1,6 @@
 package com.smexec.monitor.server.tasks;
 
+import java.util.Date;
 import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
@@ -28,9 +29,13 @@ public class Refresher<S extends ServerStataus>
     private JMXSmartExecutorStats jmxSmartExecutorStats;
 
     private S ss;
+    private Date executionDate;
+    private int excutionNumber;
 
-    public Refresher(S ss) {
+    public Refresher(S ss, Date executionDate, int excutionNumber) {
         this.ss = ss;
+        this.excutionNumber = excutionNumber;
+        this.executionDate = executionDate;
         GuiceUtils.getInjector().injectMembers(this);
     }
 
@@ -63,6 +68,14 @@ public class Refresher<S extends ServerStataus>
      */
     public void fillExtraData(S ss) {
         // Nothing
+    }
+
+    public int getExcutionNumber() {
+        return excutionNumber;
+    }
+
+    public Date getExecutionDate() {
+        return executionDate;
     }
 
 }
