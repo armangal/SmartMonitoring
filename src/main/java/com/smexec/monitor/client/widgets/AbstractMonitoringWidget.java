@@ -15,10 +15,19 @@ public abstract class AbstractMonitoringWidget
     extends Composite {
 
     private FlowPanel mainPanel = new FlowPanel();
+    FlowPanel header = new FlowPanel();
 
     private FlowPanel dataPanel = new FlowPanel();
 
+    /**
+     * default title widget
+     */
     private HTML lable = new HTML();
+
+    /**
+     * the custom title widget
+     */
+    private Widget title;
 
     private ClickHandler zoom = new ClickHandler() {
 
@@ -43,7 +52,6 @@ public abstract class AbstractMonitoringWidget
 
     public AbstractMonitoringWidget(String name) {
 
-        FlowPanel header = new FlowPanel();
         header.setStyleName("header");
         Image img = new Image();
         img.setUrl("img/header-icon.png");
@@ -70,4 +78,15 @@ public abstract class AbstractMonitoringWidget
     public void updateTitle(String title) {
         this.lable.setText(title);
     }
+
+    public void setTitleWidget(Widget title) {
+        lable.removeFromParent();
+        header.add(title);
+        this.title = title;
+    }
+
+    public Widget getTitleWidget() {
+        return this.title;
+    }
+
 }

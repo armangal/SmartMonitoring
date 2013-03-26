@@ -141,6 +141,28 @@ body {
 	height: 170px;
 }
 
+.serversHeader {
+	   	color: white;
+    float: left;
+    font-family: Arial,sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    left: 38px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 9px;
+}
+
+.serversHeader td {
+	padding-left: 5px;
+}
+
+.serversHeader input {
+	margin: 0px;
+	padding: 0px;
+}
+
 .playersWidget {
 	width: 50%;
 	position: relative;

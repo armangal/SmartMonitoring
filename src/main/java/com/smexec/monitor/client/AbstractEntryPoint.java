@@ -38,6 +38,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
     private LinkedList<IMonitoringWidget<CS, R, FR>> widgets = new LinkedList<IMonitoringWidget<CS, R, FR>>();
     final FlowPanel mainPanel = new FlowPanel();
 
+    private ClientConfigurations clientConfigurations;
+
     final Button refreshBtn = new Button("Stop Refresh");
     boolean refresh = true;
 
@@ -67,6 +69,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
 
             @Override
             public void loggedIn(ClientConfigurations cc) {
+                clientConfigurations = cc;
                 Log.debug("Authenticated");
                 RootPanel.get().clear();
                 addMainWidgets();
@@ -75,7 +78,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
                 refresh = true;
                 refresh();
                 Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
-                title.setHTML("<h1>" + cc.getTitle() + ", v:" + cc.getVersion() + "</h1>");
+                title.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
 
             }
         });
@@ -153,6 +156,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
                 }
 
                 lastAlertId = fullResult.getLastAlertId();
+                title.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime()
+                              + ")</h1>");
 
             }
 

@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.ILineType;
@@ -65,6 +65,7 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         setSize("760px", "450px");
 
         super.center();
+        setPopupPosition(200, 26);
 
         Button threadDump = new Button("Get Thread Dump");
         fp.add(threadDump);
@@ -177,34 +178,39 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         ft.setText(i++, 1, "" + rti.getAvailableProcessors());
         ft.setText(i++, 1, "" + rti.getSystemLoadAverage());
 
-        VerticalPanel vp = new VerticalPanel();
+        TextArea ta = new TextArea();
+        StringBuilder sb = new StringBuilder();
         for (String p : rti.getInputArguments()) {
-            vp.add(getWrappedHtml(p));
+            sb.append(p).append("\n");
         }
-        ft.setWidget(i++, 1, vp);
+        ta.setText(sb.toString());
+        ta.setSize("700px", "300px");
+        ft.setWidget(i++, 1, ta);
 
-        VerticalPanel spVp = new VerticalPanel();
-
+        ta = new TextArea();
+        sb = new StringBuilder();
         for (String key : rti.getSystemProperties().keySet()) {
-            spVp.add(getWrappedHtml(key + " = " + rti.getSystemProperties().get(key)));
+            sb.append(key + " = " + rti.getSystemProperties().get(key)).append("\n");
         }
-        ft.setWidget(i++, 1, spVp);
+        ta.setText(sb.toString());
+        ta.setSize("700px", "300px");
+        ft.setWidget(i++, 1, ta);
 
         fp.add(ft);
     }
 
     private void createWrappedHTML(FlexTable ft, int index, String text) {
-        HTML h = getWrappedHtml(text);
+        Widget h = getWrappedHtml(text);
         ft.setWidget(index, 1, h);
         ft.getCellFormatter().getElement(index, 1).setId("wrapContent");
 
     }
 
-    private HTML getWrappedHtml(String text) {
-        HTML h = new HTML();
-        h.setText(text);
-        h.getElement().setId("wrappedInfo");
-        return h;
+    private Widget getWrappedHtml(String text) {
+        TextArea ta = new TextArea();
+        ta.setText(text);
+        ta.setSize("700px", "100px");
+        return ta;
     }
 
     private void updateCpuChart(LinkedList<Double> percentList) {

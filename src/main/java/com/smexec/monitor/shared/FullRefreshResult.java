@@ -1,6 +1,7 @@
 package com.smexec.monitor.shared;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.LinkedList;
 
 public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends ConnectedServer>
@@ -11,6 +12,8 @@ public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends 
     private RR refreshResult;
 
     private LinkedList<Alert> alerts;
+    
+    private String serverTime;
 
     public FullRefreshResult() {}
 
@@ -18,6 +21,7 @@ public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends 
         super();
         this.refreshResult = refreshResult;
         this.alerts = alerts;
+        this.serverTime = new Date().toString();
     }
 
     public LinkedList<Alert> getAlerts() {
@@ -26,6 +30,11 @@ public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends 
 
     public RR getRefreshResult() {
         return refreshResult;
+    }
+    
+    
+    public String getServerTime() {
+        return serverTime;
     }
 
     @Override

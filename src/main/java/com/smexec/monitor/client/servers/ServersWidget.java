@@ -20,8 +20,12 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
@@ -40,6 +44,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
     private FlowPanel serversList = new FlowPanel();
     private ScrollPanel sp = new ScrollPanel();
+    private boolean showOffline = true;
 
     private ClickHandler getThreadDump = new ClickHandler() {
 
@@ -96,6 +101,10 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
     private Map<Integer, CS> serversMap = new HashMap<Integer, CS>(0);
 
+    private HorizontalPanel title = new HorizontalPanel();
+    private TextBox filter = new TextBox();
+    private Label serversLabel = new Label("Connected Servers");
+
     public ServersWidget(MonitoringServiceAsync<CS, R, FR> service) {
         super("Connected Servers");
         this.service = service;
@@ -105,6 +114,32 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
         getDataPanel().add(serversList);
         sp.setSize("100%", "100%");
         serversList.add(sp);
+
+        title.setStyleName("serversHeader");
+        setTitleWidget(title);
+        title.add(serversLabel);
+        final RadioButton rShow = new RadioButton("offline", "Show Offline");
+        rShow.setValue(true);
+        final RadioButton rHide = new RadioButton("offline", "Hide Offline");
+        title.add(rShow);
+        title.add(rHide);
+        title.add(new Label("Filter:"));
+        title.add(filter);
+        rHide.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                showOffline = !rHide.getValue();
+            }
+        });
+
+        rShow.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                showOffline = rShow.getValue();
+            }
+        });
     }
 
     @Override
@@ -156,10 +191,16 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
         ft.setText(i, j++, "CPU%");
         ft.getRowFormatter().getElement(i++).setId("th");
 
+        int offline = 0;
+
         for (CS cs : list) {
             serversMap.put(cs.getServerCode(), cs);
 
             j = 0;
+            offline += cs.getStatus() ? 0 : 1;
+            if (!toShow(cs.getName())) {
+                continue;
+            }
             if (cs.getStatus()) {
                 final HTML name = new HTML("<a href=#>" + cs.getServerCode() + "," + cs.getName() + "</a>");
                 name.getElement().setAttribute("code", "" + cs.getServerCode());
@@ -224,19 +265,36 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                 }
 
             } else {
-                final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
-                name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort());
-                ft.setWidget(i, j++, name);
-                ft.setText(i, j++, "Offline");
-                ft.setText(i, j++, "Offline");
-                ft.setText(i, j++, "Offline");
-                ft.setText(i, j++, "Offline");
-                ft.setText(i, j++, "0.0%");
-                ft.getRowFormatter().getElement(i++).setId("offline");
+                if (showOffline) {
+                    final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
+                    name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort());
+                    ft.setWidget(i, j++, name);
+                    ft.setText(i, j++, "Offline");
+                    ft.setText(i, j++, "Offline");
+                    ft.setText(i, j++, "Offline");
+                    ft.setText(i, j++, "Offline");
+                    ft.setText(i, j++, "0.0%");
+                    ft.getRowFormatter().getElement(i++).setId("offline");
+                }
             }
         }
 
         ft.getColumnFormatter().setWidth(0, "100px");
+        serversLabel.setText("Connected Servers:" + list.size() + " (" + offline + ")");
 
+    }
+
+    private boolean toShow(String serverName) {
+        filter.setText(filter.getText().trim().toLowerCase());
+        if (filter.getText().length() > 0) {
+            // filter
+            if (serverName.trim().toLowerCase().contains(filter.getText())) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 }
