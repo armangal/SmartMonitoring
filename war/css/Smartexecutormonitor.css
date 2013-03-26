@@ -104,29 +104,7 @@ body {
 }
 
 
-.tournamentsWidget {
-	position: relative;
-	float: left;
-	height: 200px;
-}
 
-.tournamentsWidget .left {
-	float: left;
-	width: 40%;
-	padding-left: 2px;
-	font-weight: bold;
-}
-
-.tournamentsWidget .right {
-	float: right;
-	width: 59%;
-}
-
-.tournamentsWidgetInternal {
-	float: left;
-	width: 100%;
-	height: 166px;
-}
 
 .serversWidget {
 	position: relative;
@@ -163,20 +141,6 @@ body {
 	padding: 0px;
 }
 
-.playersWidget {
-	width: 50%;
-	position: relative;
-	float: right;
-	height: 521px;
-}
-
-.playersWidget .players {
-	float: left;
-	width: 200px;
-	height: 360px;
-	border: solid orange thin;
-	font-weight: bold;
-}
 
 .tasksChart {
 	border: thin solid grey;
@@ -186,32 +150,6 @@ body {
 .timesChart {
 	border: thin solid grey;
 	height: 150px;
-}
-
-.playersChart {
-	border: thin solid grey;
-	height: 180px;
-}
-
-.reconnectionsChart {
-	border: thin solid grey;
-	height: 180px;
-}
-
-.playersWidget .charts {
-	float: left;
-	border: solid orange thin;
-	width: 420px;
-	height: 360px;
-}
-
-.playersWidget .servers {
-  border: thin solid orange;
-    float: left;
-    height: 111px;
-    margin: 6px 0;
-    padding: 2px;
-    width: 100%;
 }
 
 .alertsWidget {
@@ -258,13 +196,6 @@ body {
 
 .poolTasks {
 	
-}
-
-.nettyWidget {
-	width: 49%;
-	position: relative;
-	float: left;
-	height: 120px;
 }
 
 
