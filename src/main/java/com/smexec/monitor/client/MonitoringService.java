@@ -8,6 +8,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.runtime.RuntimeInfo;
 
 /**
  * The client side stub for the RPC service.
@@ -29,4 +30,6 @@ public interface MonitoringService<CS extends ConnectedServer, R extends Abstrac
     LinkedList<Double> getCpuUsageHistory(Integer serverCode);
     
     ClientConfigurations getClientConfigurations();
+    
+    RuntimeInfo getRuntimeInfo(Integer serverCode);
 }

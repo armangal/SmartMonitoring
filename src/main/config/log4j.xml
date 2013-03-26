@@ -59,7 +59,19 @@
      </layout>	    
    </appender>
     
+	<appender name="ALERTS_FILE" class="org.apache.log4j.RollingFileAppender">
+		<!--errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/ -->
+		<param name="File" value="log/monitoring_server_alerts.log" />
+		<param name="Append" value="true" />
+		<param name="MaxFileSize" value="50000KB" />
+		<param name="MaxBackupIndex" value="10" />
 
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="[%d{dd-MMM-yyyy HH:mm:ss.SSS z}] %-5p %c %x - %m [%t]%n" />
+		</layout>
+	</appender>
+	
    <!-- ====================== -->
    <!-- More Appender examples -->
    <!-- ====================== -->
@@ -170,6 +182,10 @@
       <appender-ref ref="ASYNC"/>
    </root>
 
-
+	<!-- alerts logging -->
+	<logger name="AlertService">
+		<level value="WARN" />
+		<appender-ref ref="ALERTS_FILE" />
+	</logger>
 
 </log4j:configuration>

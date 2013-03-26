@@ -1,5 +1,6 @@
 package com.smexec.monitor.server;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 import javax.servlet.http.HttpSession;
@@ -15,6 +16,7 @@ import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.ServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.utils.JMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.Alert;
@@ -23,6 +25,7 @@ import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.Version;
 import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.runtime.RuntimeInfo;
 
 /**
  * The server side implementation of the monitoring RPC service.
@@ -46,6 +49,9 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     @Inject
     private ConfigurationService configurationService;
+
+    @Inject
+    private JMXGeneralStats jmxGeneralStats;
 
     public AbstractMonitoringService() {
         GuiceUtils.getInjector().injectMembers(this);
@@ -125,6 +131,21 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
         if (serverStataus != null) {
             return serverStataus.getCpuUtilization().getPercentList();
+        }
+        logger.warn("can't find server with code:{} for cpu stats", serverCode);
+        return null;
+    }
+
+    public RuntimeInfo getRuntimeInfo(Integer serverCode) {
+        checkAuthenticated();
+        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
+        if (serverStataus != null && serverStataus.isConnected()) {
+            try {
+                return jmxGeneralStats.getRuntimeInfo(serverStataus);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+                return null;
+            }
         }
         logger.warn("can't find server with code:{} for cpu stats", serverCode);
         return null;

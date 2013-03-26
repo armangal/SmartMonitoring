@@ -18,6 +18,7 @@
 	<!-- Other module inherits -->
 
 	<inherits name="com.googlecode.gwt.charts.Charts" />
+	<inherits name="com.google.gwt.inject.Inject"/>
 
 
 	<!-- For development, a default of `DEBUG` is recommended -->

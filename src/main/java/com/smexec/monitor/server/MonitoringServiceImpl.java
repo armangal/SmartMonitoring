@@ -8,6 +8,7 @@ import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.RefreshResult;
+import com.smexec.monitor.shared.runtime.RuntimeInfo;
 
 /**
  * The server side implementation of the monitoring RPC service.
@@ -23,4 +24,6 @@ public class MonitoringServiceImpl
     public FullRefreshResult<RefreshResult, ConnectedServer> createFullRefreshResult(RefreshResult refreshResult, LinkedList<Alert> alerts) {
         return new FullRefreshResult<RefreshResult, ConnectedServer>(refreshResult, alerts);
     }
+
+
 }

@@ -8,9 +8,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.ILineType;
@@ -21,6 +23,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.MemoryUsage;
+import com.smexec.monitor.shared.runtime.RuntimeInfo;
 
 public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends DialogBox {
@@ -59,6 +62,8 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
 
     @Override
     public void center() {
+        setSize("760px", "450px");
+
         super.center();
 
         Button threadDump = new Button("Get Thread Dump");
@@ -118,6 +123,64 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
                 Log.error("error while getting server cpu stats:" + caught.getMessage());
             }
         });
+
+        service.getRuntimeInfo(cs.getServerCode(), new AsyncCallback<RuntimeInfo>() {
+
+            @Override
+            public void onSuccess(RuntimeInfo result) {
+                updateRuntimeInfo(result);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Log.error("error while getting server cpu stats:" + caught.getMessage());
+
+            }
+        });
+    }
+
+    private void updateRuntimeInfo(RuntimeInfo rti) {
+        FlexTable ft = new FlexTable();
+        ft.getElement().setId("infoTable");
+        ft.setCellPadding(0);
+        ft.setCellSpacing(0);
+        ft.setText(0, 0, "Name/Value");
+        ft.setText(0, 1, "Value");
+
+        int i = 1;
+        ft.setText(i++, 0, "Name");
+        ft.setText(i++, 0, "BootClassPath");
+        ft.setText(i++, 0, "ClassPath");
+        ft.setText(i++, 0, "LibraryPath");
+        ft.setText(i++, 0, "AvailableProcessors");
+        ft.setText(i++, 0, "SystemLoadAverage");
+        ft.setText(i++, 0, "InputArguments");
+        ft.setText(i++, 0, "SystemProperties");
+
+        ft.getRowFormatter().getElement(0).setId("th");
+
+        i = 1;
+        ft.setText(i++, 1, rti.getName());
+        ft.setText(i++, 1, rti.getBootClassPath());
+        ft.setText(i++, 1, rti.getClassPath());
+        ft.setText(i++, 1, rti.getLibraryPath());
+        ft.setText(i++, 1, "" + rti.getAvailableProcessors());
+        ft.setText(i++, 1, "" + rti.getSystemLoadAverage());
+
+        VerticalPanel vp = new VerticalPanel();
+        for (String p : rti.getInputArguments()) {
+            vp.add(new HTML(p));
+        }
+        ft.setWidget(i++, 1, vp);
+
+        VerticalPanel spVp = new VerticalPanel();
+
+        for (String key : rti.getSystemProperties().keySet()) {
+            spVp.add(new HTML(key + " = " + rti.getSystemProperties().get(key)));
+        }
+        ft.setWidget(i++, 1, spVp);
+
+        fp.add(ft);
     }
 
     private void updateCpuChart(LinkedList<Double> percentList) {

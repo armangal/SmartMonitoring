@@ -2,6 +2,7 @@ package com.smexec.monitor.server.utils;
 
 import static java.lang.management.ManagementFactory.GARBAGE_COLLECTOR_MXBEAN_DOMAIN_TYPE;
 import static java.lang.management.ManagementFactory.MEMORY_POOL_MXBEAN_DOMAIN_TYPE;
+import static java.lang.management.ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME;
 import static java.lang.management.ManagementFactory.RUNTIME_MXBEAN_NAME;
 import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
 
@@ -16,6 +17,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +37,7 @@ import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.StringFormatter;
 import com.smexec.monitor.shared.alert.AlertType;
+import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.sun.management.OperatingSystemMXBean;
 
 /**
@@ -161,7 +164,7 @@ public class JMXGeneralStats {
                                                          operatingSystemMXBean.getAvailableProcessors(),
                                                          System.nanoTime());
 
-        if (load > 80d) {
+        if (load > 90d) {
             Alert alert = new Alert("CPU Alert, load is:" + DECIMAL_FORMAT.format(load),
                                     serverStataus.getServerConfig().getServerCode(),
                                     DATE_FORMAT.format(new Date()),
@@ -169,6 +172,26 @@ public class JMXGeneralStats {
             alertService.addAlert(alert);
         }
 
+    }
+
+    public RuntimeInfo getRuntimeInfo(ServerStataus serverStataus)
+        throws IOException {
+        MBeanServerConnection mbsc = serverStataus.getConnector().getMBeanServerConnection();
+        RuntimeMXBean rmbean = newPlatformMXBeanProxy(mbsc, RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
+
+        OperatingSystemMXBean osbean = newPlatformMXBeanProxy(mbsc, OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
+
+        HashMap<String, String> map = new HashMap<String, String>(rmbean.getSystemProperties());
+
+        RuntimeInfo rti = new RuntimeInfo(rmbean.getBootClassPath(),
+                                          rmbean.getClassPath(),
+                                          rmbean.getInputArguments(),
+                                          rmbean.getLibraryPath(),
+                                          rmbean.getName(),
+                                          map,
+                                          osbean.getAvailableProcessors(),
+                                          osbean.getSystemLoadAverage());
+        return rti;
     }
 
 }

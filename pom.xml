@@ -4,7 +4,7 @@
 
 	<groupId>org.smexec</groupId>
 	<artifactId>smartexecutormonitor</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 	<name>Smart Executor Monitor</name>
 
 	<properties>
@@ -45,6 +45,12 @@
 				<groupId>com.googlecode.gwt-charts</groupId>
 				<artifactId>gwt-charts</artifactId>
 				<version>0.9.9</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.google.gwt.inject</groupId>
+				<artifactId>gin</artifactId>
+				<version>2.0.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -149,6 +155,11 @@
 			<artifactId>gwt-charts</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.google.gwt.inject</groupId>
+			<artifactId>gin</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -195,7 +206,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			<!-- creating version file for deployed version to  -->
+			<!-- creating version file for deployed version to -->
 			<plugin>
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>replacer</artifactId>
