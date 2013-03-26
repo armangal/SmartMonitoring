@@ -139,7 +139,10 @@ public class MonitoringLineChart
 
         Log.debug("Adding line:" + lineType.getName() + ":" + lineType.getIndex() + " with values:" + chartFeeds.getValuesLenght());
         for (int i = 0; i < chartFeeds.getValuesLenght(); i++) {
-            double value = chartFeeds.getValues(lineType.getIndex(), i);
+            long value = chartFeeds.getValues(lineType.getIndex(), i);
+            if (value == Integer.MIN_VALUE) {
+                continue;
+            }
             if (value > max)
                 max = value;
             if (value < min)
