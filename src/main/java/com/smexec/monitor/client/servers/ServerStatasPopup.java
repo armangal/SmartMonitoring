@@ -38,9 +38,9 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         this.cs = cs;
         this.service = service;
         setAnimationEnabled(true);
-        setAutoHideEnabled(true);
         setModal(true);
         setSize("760px", "450px");
+        setGlassEnabled(true);
 
         fp.add(new HTML("<h1>Server:" + cs.getServerCode() + ", " + cs.getName() + "</h1>"));
 
@@ -68,6 +68,15 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
 
         Button threadDump = new Button("Get Thread Dump");
         fp.add(threadDump);
+        Button close = new Button("Close");
+        fp.add(close);
+        close.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                hide();
+            }
+        });
 
         threadDump.addClickHandler(new ClickHandler() {
 
@@ -161,26 +170,41 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
 
         i = 1;
         ft.setText(i++, 1, rti.getName());
-        ft.setText(i++, 1, rti.getBootClassPath());
-        ft.setText(i++, 1, rti.getClassPath());
-        ft.setText(i++, 1, rti.getLibraryPath());
+        createWrappedHTML(ft, i++, rti.getBootClassPath());
+        createWrappedHTML(ft, i++, rti.getClassPath());
+        createWrappedHTML(ft, i++, rti.getLibraryPath());
+
         ft.setText(i++, 1, "" + rti.getAvailableProcessors());
         ft.setText(i++, 1, "" + rti.getSystemLoadAverage());
 
         VerticalPanel vp = new VerticalPanel();
         for (String p : rti.getInputArguments()) {
-            vp.add(new HTML(p));
+            vp.add(getWrappedHtml(p));
         }
         ft.setWidget(i++, 1, vp);
 
         VerticalPanel spVp = new VerticalPanel();
 
         for (String key : rti.getSystemProperties().keySet()) {
-            spVp.add(new HTML(key + " = " + rti.getSystemProperties().get(key)));
+            spVp.add(getWrappedHtml(key + " = " + rti.getSystemProperties().get(key)));
         }
         ft.setWidget(i++, 1, spVp);
 
         fp.add(ft);
+    }
+
+    private void createWrappedHTML(FlexTable ft, int index, String text) {
+        HTML h = getWrappedHtml(text);
+        ft.setWidget(index, 1, h);
+        ft.getCellFormatter().getElement(index, 1).setId("wrapContent");
+
+    }
+
+    private HTML getWrappedHtml(String text) {
+        HTML h = new HTML();
+        h.setText(text);
+        h.getElement().setId("wrappedInfo");
+        return h;
     }
 
     private void updateCpuChart(LinkedList<Double> percentList) {

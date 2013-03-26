@@ -281,6 +281,16 @@ body {
 	height: 16px;
 }
 
+#infoTable td div#wrappedInfo  {
+	width: 700px;
+	overflow: auto;
+}
+
+#infoTable td#wrapContent {
+	word-wrap:break-word;
+}
+
+
 #infoTable tr:hover td {
 	color: #339;
 	background: #eff2ff;
