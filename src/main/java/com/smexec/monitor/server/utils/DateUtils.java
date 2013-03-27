@@ -3,8 +3,6 @@ package com.smexec.monitor.server.utils;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Test;
-
 public class DateUtils {
 
     private static int STEP = 20;
@@ -32,7 +30,7 @@ public class DateUtils {
         return sec;
     }
 
-    @Test
+    
     public void test() {
         for (int i = 0; i < 60; i++) {
             System.out.println("i=" + i + ", r=" + roundSec(i));

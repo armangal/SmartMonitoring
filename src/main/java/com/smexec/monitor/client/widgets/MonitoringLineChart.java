@@ -60,6 +60,11 @@ public class MonitoringLineChart
         updateChart(chartFeeds, false);
     }
 
+    /**
+     * @param chartFeeds
+     * @param lastRowAsColumn - meaning the the last row in the chartFeeds includes X line values (usually
+     *            time)
+     */
     public void updateChart(ChartFeed chartFeeds, boolean lastRowAsColumn) {
         try {
             if (!initilized) {
@@ -68,19 +73,17 @@ public class MonitoringLineChart
                 return;
             }
 
-            double maxYAxis = Double.MIN_VALUE;
-            double minYAxis = Double.MAX_VALUE;
-
-            // chart.clearChart();
             // Prepare the data
             DataTable dataTable = DataTable.create();
-            dataTable.addColumn(ColumnType.STRING, xColumnname);
+            dataTable.addColumn(ColumnType.STRING, xColumnname); // 0 index
+
             // adding lines
             for (int i = 0; i < lineTypes.length; i++) {
-                dataTable.addColumn(ColumnType.NUMBER, lineTypes[i].getName());
+                dataTable.addColumn(lineTypes[i].getColumnType(), lineTypes[i].getName());
             }
 
             dataTable.addRows(chartFeeds.getValuesLenght());
+            Log.debug("Adding:" + chartFeeds.getValuesLenght() + " rows to chart");
 
             if (lastRowAsColumn) {
                 for (int i = 0; i < chartFeeds.getValuesLenght(); i++) {
@@ -94,14 +97,7 @@ public class MonitoringLineChart
             }
 
             for (int i = 0; i < lineTypes.length; i++) {
-                double[] line = drawLine(chartFeeds, lineTypes[i], dataTable);
-                if (line[0] > maxYAxis) {
-                    maxYAxis = line[0];
-                }
-                if (line[1] < minYAxis) {
-                    minYAxis = line[1];
-                }
-
+                drawLine(chartFeeds, lineTypes[i], dataTable);
             }
 
             // Set options
@@ -129,20 +125,29 @@ public class MonitoringLineChart
         try {
             chart.clearChart();
         } catch (Exception e) {
-            //Log.error("MonitoringLineChart.clean:, " + e.getMessage(), e);
+            // Log.error("MonitoringLineChart.clean:, " + e.getMessage(), e);
         }
     }
 
     private double[] drawLine(ChartFeed chartFeeds, ILineType lineType, DataTable dataTable) {
         double max = Double.MIN_VALUE;
         double min = Double.MAX_VALUE;
+        long prevNormalValue = Integer.MIN_VALUE;
 
         Log.debug("Adding line:" + lineType.getName() + ":" + lineType.getIndex() + " with values:" + chartFeeds.getValuesLenght());
+        //Log.debug("Data:" + Arrays.toString(chartFeeds.getValues()[lineType.getIndex()]));
         for (int i = 0; i < chartFeeds.getValuesLenght(); i++) {
             long value = chartFeeds.getValues(lineType.getIndex(), i);
+            
             if (value == Integer.MIN_VALUE) {
+                //this case means that this line do not have valid value for current "period" or "Y"
+                if (prevNormalValue != Integer.MIN_VALUE) {
+                    //draw previous value is case it's valid one, we're OK to start drawing the line from a middle of the chart
+                    dataTable.setValue(i, lineType.getIndex() + 1, prevNormalValue);
+                }
                 continue;
             }
+            prevNormalValue = value;
             if (value > max)
                 max = value;
             if (value < min)

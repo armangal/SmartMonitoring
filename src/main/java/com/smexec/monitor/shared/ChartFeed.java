@@ -8,11 +8,21 @@ public class ChartFeed
 
     private static final long serialVersionUID = 1L;
     private long values[][];
+    /**
+     * the amount of lines
+     */
     private int valuesLenght;
+    /**
+     * the length of the lines
+     */
     private int valuesAmount;
 
     public ChartFeed() {}
 
+    /**
+     * @param valuesLenght -the length of the lines
+     * @param valuesAmount -the amount of lines
+     */
     public ChartFeed(int valuesLenght, int valuesAmount) {
         values = new long[valuesAmount][valuesLenght];
         this.valuesAmount = valuesAmount;
@@ -31,10 +41,16 @@ public class ChartFeed
         return values[x][Math.max(valuesLenght - 1, 0)];
     }
 
+    /**
+     * the length of the lines
+     */
     public int getValuesAmount() {
         return valuesAmount;
     }
 
+    /**
+     * the amount of lines
+     */
     public int getValuesLenght() {
         return valuesLenght;
     }
