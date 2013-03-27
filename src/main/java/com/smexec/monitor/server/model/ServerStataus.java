@@ -2,6 +2,7 @@ package com.smexec.monitor.server.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -9,11 +10,12 @@ import java.util.Map;
 
 import javax.management.remote.JMXConnector;
 
-import com.smexec.monitor.shared.CPUUtilization;
-import com.smexec.monitor.shared.GCHistory;
-import com.smexec.monitor.shared.MemoryUsage;
+import com.smexec.monitor.server.utils.DateUtils;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.StringFormatter;
+import com.smexec.monitor.shared.runtime.CPUUtilization;
+import com.smexec.monitor.shared.runtime.GCHistory;
+import com.smexec.monitor.shared.runtime.MemoryUsage;
 
 /**
  * Class represents a current state of connected server with some historical data about memory, GC cycles and
@@ -93,7 +95,7 @@ public class ServerStataus {
     }
 
     public MemoryUsage updateMemoryUsage(long init, long used, long committed, long max, String memoryState) {
-        MemoryUsage mu = new MemoryUsage(init, used, committed, max, memoryState);
+        MemoryUsage mu = new MemoryUsage(init, used, committed, max, memoryState, DateUtils.roundDate(new Date()));
         memoryUsage.add(mu);
         if (memoryUsage.size() > 100) {
             memoryUsage.remove();

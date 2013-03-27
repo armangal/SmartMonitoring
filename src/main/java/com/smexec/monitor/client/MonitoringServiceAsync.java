@@ -6,8 +6,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
+import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 
 public interface MonitoringServiceAsync<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>> {
@@ -22,7 +23,7 @@ public interface MonitoringServiceAsync<CS extends ConnectedServer, R extends Ab
 
     void getMemoryStats(Integer serverCode, AsyncCallback<LinkedList<MemoryUsage>> callback);
 
-    void getCpuUsageHistory(Integer serverCode, AsyncCallback<LinkedList<Double>> callback);
+    void getCpuUsageHistory(Integer serverCode, AsyncCallback<LinkedList<CpuUtilizationChunk>> callback);
 
     void getClientConfigurations(AsyncCallback<ClientConfigurations> callback);
 

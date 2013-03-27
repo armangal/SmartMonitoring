@@ -3,6 +3,9 @@ package com.smexec.monitor.shared;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.smexec.monitor.shared.runtime.GCHistory;
+import com.smexec.monitor.shared.runtime.MemoryUsage;
+
 /**
  * Class represents one connected server that hold all the relevant information for client representation.
  * 

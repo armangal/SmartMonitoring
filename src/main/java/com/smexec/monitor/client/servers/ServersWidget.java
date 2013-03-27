@@ -34,7 +34,7 @@ import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.GCHistory;
+import com.smexec.monitor.shared.runtime.GCHistory;
 
 public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends AbstractMonitoringWidget

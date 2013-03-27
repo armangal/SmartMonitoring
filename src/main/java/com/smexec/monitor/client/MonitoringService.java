@@ -6,8 +6,9 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
+import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 
 /**
@@ -27,7 +28,7 @@ public interface MonitoringService<CS extends ConnectedServer, R extends Abstrac
 
     LinkedList<MemoryUsage> getMemoryStats(Integer serverCode);
 
-    LinkedList<Double> getCpuUsageHistory(Integer serverCode);
+    LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode);
     
     ClientConfigurations getClientConfigurations();
     

@@ -1,4 +1,4 @@
-package com.smexec.monitor.shared;
+package com.smexec.monitor.shared.runtime;
 
 import java.io.Serializable;
 import java.util.Arrays;

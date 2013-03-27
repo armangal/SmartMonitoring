@@ -26,7 +26,7 @@ public class StateUpdaterThread
                                    ss.getLastMemoryUsage(),
                                    ss.getLastGCHistory(),
                                    ss.getUpTime(),
-                                   ss.getCpuUtilization().getLastPercent());
+                                   ss.getCpuUtilization().getLastPercent().getUsage());
     }
 
 }

@@ -1,7 +1,10 @@
-package com.smexec.monitor.shared;
+package com.smexec.monitor.shared.runtime;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.LinkedList;
+
+import com.smexec.monitor.server.utils.DateUtils;
 
 public class CPUUtilization
     implements Serializable {
@@ -10,11 +13,12 @@ public class CPUUtilization
 
     private long lastMeasurement = 0L;
     private long lastMeasureTime = 0L;
-    private LinkedList<Double> percentList = new LinkedList<Double>();
+
+    private LinkedList<CpuUtilizationChunk> list = new LinkedList<CpuUtilizationChunk>();
 
     public CPUUtilization() {}
 
-    public double evolve(final long lastMeasurementAfter,final int availableProcessors, final long lastMeasureTimeAfter) {
+    public double evolve(final long lastMeasurementAfter, final int availableProcessors, final long lastMeasureTimeAfter) {
         double percent;
 
         if (lastMeasureTimeAfter > lastMeasureTime) {
@@ -25,9 +29,9 @@ public class CPUUtilization
 
         this.lastMeasurement = lastMeasurementAfter;
         this.lastMeasureTime = lastMeasureTimeAfter;
-        percentList.add(percent);
-        if (percentList.size() > 100) {
-            percentList.remove();
+        list.add(new CpuUtilizationChunk(percent, DateUtils.roundDate(new Date())));
+        if (list.size() > 100) {
+            list.remove();
         }
 
         return percent;
@@ -41,12 +45,12 @@ public class CPUUtilization
         return lastMeasureTime;
     }
 
-    public double getLastPercent() {
-        return percentList.isEmpty() ? 0.00d : percentList.getLast();
+    public CpuUtilizationChunk getLastPercent() {
+        return list.isEmpty() ? new CpuUtilizationChunk() : list.getLast();
     }
 
-    public LinkedList<Double> getPercentList() {
-        return percentList;
+    public LinkedList<CpuUtilizationChunk> getPercentList() {
+        return list;
     }
 
     @Override

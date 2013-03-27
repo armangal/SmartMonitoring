@@ -34,9 +34,9 @@ import com.google.inject.Inject;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.shared.Alert;
-import com.smexec.monitor.shared.GCHistory;
 import com.smexec.monitor.shared.StringFormatter;
 import com.smexec.monitor.shared.alert.AlertType;
+import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.sun.management.OperatingSystemMXBean;
 
@@ -139,7 +139,7 @@ public class JMXGeneralStats {
 
         serverStataus.setUptime(rmbean.getUptime());
 
-        com.smexec.monitor.shared.MemoryUsage mu = serverStataus.updateMemoryUsage(heapMemoryUsage.getInit(),
+        com.smexec.monitor.shared.runtime.MemoryUsage mu = serverStataus.updateMemoryUsage(heapMemoryUsage.getInit(),
                                                                                    heapMemoryUsage.getUsed(),
                                                                                    heapMemoryUsage.getCommitted(),
                                                                                    heapMemoryUsage.getMax(),

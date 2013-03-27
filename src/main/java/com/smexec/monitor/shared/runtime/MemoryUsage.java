@@ -1,6 +1,8 @@
-package com.smexec.monitor.shared;
+package com.smexec.monitor.shared.runtime;
 
 import java.io.Serializable;
+
+import com.smexec.monitor.shared.AbstractChunkStats;
 
 /**
  * represents one memory measurement
@@ -8,6 +10,7 @@ import java.io.Serializable;
  * @author armang
  */
 public class MemoryUsage
+    extends AbstractChunkStats
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,8 +23,8 @@ public class MemoryUsage
 
     public MemoryUsage() {}
 
-    public MemoryUsage(long init, long used, long committed, long max, String memoryState) {
-        super();
+    public MemoryUsage(long init, long used, long committed, long max, String memoryState, long time) {
+        super(time, time);
         this.committed = committed;
         this.init = init;
         this.max = max;
@@ -70,7 +73,7 @@ public class MemoryUsage
         builder.append((used));
         builder.append(", pr=");
         builder.append((getPercentage()));
-        builder.append("%]");
+        builder.append("%, ").append(super.toString()).append("]");
         return builder.toString();
     }
 

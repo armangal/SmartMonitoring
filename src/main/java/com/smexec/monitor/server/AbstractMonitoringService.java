@@ -22,9 +22,10 @@ import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.MemoryUsage;
 import com.smexec.monitor.shared.Version;
 import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
+import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 
 /**
@@ -126,7 +127,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         return null;
     }
 
-    public LinkedList<Double> getCpuUsageHistory(Integer serverCode) {
+    public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode) {
         checkAuthenticated();
         ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
         if (serverStataus != null) {

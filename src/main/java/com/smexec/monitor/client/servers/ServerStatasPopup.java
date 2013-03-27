@@ -21,8 +21,9 @@ import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.GCHistory;
-import com.smexec.monitor.shared.MemoryUsage;
+import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
+import com.smexec.monitor.shared.runtime.GCHistory;
+import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 
 public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
@@ -121,10 +122,10 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
                 Log.error("error while getting server memory stats:" + caught.getMessage());
             };
         });
-        service.getCpuUsageHistory(cs.getServerCode(), new AsyncCallback<LinkedList<Double>>() {
+        service.getCpuUsageHistory(cs.getServerCode(), new AsyncCallback<LinkedList<CpuUtilizationChunk>>() {
 
             @Override
-            public void onSuccess(LinkedList<Double> result) {
+            public void onSuccess(LinkedList<CpuUtilizationChunk> result) {
                 updateCpuChart(result);
             }
 
@@ -213,14 +214,14 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         return ta;
     }
 
-    private void updateCpuChart(LinkedList<Double> percentList) {
+    private void updateCpuChart(LinkedList<CpuUtilizationChunk> percentList) {
         ChartFeed cpuHistory = new ChartFeed(percentList.size(), 2);
         for (int k = 0; k < 2; k++) {
             for (int j = 0; j < percentList.size(); j++) {
                 if (k == 0) {
-                    cpuHistory.getValues()[k][j] = percentList.get(j).longValue();
+                    cpuHistory.getValues()[k][j] = (long) percentList.get(j).getUsage();
                 } else if (k == 1) {
-                    cpuHistory.getValues()[k][j] = j;
+                    cpuHistory.getValues()[k][j] = percentList.get(j).getStartTime();
                 }
             }
         }
@@ -245,7 +246,7 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
                 if (k == 0) {
                     memoryHistory.getValues()[k][j] = (long) result.get(j).getPercentage();
                 } else if (k == 1) {
-                    memoryHistory.getValues()[k][j] = j;
+                    memoryHistory.getValues()[k][j] = result.get(j).getStartTime();
                 }
             }
         }
