@@ -2,7 +2,9 @@ package com.smexec.monitor.shared.alert;
 
 public enum AlertType implements IAlertType {
 
-    MEMORY("mem", 1, AlertGroup.SYSTEM, true), CPU("cpu", 2, AlertGroup.SYSTEM, true);
+    MEMORY("mem", 1, AlertGroup.SYSTEM, true), //
+    CPU("cpu", 2, AlertGroup.SYSTEM, true), //
+    SERVER_DISCONNECTED("srvDisc", 3, AlertGroup.SYSTEM, true);
 
     private String name;
     private Integer id;
@@ -30,7 +32,7 @@ public enum AlertType implements IAlertType {
     public AlertGroup getAlertGroup() {
         return alertGroup;
     }
-    
+
     @Override
     public boolean sendMail() {
         return sendMail;

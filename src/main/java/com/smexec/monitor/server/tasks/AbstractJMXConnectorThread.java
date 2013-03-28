@@ -3,6 +3,7 @@ package com.smexec.monitor.server.tasks;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -26,10 +27,13 @@ import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.shared.AbstractRefreshResult;
+import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.Version;
+import com.smexec.monitor.shared.alert.AlertType;
 
 public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>>
     implements IJMXConnectorThread {
@@ -54,6 +58,9 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
     @Inject
     private ConfigurationService configurationService;
+
+    @Inject
+    private AlertService alertService;
 
     public AbstractJMXConnectorThread()
         throws JAXBException {
@@ -168,8 +175,14 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                     logger.info("Notification for key:{}", key);
                     logger.info("Notificatio n:{}" + notification);
                     if (notification.getType().contains("closed") || notification.getType().contains("failed")) {
-                        SS serverStataus = connectedServersState.getServerStataus(((ServerConfig) key).getServerCode());
+                        ServerConfig sc = (ServerConfig) key;
+                        SS serverStataus = connectedServersState.getServerStataus(sc.getServerCode());
                         serverStataus.resetOnDisconnect();
+
+                        alertService.addAlert(new Alert("Server went down:" + sc.getName(),
+                                                        sc.getServerCode(),
+                                                        new Date().toString(),
+                                                        AlertType.SERVER_DISCONNECTED));
                     }
                 }
             }, null, sc);
