@@ -9,6 +9,7 @@ import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
 import com.googlecode.gwt.charts.client.corechart.LineChart;
 import com.googlecode.gwt.charts.client.corechart.LineChartOptions;
+import com.googlecode.gwt.charts.client.options.CurveType;
 import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.VAxis;
 import com.smexec.monitor.shared.ChartFeed;
@@ -16,6 +17,7 @@ import com.smexec.monitor.shared.ChartFeed;
 public class MonitoringLineChart
     extends Composite {
 
+    private CurveType curveType = CurveType.FUNCTION;
     private LineChart chart;
     private FlowPanel fp = new FlowPanel();
 
@@ -26,6 +28,11 @@ public class MonitoringLineChart
     private ChartFeed chartFeeds;
     private boolean lastRowAsColumn;
     private boolean initilized = false;
+
+    public MonitoringLineChart(CurveType curveType, ILineType[] lineTypes, String yColumnName, String xColumnname, String title) {
+        this(lineTypes, yColumnName, xColumnname, title);
+        this.curveType = curveType;
+    }
 
     public MonitoringLineChart(ILineType[] lineTypes, String yColumnName, String xColumnname, String title) {
         this.lineTypes = lineTypes;
@@ -107,6 +114,7 @@ public class MonitoringLineChart
             options.setTitle(title);
             options.setHAxis(HAxis.create(xColumnname));
             options.setVAxis(VAxis.create(yColumnName));
+            options.setCurveType(curveType);
             String[] color = new String[lineTypes.length];
 
             for (int i = 0; i < lineTypes.length; i++) {
@@ -135,14 +143,15 @@ public class MonitoringLineChart
         long prevNormalValue = Integer.MIN_VALUE;
 
         Log.debug("Adding line:" + lineType.getName() + ":" + lineType.getIndex() + " with values:" + chartFeeds.getValuesLenght());
-        //Log.debug("Data:" + Arrays.toString(chartFeeds.getValues()[lineType.getIndex()]));
+        // Log.debug("Data:" + Arrays.toString(chartFeeds.getValues()[lineType.getIndex()]));
         for (int i = 0; i < chartFeeds.getValuesLenght(); i++) {
             long value = chartFeeds.getValues(lineType.getIndex(), i);
-            
+
             if (value == Integer.MIN_VALUE) {
-                //this case means that this line do not have valid value for current "period" or "Y"
+                // this case means that this line do not have valid value for current "period" or "Y"
                 if (prevNormalValue != Integer.MIN_VALUE) {
-                    //draw previous value is case it's valid one, we're OK to start drawing the line from a middle of the chart
+                    // draw previous value is case it's valid one, we're OK to start drawing the line from a
+                    // middle of the chart
                     dataTable.setValue(i, lineType.getIndex() + 1, prevNormalValue);
                 }
                 continue;

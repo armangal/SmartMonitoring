@@ -143,6 +143,11 @@ public class ServerStataus {
         return list;
     }
 
+    /**
+     * get the last 20 GC stats per each pool name
+     * 
+     * @return
+     */
     public String getGCHistory() {
         StringBuilder sb = new StringBuilder();
         for (String poolName : gcHistoryMap.keySet()) {
@@ -150,14 +155,14 @@ public class ServerStataus {
             LinkedHashMap<Long, GCHistory> map = gcHistoryMap.get(poolName);
             LinkedList<Long> list = new LinkedList<Long>(map.keySet());
             Collections.sort(list);
-            for (int i = (list.size() - 1); i > (list.size() - 20) && i >= 0; i--) {
+            for (int i = Math.max(0, list.size() - 20); i < list.size(); i++) {
                 GCHistory gch = map.get(list.get(i));
                 sb.append("[T:").append(gch.getTime()).append(" CNT=" + gch.getCollectionCount());
                 sb.append(" TT=" + StringFormatter.formatMillis(gch.getCollectionTime()));
                 sb.append(" LT=" + StringFormatter.formatMillis(gch.getLastColleactionTime()));
                 sb.append("]\n");
             }
-            sb.append("\n");
+            sb.append("\n\n");
         }
         return sb.toString();
     }
