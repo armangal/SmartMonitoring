@@ -17,12 +17,12 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -98,10 +98,10 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
     private HorizontalPanel title = new HorizontalPanel();
     private TextBox filter = new TextBox();
-    private Label serversLabel = new Label("Connected Servers");
+    private Label serversLabel = new Label("Servers");
 
     public ServersWidget(MonitoringServiceAsync<CS, R, FR> service) {
-        super("Connected Servers");
+        super("Servers");
         this.service = service;
 
         addStyleName("serversWidget");
@@ -113,11 +113,9 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
         title.setStyleName("serversHeader");
         setTitleWidget(title);
         title.add(serversLabel);
-        final RadioButton rShow = new RadioButton("offline", "Show Offline");
-        rShow.setValue(true);
-        final RadioButton rHide = new RadioButton("offline", "Hide Offline");
-        title.add(rShow);
-        title.add(rHide);
+        final CheckBox chkShowOffline = new CheckBox("Show Offline");
+        chkShowOffline.setValue(true);
+        title.add(chkShowOffline);
         title.add(new Label("Filter:"));
         title.add(filter);
         String filterText = Cookies.getCookie(SERVERS_FILTER);
@@ -127,25 +125,15 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
         String showOff = Cookies.getCookie(SERVERS_SHOW_OFF);
         if (showOff != null && (showOff.equals("1") || showOff.equals("0"))) {
-            rShow.setValue(showOff.equals("1"));
-            rHide.setValue(showOff.equals("0"));
+            chkShowOffline.setValue(showOff.equals("1"));
             showOffline = showOff.equals("1");
         }
 
-        rHide.addClickHandler(new ClickHandler() {
+        chkShowOffline.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-                showOffline = !rHide.getValue();
-                Cookies.setCookie(SERVERS_SHOW_OFF, showOffline ? "1" : "0");
-            }
-        });
-
-        rShow.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                showOffline = rShow.getValue();
+                showOffline = chkShowOffline.getValue();
                 Cookies.setCookie(SERVERS_SHOW_OFF, showOffline ? "1" : "0");
             }
         });
@@ -268,7 +256,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                 HTML cpu = new HTML(cs.getCpuUtilizationChunk().getUsage() + "%");
                 ft.setWidget(i, j++, cpu);
                 if (cs.getCpuUtilizationChunk().getUsage() > 90d) {
-                    Style style = ft.getFlexCellFormatter().getElement(i - 1, j - 1).getStyle();
+                    Style style = ft.getFlexCellFormatter().getElement(i , j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
                     style.setColor("white");
@@ -277,7 +265,8 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                 double sla = cs.getCpuUtilizationChunk().getSystemLoadAverage();
                 HTML sysl = new HTML(sla == -1 ? "N/A" : ClientStringFormatter.formatMillisShort(sla));
                 sysl.setTitle("System Load Average");
-                ft.setWidget(i++, j++, sysl);
+                ft.setWidget(i, j++, sysl);
+                i++;
 
             } else {
                 if (showOffline) {
@@ -296,7 +285,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
         }
 
         ft.getColumnFormatter().setWidth(0, "100px");
-        serversLabel.setText("Connected Servers:" + list.size() + " (" + offline + ")");
+        serversLabel.setText("Servers:" + list.size() + " (" + offline + ")");
 
     }
 

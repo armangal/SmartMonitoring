@@ -146,7 +146,7 @@ public class JMXGeneralStats {
                                                                                    memoryState);
 
         if (mu.getPercentage() > 90d) {
-            Alert alert = new Alert("Memory Usage Alert, load is:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
+            Alert alert = new Alert("Memory Usage Alert:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "% [" + serverStataus.getServerConfig().getName() + "]",
                                     serverStataus.getServerConfig().getServerCode(),
                                     DATE_FORMAT.format(new Date()),
                                     AlertType.MEMORY);
@@ -165,7 +165,7 @@ public class JMXGeneralStats {
                                                          System.nanoTime(), operatingSystemMXBean.getSystemLoadAverage());
 
         if (load > 90d) {
-            Alert alert = new Alert("CPU Alert, load is:" + DECIMAL_FORMAT.format(load),
+            Alert alert = new Alert("CPU Alert:" + DECIMAL_FORMAT.format(load) + " [" + serverStataus.getServerConfig().getName() + "]",
                                     serverStataus.getServerConfig().getServerCode(),
                                     DATE_FORMAT.format(new Date()),
                                     AlertType.CPU);
