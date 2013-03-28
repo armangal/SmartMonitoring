@@ -3,9 +3,12 @@ package com.smexec.monitor.client.servers;
 import java.util.LinkedList;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.HasDirection.Direction;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -73,7 +76,7 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         setSize("760px", "450px");
 
         super.center();
-        setPopupPosition(200, 26);
+
 
         HorizontalPanel hp = new HorizontalPanel();
         Button threadDump = new Button("Get Thread Dump");
@@ -90,7 +93,9 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
 
         hp.setWidth("100%");
         hp.setCellHorizontalAlignment(close, HorizontalAlignmentConstant.endOf(Direction.LTR));
-        close.getElement().getStyle().setColor("orange");
+        Style style = close.getElement().getStyle();
+        style.setColor("orange");
+        style.setFontWeight(FontWeight.BOLDER);
         fp.add(hp);
         fp.add(cpu);
         fp.add(memory);
@@ -148,6 +153,9 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
             @Override
             public void onSuccess(RuntimeInfo result) {
                 updateRuntimeInfo(result);
+                int left = (Window.getClientWidth() - getOffsetWidth()) >> 1;
+                setPopupPosition(Math.max(Window.getScrollLeft() + left, 0), 26);
+
             }
 
             @Override

@@ -8,4 +8,6 @@ public interface IAlertType {
     Integer getId();
     
     AlertGroup getAlertGroup();
+    
+    boolean sendMail();
 }

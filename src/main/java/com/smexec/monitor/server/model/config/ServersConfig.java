@@ -25,7 +25,7 @@ public class ServersConfig {
     private String username;
     private String password;
 
-    private Integer inMemoryAlerts = 10000;
+    private AlertsConfig alertsConfig;
 
     public ServersConfig() {}
 
@@ -49,8 +49,12 @@ public class ServersConfig {
         return username;
     }
 
-    public Integer getInMemoryAlerts() {
-        return inMemoryAlerts;
+    public AlertsConfig getAlertsConfig() {
+        return alertsConfig;
+    }
+
+    public void setAlertsConfig(AlertsConfig alertsConfig) {
+        this.alertsConfig = alertsConfig;
     }
 
     @Override
@@ -64,8 +68,8 @@ public class ServersConfig {
         builder.append(username);
         builder.append(", password=");
         builder.append(password);
-        builder.append(", inMemoryAlerts=");
-        builder.append(inMemoryAlerts);
+        builder.append(", alertsConfig=");
+        builder.append(alertsConfig);
         builder.append("]");
         return builder.toString();
     }
@@ -84,8 +88,12 @@ public class ServersConfig {
             ServersConfig sc = new ServersConfig();
             sc.setServers(l);
 
+            ArrayList<String> toAddressList = new ArrayList<String>();
+            toAddressList.add("t1");
+            toAddressList.add("t2");
+            AlertsConfig ac = new AlertsConfig(true, "fromAd", "FromN", "sub", "mailServerAddress", "mailServerport", 10000, toAddressList);
+            sc.setAlertsConfig(ac);
             context.createMarshaller().marshal(sc, System.out);
-
         } catch (Exception e) {
             e.printStackTrace();
         }

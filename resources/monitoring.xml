@@ -3,7 +3,24 @@
 	<name>Demo Monitoring</name>
 	<username>admin</username>
 	<password>password</password>
-	<inMemoryAlerts>10000</inMemoryAlerts>
+
+	<alertsConfig>
+		<enabled>true</enabled>
+		<fromAddress>test@test.com</fromAddress>
+		<fromName>TestName</fromName>
+		<subjectPrefix>[ALRT]</subjectPrefix>
+		<mailServerAddress>10.10.10.10</mailServerAddress>
+		<mainServerPort>25</mainServerPort>
+		<inMemoryAlerts>10000</inMemoryAlerts>
+		<toAddressList>
+			<to>test@test.com</to>
+			<to>test1@test.com</to>
+		</toAddressList>
+		<authenticate>false</authenticate>
+		<userName>user</userName>
+		<password>pass</password>
+	</alertsConfig>
+
 	<servers>
 		<server>
 			<name>Local (1)</name>

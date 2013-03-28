@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.shared.Alert;
 
 public class AlertService {
@@ -23,6 +24,9 @@ public class AlertService {
 
     @Inject
     private ConfigurationService configurationService;
+
+    @Inject
+    private MailService mailService;
 
     public LinkedList<Alert> getAlertsAfter(int alertId) {
         if (alertId == -1) {
@@ -60,6 +64,10 @@ public class AlertService {
         alertsList.add(alert);
         if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {
             alertsList.remove();
+        }
+
+        if (alert.getAlertType().sendMail()) {
+            mailService.sendAlert(alert.getMessage(), alert.toString());
         }
     }
 }

@@ -18,6 +18,6 @@ public class ConfigurationService {
     }
 
     public Integer getMaxInMemoryAlerts() {
-        return serversConfig.getInMemoryAlerts();
+        return serversConfig.getAlertsConfig().getInMemoryAlerts();
     }
 }

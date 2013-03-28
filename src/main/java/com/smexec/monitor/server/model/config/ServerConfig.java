@@ -12,7 +12,7 @@ public class ServerConfig {
     private Integer serverCode;
     private String ip;
     private Integer jmxPort;
-    private boolean authenticate;
+    private boolean authenticate = false;
     private String username;
     private String password;
 
