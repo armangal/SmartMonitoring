@@ -36,8 +36,10 @@ public class MailService {
             @Override
             public void run() {
                 try {
-                    MailItem take = mailQueue.take();
-                    sendAlert(take);
+                    do {
+                        MailItem take = mailQueue.take();
+                        sendAlert(take);
+                    } while (true);
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -118,7 +120,7 @@ public class MailService {
         props.put("mail.smtp.host", ac.getMailServerAddress());
         props.put("mail.smtp.port", ac.getMainServerPort());
         props.put("mail.smtp.auth", ac.isAuthenticate() ? "true" : "false");
-       
+
         if (ac.isAuthenticate()) {
             props.put("mail.smtp.user", ac.getUserName());
             props.put("mail.smtp.password", ac.getPassword());
