@@ -60,7 +60,7 @@ public class MailService {
 
             msg.setFrom(new InternetAddress(ac.getFromAddress(), ac.getFromName(), MAIL_ENCODING));
 
-            msg.setSubject(ac.getSubjectPrefix() + " " + mailItem.getSubject(), MAIL_ENCODING);
+            msg.setSubject(ac.getSubjectPrefix() + " ["+ configurationService.getServersConfig().getName() +"] " + mailItem.getSubject(), MAIL_ENCODING);
 
             for (String to : ac.getToAddressList()) {
                 msg.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
