@@ -14,9 +14,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -24,7 +24,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.MonitoringServiceAsync;
@@ -39,6 +38,9 @@ import com.smexec.monitor.shared.runtime.GCHistory;
 public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends AbstractMonitoringWidget
     implements IMonitoringWidget<CS, R, FR> {
+
+    private static final String SERVERS_SHOW_OFF = "servers.showOff";
+    private static final String SERVERS_FILTER = "servers.filter";
 
     private final MonitoringServiceAsync<CS, R, FR> service;
 
@@ -71,16 +73,9 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
                 @Override
                 public void onSuccess(String result) {
-                    DialogBox db = new DialogBox();
-                    db.setAnimationEnabled(true);
-                    db.setAutoHideEnabled(true);
-                    db.setModal(true);
-                    db.setSize("600px", "600px");
-                    TextArea textArea = new TextArea();
-                    textArea.setText(result);
-                    textArea.setSize("590px", "590px");
-                    db.setWidget(textArea);
-                    db.center();
+                    GcHistoryPopup ghp = new GcHistoryPopup();
+                    ghp.setText(result);
+                    ghp.center();
                 }
 
                 @Override
@@ -125,11 +120,24 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
         title.add(rHide);
         title.add(new Label("Filter:"));
         title.add(filter);
+        String filterText = Cookies.getCookie(SERVERS_FILTER);
+        if (filterText != null) {
+            filter.setText(filterText.trim().toLowerCase());
+        }
+
+        String showOff = Cookies.getCookie(SERVERS_SHOW_OFF);
+        if (showOff != null && (showOff.equals("1") || showOff.equals("0"))) {
+            rShow.setValue(showOff.equals("1"));
+            rHide.setValue(showOff.equals("0"));
+            showOffline = showOff.equals("1");
+        }
+
         rHide.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
                 showOffline = !rHide.getValue();
+                Cookies.setCookie(SERVERS_SHOW_OFF, showOffline ? "1" : "0");
             }
         });
 
@@ -138,6 +146,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
             @Override
             public void onClick(ClickEvent event) {
                 showOffline = rShow.getValue();
+                Cookies.setCookie(SERVERS_SHOW_OFF, showOffline ? "1" : "0");
             }
         });
     }
@@ -189,6 +198,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
         ft.setText(i, j++, "Usage %");
         ft.setText(i, j++, "GC Avg Time");
         ft.setText(i, j++, "CPU%");
+        ft.setText(i, j++, "SYSL");
         ft.getRowFormatter().getElement(i++).setId("th");
 
         int offline = 0;
@@ -255,14 +265,19 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                     ft.getRowFormatter().getElement(i).setId("memoryHigh");
                 }
 
-                HTML cpu = new HTML(cs.getCpuUtilization() + "%");
-                ft.setWidget(i++, j++, cpu);
-                if (cs.getCpuUtilization() > 90d) {
+                HTML cpu = new HTML(cs.getCpuUtilizationChunk().getUsage() + "%");
+                ft.setWidget(i, j++, cpu);
+                if (cs.getCpuUtilizationChunk().getUsage() > 90d) {
                     Style style = ft.getFlexCellFormatter().getElement(i - 1, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
                     style.setColor("white");
                 }
+
+                double sla = cs.getCpuUtilizationChunk().getSystemLoadAverage();
+                HTML sysl = new HTML(sla == -1 ? "N/A" : ClientStringFormatter.formatMillisShort(sla));
+                sysl.setTitle("System Load Average");
+                ft.setWidget(i++, j++, sysl);
 
             } else {
                 if (showOffline) {
@@ -274,6 +289,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                     ft.setText(i, j++, "Offline");
                     ft.setText(i, j++, "Offline");
                     ft.setText(i, j++, "0.0%");
+                    ft.setText(i, j++, "0");
                     ft.getRowFormatter().getElement(i++).setId("offline");
                 }
             }
@@ -288,12 +304,17 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
         filter.setText(filter.getText().trim().toLowerCase());
         if (filter.getText().length() > 0) {
             // filter
+            Cookies.setCookie(SERVERS_FILTER, filter.getText());
+            filter.getElement().getStyle().setBackgroundColor("#66FF00");
             if (serverName.trim().toLowerCase().contains(filter.getText())) {
                 return true;
             } else {
                 return false;
             }
         } else {
+            filter.getElement().getStyle().setBackgroundColor("white");
+            Cookies.removeCookie(SERVERS_FILTER);
+
             return true;
         }
     }

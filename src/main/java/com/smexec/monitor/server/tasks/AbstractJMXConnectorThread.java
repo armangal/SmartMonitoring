@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.model.IConnectedServersState;
-import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
-import com.smexec.monitor.server.model.ServersConfig;
+import com.smexec.monitor.server.model.config.ServerConfig;
+import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
@@ -104,13 +104,16 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {
-                    if (connectedServersState.getMap().containsKey(sc.getServerCode())) {
-                        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(sc.getServerCode());
+                    if (connectedServersState.getServerStataus(sc.getServerCode()) != null) {
+                        // server found in memory
+                        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(sc.getServerCode());
 
                         if (serverStataus.isConnected()) {
+                            // no need to reconnect
                             continue;
                         }
                     }
+                    // reconnect or make first connection attempt
                     threadPool.execute(new Connector(sc));
                 }
             }
@@ -126,8 +129,18 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
     private void connect(final ServerConfig sc) {
 
-        JMXConnector c;
-        SS ss = getServerStatus(sc);
+        JMXConnector jmxConnector;
+        SS ss = connectedServersState.getServerStataus(sc.getServerCode());
+        if (ss == null) {
+            // new server, first time
+            ss = getServerStatus(sc);
+            try {
+                ConnectionSynch.connectionLock.lock();
+                connectedServersState.addServer(ss);
+            } finally {
+                ConnectionSynch.connectionLock.unlock();
+            }
+        }
 
         try {
 
@@ -137,37 +150,34 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                 Map<String, String[]> env = new HashMap<String, String[]>(0);
                 String[] creds = {sc.getUsername(), sc.getPassword()};
                 env.put(JMXConnector.CREDENTIALS, creds);
-                c = JMXConnectorFactory.connect(u, env);
+                jmxConnector = JMXConnectorFactory.connect(u, env);
             } else {
-                c = JMXConnectorFactory.connect(u);
+                jmxConnector = JMXConnectorFactory.connect(u);
             }
 
-            logger.info("Conneted to:{}", c);
+            logger.info("Conneted to:{}", jmxConnector);
 
-            c.addConnectionNotificationListener(new NotificationListener() {
+            /**
+             * adding connection listener that should change the server status in case it's braking JMX
+             * connection
+             */
+            jmxConnector.addConnectionNotificationListener(new NotificationListener() {
 
                 @Override
                 public void handleNotification(Notification notification, Object key) {
                     logger.info("Notification for key:{}", key);
                     logger.info("Notificatio n:{}" + notification);
                     if (notification.getType().contains("closed") || notification.getType().contains("failed")) {
-                        connectedServersState.getMap().remove(((ServerConfig) key).getServerCode());
+                        SS serverStataus = connectedServersState.getServerStataus(((ServerConfig) key).getServerCode());
+                        serverStataus.resetOnDisconnect();
                     }
                 }
             }, null, sc);
 
-            ss.setConnector(c);
-            ss.setConnected(true);
+            ss.setConnector(jmxConnector);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        }
-
-        try {
-            ConnectionSynch.connectionLock.lock();
-            connectedServersState.getMap().put(sc.getServerCode(), ss);
-        } finally {
-            ConnectionSynch.connectionLock.unlock();
         }
 
     }

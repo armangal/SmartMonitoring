@@ -1,4 +1,4 @@
-package com.smexec.monitor.server.model;
+package com.smexec.monitor.server.model.config;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -2,8 +2,8 @@ package com.smexec.monitor.server.tasks;
 
 import java.util.Date;
 
-import com.smexec.monitor.server.model.ServerConfig;
 import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
@@ -26,7 +26,7 @@ public class StateUpdaterThread
                                    ss.getLastMemoryUsage(),
                                    ss.getLastGCHistory(),
                                    ss.getUpTime(),
-                                   ss.getCpuUtilization().getLastPercent().getUsage());
+                                   ss.getCpuUtilization().getLastPercent());
     }
 
 }

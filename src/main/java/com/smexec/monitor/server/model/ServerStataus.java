@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.management.remote.JMXConnector;
 
+import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.utils.DateUtils;
 import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.StringFormatter;
@@ -31,10 +32,13 @@ public class ServerStataus {
     private JMXConnector connector;
     private ServerConfig serverConfig;
 
+    /**
+     * Memory usage history stats
+     */
     private LinkedList<MemoryUsage> memoryUsage = new LinkedList<MemoryUsage>();
 
     /**
-     * Map of available GCs with a map of last 100 GC cycles
+     * Map of available GCs with a map of last XXX GC cycles
      */
     private HashMap<String, LinkedHashMap<Long, GCHistory>> gcHistoryMap = new HashMap<String, LinkedHashMap<Long, GCHistory>>(0);
 
@@ -46,12 +50,25 @@ public class ServerStataus {
     private long upTime;
 
     /**
-     * stores locally CPU utilization
+     * in memory history thresholds
+     */
+    private final int memoryHistoryToKeep;
+    private final int gcHistoryToKeep;
+
+    /**
+     * stores locally CPU utilisation
      */
     private CPUUtilization cpuUtilization = new CPUUtilization();
 
-    public ServerStataus(ServerConfig serverConfig) {
+    /**
+     * @param serverConfig
+     * @param gcHistoryToKeep - how much chunks to keep in memory (aggregated each 20 sec)
+     * @param memoryHistoryToKeep - how much chunks to keep in memory (aggregated each 20 sec)
+     */
+    public ServerStataus(final ServerConfig serverConfig, final int gcHistoryToKeep, final int memoryHistoryToKeep) {
         this.serverConfig = serverConfig;
+        this.memoryHistoryToKeep = memoryHistoryToKeep;
+        this.gcHistoryToKeep = gcHistoryToKeep;
     }
 
     public void setPoolFeedMap(Map<String, PoolsFeed> poolFeedMap) {
@@ -65,11 +82,12 @@ public class ServerStataus {
     @SuppressWarnings("serial")
     public void updateGCHistory(GCHistory gcHistory) {
         if (!gcHistoryMap.containsKey(gcHistory.getCollectorName())) {
+            // adding new collector
             LinkedHashMap<Long, GCHistory> cycles = new LinkedHashMap<Long, GCHistory>() {
 
                 @Override
                 protected boolean removeEldestEntry(java.util.Map.Entry<Long, GCHistory> eldest) {
-                    return size() > 100;
+                    return size() > gcHistoryToKeep;
                 }
             };
 
@@ -97,14 +115,17 @@ public class ServerStataus {
     public MemoryUsage updateMemoryUsage(long init, long used, long committed, long max, String memoryState) {
         MemoryUsage mu = new MemoryUsage(init, used, committed, max, memoryState, DateUtils.roundDate(new Date()));
         memoryUsage.add(mu);
-        if (memoryUsage.size() > 100) {
+        if (memoryUsage.size() > memoryHistoryToKeep) {
             memoryUsage.remove();
         }
         return mu;
     }
 
-    public double updateCPUutilization(final long lastMeasurementAfter, final int availableProcessors, final long lastMeasureTimeAfter) {
-        return cpuUtilization.evolve(lastMeasurementAfter, availableProcessors, lastMeasureTimeAfter);
+    public double updateCPUutilization(final long lastMeasurementAfter,
+                                       final int availableProcessors,
+                                       final long lastMeasureTimeAfter,
+                                       final double systemLoadAverage) {
+        return cpuUtilization.evolve(lastMeasurementAfter, availableProcessors, lastMeasureTimeAfter, systemLoadAverage);
     }
 
     /**
@@ -127,7 +148,10 @@ public class ServerStataus {
         for (String poolName : gcHistoryMap.keySet()) {
             sb.append("Collector Name:").append(poolName).append("\n");
             LinkedHashMap<Long, GCHistory> map = gcHistoryMap.get(poolName);
-            for (GCHistory gch : map.values()) {
+            LinkedList<Long> list = new LinkedList<Long>(map.keySet());
+            Collections.sort(list);
+            for (int i = (list.size() - 1); i > (list.size() - 20) && i >= 0; i--) {
+                GCHistory gch = map.get(list.get(i));
                 sb.append("[T:").append(gch.getTime()).append(" CNT=" + gch.getCollectionCount());
                 sb.append(" TT=" + StringFormatter.formatMillis(gch.getCollectionTime()));
                 sb.append(" LT=" + StringFormatter.formatMillis(gch.getLastColleactionTime()));
@@ -150,13 +174,8 @@ public class ServerStataus {
         return serverConfig;
     }
 
-    public void setConnected(boolean connected) {
-        this.connected = connected;
-    }
-
     public JMXConnector getConnector() {
         return connector;
-
     }
 
     public boolean isConnected() {
@@ -165,6 +184,9 @@ public class ServerStataus {
 
     public void setConnector(JMXConnector connector) {
         this.connector = connector;
+        if (connector != null) {
+            connected = true;
+        }
     }
 
     /**
@@ -186,6 +208,17 @@ public class ServerStataus {
 
     public void setUptime(long uptime) {
         this.upTime = uptime;
+    }
+
+    /**
+     * the method is called when JMX is disconnected
+     */
+    public void resetOnDisconnect() {
+        this.firstTimeAccess = true;
+        this.connected = false;
+        this.connector = null;
+        this.gcHistoryMap.clear();
+        this.memoryUsage.clear();
     }
 
     public CPUUtilization getCpuUtilization() {

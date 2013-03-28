@@ -3,6 +3,7 @@ package com.smexec.monitor.shared;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 
@@ -25,7 +26,7 @@ public class ConnectedServer
     private ArrayList<GCHistory> gcHistories;
     private long upTime;
 
-    private double cpuUtilization;
+    private CpuUtilizationChunk cpuUtilizationChunk;
 
     public ConnectedServer() {}
 
@@ -37,7 +38,7 @@ public class ConnectedServer
                            MemoryUsage memoryUsage,
                            ArrayList<GCHistory> gcHistories,
                            long upTime,
-                           double cpuUtilization) {
+                           CpuUtilizationChunk cpuUtilizationChunk) {
         super();
         this.name = name;
         this.serverCode = serverCode;
@@ -47,7 +48,7 @@ public class ConnectedServer
         this.memoryUsage = memoryUsage;
         this.gcHistories = gcHistories;
         this.upTime = upTime;
-        this.cpuUtilization = cpuUtilization;
+        this.cpuUtilizationChunk = cpuUtilizationChunk;
     }
 
     public String getName() {
@@ -82,8 +83,8 @@ public class ConnectedServer
         return upTime;
     }
 
-    public double getCpuUtilization() {
-        return cpuUtilization;
+    public CpuUtilizationChunk getCpuUtilizationChunk() {
+        return cpuUtilizationChunk;
     }
 
     @Override
@@ -106,7 +107,7 @@ public class ConnectedServer
                .append(", ut=")
                .append(upTime)
                .append(", cp=")
-               .append(cpuUtilization)
+               .append(cpuUtilizationChunk)
                .append("]");
         return builder.toString();
     }

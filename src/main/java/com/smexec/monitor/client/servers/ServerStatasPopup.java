@@ -5,12 +5,15 @@ import java.util.LinkedList;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.HasDirection.Direction;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.MonitoringServiceAsync;
@@ -25,6 +28,7 @@ import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
+import com.smexec.monitor.shared.runtime.ThreadDump;
 
 public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends DialogBox {
@@ -32,6 +36,9 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
     private final MonitoringServiceAsync<CS, R, FR> service;
 
     private FlowPanel fp = new FlowPanel();
+    private FlowPanel cpu = new FlowPanel();
+    private FlowPanel memory = new FlowPanel();
+    private FlowPanel details = new FlowPanel();
 
     private CS cs;
 
@@ -68,10 +75,11 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         super.center();
         setPopupPosition(200, 26);
 
+        HorizontalPanel hp = new HorizontalPanel();
         Button threadDump = new Button("Get Thread Dump");
-        fp.add(threadDump);
+        hp.add(threadDump);
         Button close = new Button("Close");
-        fp.add(close);
+        hp.add(close);
         close.addClickHandler(new ClickHandler() {
 
             @Override
@@ -80,31 +88,31 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
             }
         });
 
+        hp.setWidth("100%");
+        hp.setCellHorizontalAlignment(close, HorizontalAlignmentConstant.endOf(Direction.LTR));
+        close.getElement().getStyle().setColor("orange");
+        fp.add(hp);
+        fp.add(cpu);
+        fp.add(memory);
+        fp.add(details);
+
         threadDump.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-                DialogBox db = new DialogBox();
-                db.setAnimationEnabled(true);
-                db.setAutoHideEnabled(true);
-                db.setModal(true);
-                db.setSize("900px", "600px");
-                final TextArea textArea = new TextArea();
-                textArea.setText("Wait....");
-                textArea.setSize("990px", "590px");
-                db.setWidget(textArea);
-                db.center();
+                final ThreadDumpPopup tdp = new ThreadDumpPopup();
+                tdp.center();
 
-                service.getThreadDump(cs.getServerCode(), new AsyncCallback<String>() {
+                service.getThreadDump(cs.getServerCode(), new AsyncCallback<ThreadDump>() {
 
                     @Override
-                    public void onSuccess(String result) {
-                        textArea.setText(result);
+                    public void onSuccess(ThreadDump result) {
+                        tdp.setDump(result);
                     }
 
                     @Override
                     public void onFailure(Throwable caught) {
-                        textArea.setText("Can't get thread dump:" + caught.getMessage());
+                        tdp.setText("Can't get thread dump:" + caught.getMessage());
                     }
                 });
             }
@@ -197,7 +205,7 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         ta.setSize("700px", "300px");
         ft.setWidget(i++, 1, ta);
 
-        fp.add(ft);
+        details.add(ft);
     }
 
     private void createWrappedHTML(FlexTable ft, int index, String text) {
@@ -229,7 +237,7 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         Log.debug("ServerStatasPopup.Updating CPU, values size:" + cpuHistory.getValuesLenght());
         MonitoringLineChart cpuChart = new MonitoringLineChart(new ILineType[] {ServersLineType.CPU}, "CPU%", "Time", "CPU Load");
         cpuChart.setStyleName("reconnectionsChart");
-        fp.add(cpuChart);
+        cpu.add(cpuChart);
         cpuChart.updateChart(cpuHistory, true);
     }
 
@@ -253,7 +261,7 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         Log.debug("ServerStatasPopup.Updating memry, values size:" + memoryHistory.getValuesLenght());
         MonitoringLineChart connected = new MonitoringLineChart(new ILineType[] {ServersLineType.MEMORY}, "Memory%", "Time", "Memory Usage");
         connected.setStyleName("playersChart");
-        fp.add(connected);
+        memory.add(connected);
         connected.updateChart(memoryHistory, true);
     }
 }

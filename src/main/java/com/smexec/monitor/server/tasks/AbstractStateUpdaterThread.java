@@ -53,7 +53,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
 
             CompletionService<S> compService = new ExecutorCompletionService<S>(threadPool);
 
-            Collection<S> values = connectedServersState.getMap().values();
+            Collection<S> values = connectedServersState.getAllServers();
 
             // scheduling update threads
             for (S ss : values) {

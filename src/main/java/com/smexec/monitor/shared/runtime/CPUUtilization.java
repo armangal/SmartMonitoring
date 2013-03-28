@@ -18,7 +18,7 @@ public class CPUUtilization
 
     public CPUUtilization() {}
 
-    public double evolve(final long lastMeasurementAfter, final int availableProcessors, final long lastMeasureTimeAfter) {
+    public double evolve(final long lastMeasurementAfter, final int availableProcessors, final long lastMeasureTimeAfter, final double systemLoadAverage) {
         double percent;
 
         if (lastMeasureTimeAfter > lastMeasureTime) {
@@ -29,7 +29,7 @@ public class CPUUtilization
 
         this.lastMeasurement = lastMeasurementAfter;
         this.lastMeasureTime = lastMeasureTimeAfter;
-        list.add(new CpuUtilizationChunk(percent, DateUtils.roundDate(new Date())));
+        list.add(new CpuUtilizationChunk(percent, systemLoadAverage, DateUtils.roundDate(new Date())));
         if (list.size() > 100) {
             list.remove();
         }

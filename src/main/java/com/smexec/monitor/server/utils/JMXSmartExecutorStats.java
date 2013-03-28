@@ -25,7 +25,7 @@ public class JMXSmartExecutorStats {
     public void getSmartThreadPoolStats(ServerStataus ss)
         throws AttributeNotFoundException, InstanceNotFoundException, MBeanException, ReflectionException, IOException, MalformedObjectNameException {
 
-        Map<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>(0);
+        final Map<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>(0);
 
         JMXConnector jmxConnector = ss.getConnector();
         MBeanServerConnection mbsc = jmxConnector.getMBeanServerConnection();

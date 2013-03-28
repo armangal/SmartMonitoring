@@ -7,6 +7,7 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 
 import javax.management.MBeanServerConnection;
 
@@ -14,14 +15,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.shared.runtime.ThreadDump;
 
 public class JMXThreadDumpUtils {
 
     private static Logger logger = LoggerFactory.getLogger(JMXThreadDumpUtils.class);
 
-    public <SS extends ServerStataus> String getThreadDump(SS ss) {
+    public <SS extends ServerStataus> ThreadDump getThreadDump(SS ss) {
         StringBuilder response = new StringBuilder();
 
+        LinkedList<com.smexec.monitor.shared.runtime.ThreadInfo> threads = new LinkedList<com.smexec.monitor.shared.runtime.ThreadInfo>();
         try {
             MBeanServerConnection mbsc = ss.getConnector().getMBeanServerConnection();
             ThreadMXBean threadMXBean = newPlatformMXBeanProxy(mbsc, THREAD_MXBEAN_NAME, ThreadMXBean.class);
@@ -29,6 +32,11 @@ public class JMXThreadDumpUtils {
 
             response.append("Dump of " + dump.length + " thread at server:" + ss.getServerConfig().getServerCode() + ", time:"
                             + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z").format(new Date(System.currentTimeMillis())) + "\n\n");
+
+            for (ThreadInfo ti : dump) {
+
+                threads.add(new com.smexec.monitor.shared.runtime.ThreadInfo(ti.getThreadName(), ti.getThreadId(), ti.getThreadState().name()));
+            }
 
             for (ThreadInfo ti : dump) {
 
@@ -51,7 +59,8 @@ public class JMXThreadDumpUtils {
             response = new StringBuilder(e.getMessage());
         }
 
-        return response.toString();
+        ThreadDump td = new ThreadDump(response.toString(), threads);
+        return td;
     }
 
     private static String extractStack(StackTraceElement ste) {

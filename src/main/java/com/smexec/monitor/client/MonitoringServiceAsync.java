@@ -10,12 +10,13 @@ import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
+import com.smexec.monitor.shared.runtime.ThreadDump;
 
 public interface MonitoringServiceAsync<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>> {
 
     void refresh(int lastAlertId, AsyncCallback<FR> callback);
 
-    void getThreadDump(Integer serverCode, AsyncCallback<String> callback);
+    void getThreadDump(Integer serverCode, AsyncCallback<ThreadDump> callback);
 
     void getGCHistory(Integer serverCode, AsyncCallback<String> callback);
 

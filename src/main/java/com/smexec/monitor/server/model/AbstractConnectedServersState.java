@@ -1,6 +1,7 @@
 package com.smexec.monitor.server.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,26 +12,38 @@ import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.PoolsFeed;
 
-public abstract class AbstractConnectedServersState<S extends ServerStataus, R extends AbstractRefreshResult<C>, C extends ConnectedServer> {
+public abstract class AbstractConnectedServersState<SS extends ServerStataus, RR extends AbstractRefreshResult<CS>, CS extends ConnectedServer> {
 
     private static Logger logger = LoggerFactory.getLogger(AbstractConnectedServersState.class);
 
-    private ConcurrentHashMap<Integer, S> connectedServersMap = new ConcurrentHashMap<Integer, S>();
+    private ConcurrentHashMap<Integer, SS> connectedServersMap = new ConcurrentHashMap<Integer, SS>();
 
     /**
      * Result ready to be used by clients
      */
-    private R result;
+    private RR result;
 
-    public abstract R createNewRefreshResult(ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap);
+    public abstract RR createNewRefreshResult(ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap);
 
-    public abstract void mergeExtraData(S ss);
+    public abstract void mergeExtraData(SS ss);
 
-    public ConcurrentHashMap<Integer, S> getMap() {
-        return connectedServersMap;
+    public SS getServerStataus(final Integer serverCode) {
+        return connectedServersMap.get(serverCode);
     }
 
-    public synchronized R getRefreshResult() {
+    public Collection<SS> getAllServers() {
+        return connectedServersMap.values();
+    }
+
+    public SS removeServer(final Integer serevrCode) {
+        return connectedServersMap.remove(serevrCode);
+    }
+
+    public SS addServer(SS serverStataus) {
+        return connectedServersMap.put(serverStataus.getServerConfig().getServerCode(), serverStataus);
+    }
+
+    public synchronized RR getRefreshResult() {
         return result;
     }
 
@@ -39,11 +52,11 @@ public abstract class AbstractConnectedServersState<S extends ServerStataus, R e
      * 
      * @param servers
      */
-    public void mergeStats(ArrayList<C> servers) {
+    public void mergeStats(ArrayList<CS> servers) {
         HashMap<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>();
 
         logger.info("Merging stats");
-        for (S ss : connectedServersMap.values()) {
+        for (SS ss : connectedServersMap.values()) {
             if (ss.isConnected()) {
                 for (PoolsFeed pf : ss.getPoolFeedMap().values()) {
                     // go over all pools in each server

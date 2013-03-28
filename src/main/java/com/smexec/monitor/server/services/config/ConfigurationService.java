@@ -1,6 +1,6 @@
 package com.smexec.monitor.server.services.config;
 
-import com.smexec.monitor.server.model.ServersConfig;
+import com.smexec.monitor.server.model.config.ServersConfig;
 
 public class ConfigurationService {
 

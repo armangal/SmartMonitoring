@@ -13,7 +13,7 @@ import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
-import com.smexec.monitor.server.model.ServersConfig;
+import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.utils.JMXGeneralStats;
@@ -27,6 +27,7 @@ import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
+import com.smexec.monitor.shared.runtime.ThreadDump;
 
 /**
  * The server side implementation of the monitoring RPC service.
@@ -68,11 +69,12 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public abstract FR createFullRefreshResult(RR refreshResult, LinkedList<Alert> alerts);
 
-    public String getThreadDump(Integer serverCode) {
+    public ThreadDump getThreadDump(Integer serverCode) {
         checkAuthenticated();
-        SS ss = connectedServersState.getMap().get(serverCode);
+        SS ss = connectedServersState.getServerStataus(serverCode);
         if (ss == null || !ss.isConnected()) {
-            return new String("Server:" + serverCode + " not found or not connected.");
+            logger.warn("Server:" + serverCode + " not found or not connected.");
+            return null;
 
         } else {
             return jmxThreadDumpUtils.getThreadDump(ss);
@@ -81,7 +83,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public String getGCHistory(Integer serverCode) {
         checkAuthenticated();
-        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
+        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             return serverStataus.getGCHistory();
         } else {
@@ -119,7 +121,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode) {
         checkAuthenticated();
-        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
+        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             return serverStataus.getMemoryUsage();
         }
@@ -129,7 +131,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode) {
         checkAuthenticated();
-        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
+        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             return serverStataus.getCpuUtilization().getPercentList();
         }
@@ -139,7 +141,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public RuntimeInfo getRuntimeInfo(Integer serverCode) {
         checkAuthenticated();
-        ServerStataus serverStataus = (ServerStataus) connectedServersState.getMap().get(serverCode);
+        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null && serverStataus.isConnected()) {
             try {
                 return jmxGeneralStats.getRuntimeInfo(serverStataus);

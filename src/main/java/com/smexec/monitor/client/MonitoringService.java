@@ -10,6 +10,7 @@ import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
+import com.smexec.monitor.shared.runtime.ThreadDump;
 
 /**
  * The client side stub for the RPC service.
@@ -20,7 +21,7 @@ public interface MonitoringService<CS extends ConnectedServer, R extends Abstrac
 
     FR refresh(int lastAlertId);
 
-    String getThreadDump(Integer serverCode);
+    ThreadDump getThreadDump(Integer serverCode);
 
     String getGCHistory(Integer serverCode);
 

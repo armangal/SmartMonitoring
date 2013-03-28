@@ -162,7 +162,7 @@ public class JMXGeneralStats {
 
         double load = serverStataus.updateCPUutilization(operatingSystemMXBean.getProcessCpuTime(),
                                                          operatingSystemMXBean.getAvailableProcessors(),
-                                                         System.nanoTime());
+                                                         System.nanoTime(), operatingSystemMXBean.getSystemLoadAverage());
 
         if (load > 90d) {
             Alert alert = new Alert("CPU Alert, load is:" + DECIMAL_FORMAT.format(load),

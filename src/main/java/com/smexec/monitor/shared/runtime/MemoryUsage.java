@@ -32,10 +32,6 @@ public class MemoryUsage
         this.memoryState = memoryState;
     }
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
     public long getCommitted() {
         return committed;
     }
