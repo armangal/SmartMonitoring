@@ -1,4 +1,4 @@
-package com.smexec.monitor.shared;
+package com.smexec.monitor.shared.config;
 
 import java.io.Serializable;
 

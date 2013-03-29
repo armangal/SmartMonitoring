@@ -45,4 +45,34 @@ public class CpuUtilizationChunk
         return builder.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        long temp;
+        temp = Double.doubleToLongBits(systemLoadAverage);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(usage);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CpuUtilizationChunk other = (CpuUtilizationChunk) obj;
+        if (Double.doubleToLongBits(systemLoadAverage) != Double.doubleToLongBits(other.systemLoadAverage))
+            return false;
+        if (Double.doubleToLongBits(usage) != Double.doubleToLongBits(other.usage))
+            return false;
+        return true;
+    }
+    
+    
+
 }

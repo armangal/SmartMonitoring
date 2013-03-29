@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.RefreshResult;
+import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 public class ConnectedServersState
     extends AbstractConnectedServersState<ServerStataus, RefreshResult, ConnectedServer>

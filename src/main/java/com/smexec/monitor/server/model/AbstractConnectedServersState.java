@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.PoolsFeed;
+import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 public abstract class AbstractConnectedServersState<SS extends ServerStataus, RR extends AbstractRefreshResult<CS>, CS extends ConnectedServer> {
 

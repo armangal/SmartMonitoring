@@ -18,7 +18,7 @@ import javax.management.remote.JMXConnector;
 
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.shared.ChartFeed;
-import com.smexec.monitor.shared.PoolsFeed;
+import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 public class JMXSmartExecutorStats {
 
@@ -40,19 +40,19 @@ public class JMXSmartExecutorStats {
 
             CompositeData[] times = (CompositeData[]) mbsc.getAttribute(objectName, "ExecutionTimeStats");
 
-            ChartFeed timesChartFeed = new ChartFeed(times.length, 4);
+            ChartFeed<Long, Long> timesChartFeed = new ChartFeed<Long, Long>(new Long[3][times.length], new Long[times.length]);
             for (int i = 0; i < times.length; i++) {
                 CompositeData timeStat = times[i];
                 timesChartFeed.getValues()[0][i] = JMXUtils.getLongAtributeFromComposite(timeStat, "max");
                 timesChartFeed.getValues()[1][i] = JMXUtils.getLongAtributeFromComposite(timeStat, "avg");
                 timesChartFeed.getValues()[2][i] = JMXUtils.getLongAtributeFromComposite(timeStat, "min");
-                timesChartFeed.getValues()[3][i] = JMXUtils.getLongAtributeFromComposite(timeStat, "chunkTime");
+                timesChartFeed.getXLineValues()[i] = JMXUtils.getLongAtributeFromComposite(timeStat, "chunkTime");
             }
             pf.setTimeChartFeeds(timesChartFeed);
             // /////////////////////////////////////////
 
             CompositeData[] tasks = (CompositeData[]) mbsc.getAttribute(objectName, "TaskExecutionStats");
-            ChartFeed tasksChartFeed = new ChartFeed(tasks.length, 6);
+            ChartFeed<Long, Long> tasksChartFeed = new ChartFeed<Long, Long>(new Long[5][tasks.length], new Long[tasks.length]);
             for (int i = 0; i < tasks.length; i++) {
                 CompositeData taskStat = tasks[i];
                 tasksChartFeed.getValues()[0][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "submitted");
@@ -60,7 +60,7 @@ public class JMXSmartExecutorStats {
                 tasksChartFeed.getValues()[2][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "completed");
                 tasksChartFeed.getValues()[3][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "failed");
                 tasksChartFeed.getValues()[4][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "rejected");
-                tasksChartFeed.getValues()[5][i] = JMXUtils.getLongAtributeFromComposite(taskStat, "chunkTime");
+                tasksChartFeed.getXLineValues()[i] = JMXUtils.getLongAtributeFromComposite(taskStat, "chunkTime");
             }
             pf.setTasksChartFeeds(tasksChartFeed);
 

@@ -18,7 +18,11 @@ public class CPUUtilization
 
     public CPUUtilization() {}
 
-    public double evolve(final long lastMeasurementAfter, final int availableProcessors, final long lastMeasureTimeAfter, final double systemLoadAverage) {
+    public double evolve(final long lastMeasurementAfter,
+                         final int availableProcessors,
+                         final long lastMeasureTimeAfter,
+                         final double systemLoadAverage,
+                         final int systemHistoryToKeep) {
         double percent;
 
         if (lastMeasureTimeAfter > lastMeasureTime) {
@@ -30,7 +34,7 @@ public class CPUUtilization
         this.lastMeasurement = lastMeasurementAfter;
         this.lastMeasureTime = lastMeasureTimeAfter;
         list.add(new CpuUtilizationChunk(percent, systemLoadAverage, DateUtils.roundDate(new Date())));
-        if (list.size() > 100) {
+        if (list.size() > systemHistoryToKeep) {
             list.remove();
         }
 
@@ -49,8 +53,13 @@ public class CPUUtilization
         return list.isEmpty() ? new CpuUtilizationChunk() : list.getLast();
     }
 
-    public LinkedList<CpuUtilizationChunk> getPercentList() {
-        return list;
+    public LinkedList<CpuUtilizationChunk> getPercentList(Integer chunks) {
+        LinkedList<CpuUtilizationChunk> ret = new LinkedList<CpuUtilizationChunk>();
+        // get last X chunks
+        for (int i = Math.max(0, list.size() - chunks); i < list.size(); i++) {
+            ret.add(list.get(i));
+        }
+        return ret;
     }
 
     @Override

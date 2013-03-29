@@ -1,6 +1,8 @@
-package com.smexec.monitor.shared;
+package com.smexec.monitor.shared.smartpool;
 
 import java.io.Serializable;
+
+import com.smexec.monitor.shared.ChartFeed;
 
 public class PoolsFeed
     implements Serializable {
@@ -8,8 +10,8 @@ public class PoolsFeed
     private static final long serialVersionUID = 1L;
 
     private String poolName;
-    private ChartFeed timeChartFeeds;
-    private ChartFeed tasksChartFeeds;
+    private ChartFeed<Long, Long> timeChartFeeds;
+    private ChartFeed<Long, Long> tasksChartFeeds;
     private long avgGenTime;
     private long maxGenTime;
     private long minGenTime;
@@ -130,19 +132,19 @@ public class PoolsFeed
         this.poolName = poolName;
     }
 
-    public ChartFeed getTimeChartFeeds() {
+    public ChartFeed<Long, Long> getTimeChartFeeds() {
         return timeChartFeeds;
     }
 
-    public void setTimeChartFeeds(ChartFeed timeChartFeeds) {
+    public void setTimeChartFeeds(ChartFeed<Long, Long> timeChartFeeds) {
         this.timeChartFeeds = timeChartFeeds;
     }
 
-    public ChartFeed getTasksChartFeeds() {
+    public ChartFeed<Long, Long> getTasksChartFeeds() {
         return tasksChartFeeds;
     }
 
-    public void setTasksChartFeeds(ChartFeed tasksChartFeeds) {
+    public void setTasksChartFeeds(ChartFeed<Long, Long> tasksChartFeeds) {
         this.tasksChartFeeds = tasksChartFeeds;
     }
 

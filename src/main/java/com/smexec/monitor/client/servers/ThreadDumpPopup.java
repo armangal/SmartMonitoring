@@ -1,5 +1,7 @@
 package com.smexec.monitor.client.servers;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -29,7 +31,7 @@ public class ThreadDumpPopup
         ft.setText(0, 1, "ID");
         ft.setText(0, 2, "Status");
         ft.getRowFormatter().getElement(0).setId("th");
-        
+        ft.setWidth("70%");
         fp.add(ft);
         fp.add(textArea);
         setWidget(fp);
@@ -42,9 +44,15 @@ public class ThreadDumpPopup
         for (ThreadInfo ti : threadDump.getThreads()) {
             ft.setText(i, 0, ti.getName());
             ft.setText(i, 1, "" + ti.getId());
-            ft.setText(i++, 2, ti.getState());
-
+            ft.setText(i, 2, ti.getState());
+            
+            if ("BLOCKED".equalsIgnoreCase(ti.getState())) {
+                Style style = ft.getFlexCellFormatter().getElement(i, 2).getStyle();
+                style.setBackgroundColor("#C00000");
+                style.setFontWeight(FontWeight.BOLDER);
+                style.setColor("white");
+            }
+            i++;
         }
     }
-
 }

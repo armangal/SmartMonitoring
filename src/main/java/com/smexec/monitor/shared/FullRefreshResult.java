@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 
+import com.smexec.monitor.shared.alert.Alert;
+
 public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends ConnectedServer>
     implements Serializable {
 

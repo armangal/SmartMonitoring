@@ -10,9 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
-import com.smexec.monitor.shared.Alert;
+import com.smexec.monitor.shared.alert.Alert;
 
 public class AlertService {
 
@@ -58,7 +59,7 @@ public class AlertService {
      * 
      * @param alert
      */
-    public void addAlert(Alert alert) {
+    public <SS extends ServerStataus> void addAlert(Alert alert, SS ss) {
         alert.setId(alertCounter.getAndIncrement());
         logger.warn("Alert added:{}", alert);
         alertsList.add(alert);
@@ -66,7 +67,7 @@ public class AlertService {
             alertsList.remove();
         }
 
-        if (alert.getAlertType().sendMail()) {
+        if (alert.getAlertType().sendMail() && ss.canSendAlert(alert.getAlertType())) {
             mailService.sendAlert(alert.getMessage(), alert.toString());
         }
     }

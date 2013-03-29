@@ -55,7 +55,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
             String code = ((Widget) event.getSource()).getElement().getAttribute("code");
             CS cs = serversMap.get(Integer.valueOf(code));
             if (cs != null) {
-                ServerStatasPopup<CS, R, FR> ssp = new ServerStatasPopup<CS, R, FR>(service, cs);
+                ServerStatsPopup<CS, R, FR> ssp = new ServerStatsPopup<CS, R, FR>(service, cs);
                 ssp.center();
             } else {
                 Window.alert("Server couldn't be found:" + code);

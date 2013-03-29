@@ -141,6 +141,11 @@ body {
 	padding: 0px;
 }
 
+.serverPopupChart {
+	border: thin solid grey;
+	height: 120px;
+}
+
 
 .tasksChart {
 	border: thin solid grey;

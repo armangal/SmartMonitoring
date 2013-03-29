@@ -8,17 +8,17 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.smexec.monitor.client.widgets.ILineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
-import com.smexec.monitor.shared.PoolsFeed;
+import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 public class PoolWidget
     extends Composite {
 
     private NumberFormat formatLong = NumberFormat.getDecimalFormat();
 
-    private MonitoringLineChart timeChart = new MonitoringLineChart(new ILineType[] {ExecutionTimeLineType.MAX, ExecutionTimeLineType.AVG,
+    private MonitoringLineChart<Long, Long> timeChart = new MonitoringLineChart<Long, Long>(new ILineType[] {ExecutionTimeLineType.MAX, ExecutionTimeLineType.AVG,
                                                                                      ExecutionTimeLineType.MIN}, "Milis", "Time", "Execution Time");
 
-    private MonitoringLineChart tasksChart = new MonitoringLineChart(new ILineType[] {TasksLineType.SUBMITED, TasksLineType.EXECUTED, TasksLineType.COMPLETED,
+    private MonitoringLineChart<Long, Long> tasksChart = new MonitoringLineChart<Long, Long>(new ILineType[] {TasksLineType.SUBMITED, TasksLineType.EXECUTED, TasksLineType.COMPLETED,
                                                                                       TasksLineType.FAILED, TasksLineType.REJECTED}, "Tasks", "Time", "Tasks");
     private FlexTable tasksTable = new FlexTable();
     private FlexTable timesTable = new FlexTable();

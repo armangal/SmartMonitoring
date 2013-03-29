@@ -3,11 +3,21 @@ package com.smexec.monitor.shared;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class ChartFeed
+/**
+ * data holder to be used for charts drawing
+ * 
+ * @author armang
+ */
+public class ChartFeed<V extends Number, X extends Number>
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private long values[][];
+    /**
+     * values to draw the lines
+     */
+    private V values[][];
+
+    private X xLineValues[];
     /**
      * the amount of lines
      */
@@ -20,24 +30,29 @@ public class ChartFeed
     public ChartFeed() {}
 
     /**
-     * @param valuesLenght -the length of the lines
-     * @param valuesAmount -the amount of lines
+     * @param T values[][] = values[the amount of lines][the length of the lines],<br>
+     *            example new Integer[5][100] >> five lines each have 100 elements
      */
-    public ChartFeed(int valuesLenght, int valuesAmount) {
-        values = new long[valuesAmount][valuesLenght];
-        this.valuesAmount = valuesAmount;
-        this.valuesLenght = valuesLenght;
+    public ChartFeed(V values[][], X xLineValues[]) {
+        this.values = values;
+        this.xLineValues = xLineValues;
+        this.valuesAmount = values.length;
+        this.valuesLenght = values[0].length;
     }
 
-    public long[][] getValues() {
+    public V[][] getValues() {
         return values;
     }
 
-    public long getValues(int x, int y) {
+    public X[] getXLineValues() {
+        return xLineValues;
+    }
+
+    public V getValues(int x, int y) {
         return values[x][y];
     }
 
-    public long getLastValues(int x) {
+    public V getLastValues(int x) {
         return values[x][Math.max(valuesLenght - 1, 0)];
     }
 

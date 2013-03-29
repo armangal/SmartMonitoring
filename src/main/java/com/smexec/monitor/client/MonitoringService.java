@@ -27,9 +27,9 @@ public interface MonitoringService<CS extends ConnectedServer, R extends Abstrac
 
     Boolean authenticate(String userName, String password);
 
-    LinkedList<MemoryUsage> getMemoryStats(Integer serverCode);
+    LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks);
 
-    LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode);
+    LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks);
     
     ClientConfigurations getClientConfigurations();
     

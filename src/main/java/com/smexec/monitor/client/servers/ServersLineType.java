@@ -4,7 +4,9 @@ import com.googlecode.gwt.charts.client.ColumnType;
 import com.smexec.monitor.client.widgets.ILineType;
 
 public enum ServersLineType implements ILineType {
-    CPU(0, "CPU", "green", ColumnType.NUMBER), MEMORY(0, "Memory", "blue", ColumnType.NUMBER);
+    CPU(0, "CPU", "green", ColumnType.NUMBER), //
+    SYS_LOAD(0, "SysLoad", "green", ColumnType.NUMBER), //
+    MEMORY(0, "Memory", "blue", ColumnType.NUMBER);
 
     int index;
     String name;

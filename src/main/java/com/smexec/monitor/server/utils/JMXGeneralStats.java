@@ -33,8 +33,8 @@ import javax.management.ReflectionException;
 import com.google.inject.Inject;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.services.alert.AlertService;
-import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.StringFormatter;
+import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
 import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
@@ -140,17 +140,17 @@ public class JMXGeneralStats {
         serverStataus.setUptime(rmbean.getUptime());
 
         com.smexec.monitor.shared.runtime.MemoryUsage mu = serverStataus.updateMemoryUsage(heapMemoryUsage.getInit(),
-                                                                                   heapMemoryUsage.getUsed(),
-                                                                                   heapMemoryUsage.getCommitted(),
-                                                                                   heapMemoryUsage.getMax(),
-                                                                                   memoryState);
+                                                                                           heapMemoryUsage.getUsed(),
+                                                                                           heapMemoryUsage.getCommitted(),
+                                                                                           heapMemoryUsage.getMax(),
+                                                                                           memoryState);
 
         if (mu.getPercentage() > 90d) {
             Alert alert = new Alert("Memory Usage Alert:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "% [" + serverStataus.getServerConfig().getName() + "]",
                                     serverStataus.getServerConfig().getServerCode(),
                                     DATE_FORMAT.format(new Date()),
                                     AlertType.MEMORY);
-            alertService.addAlert(alert);
+            alertService.addAlert(alert, serverStataus);
         }
 
         List<GCHistory> gcHistoryList = getGcHistory(gcmbeans);
@@ -162,14 +162,15 @@ public class JMXGeneralStats {
 
         double load = serverStataus.updateCPUutilization(operatingSystemMXBean.getProcessCpuTime(),
                                                          operatingSystemMXBean.getAvailableProcessors(),
-                                                         System.nanoTime(), operatingSystemMXBean.getSystemLoadAverage());
+                                                         System.nanoTime(),
+                                                         operatingSystemMXBean.getSystemLoadAverage());
 
         if (load > 90d) {
             Alert alert = new Alert("CPU Alert:" + DECIMAL_FORMAT.format(load) + " [" + serverStataus.getServerConfig().getName() + "]",
                                     serverStataus.getServerConfig().getServerCode(),
                                     DATE_FORMAT.format(new Date()),
                                     AlertType.CPU);
-            alertService.addAlert(alert);
+            alertService.addAlert(alert, serverStataus);
         }
 
     }

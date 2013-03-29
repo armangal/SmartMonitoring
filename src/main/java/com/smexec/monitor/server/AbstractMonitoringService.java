@@ -19,11 +19,11 @@ import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.utils.JMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.AbstractRefreshResult;
-import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.Version;
+import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.config.Version;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
@@ -119,21 +119,21 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         }
     }
 
-    public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode) {
+    public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks) {
         checkAuthenticated();
         ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
-            return serverStataus.getMemoryUsage();
+            return serverStataus.getMemoryUsage(chunks);
         }
         logger.warn("can't find server with code:{} for memory stats", serverCode);
         return null;
     }
 
-    public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode) {
+    public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks) {
         checkAuthenticated();
         ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
-            return serverStataus.getCpuUtilization().getPercentList();
+            return serverStataus.getCpuUtilization().getPercentList(chunks);
         }
         logger.warn("can't find server with code:{} for cpu stats", serverCode);
         return null;

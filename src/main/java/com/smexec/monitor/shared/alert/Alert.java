@@ -1,8 +1,7 @@
-package com.smexec.monitor.shared;
+package com.smexec.monitor.shared.alert;
 
 import java.io.Serializable;
 
-import com.smexec.monitor.shared.alert.IAlertType;
 
 public class Alert
     implements Serializable {

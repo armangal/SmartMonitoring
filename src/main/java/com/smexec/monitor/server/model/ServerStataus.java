@@ -10,13 +10,17 @@ import java.util.Map;
 
 import javax.management.remote.JMXConnector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.utils.DateUtils;
-import com.smexec.monitor.shared.PoolsFeed;
 import com.smexec.monitor.shared.StringFormatter;
+import com.smexec.monitor.shared.alert.IAlertType;
 import com.smexec.monitor.shared.runtime.CPUUtilization;
 import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
+import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 /**
  * Class represents a current state of connected server with some historical data about memory, GC cycles and
@@ -26,6 +30,8 @@ import com.smexec.monitor.shared.runtime.MemoryUsage;
  * @author armang
  */
 public class ServerStataus {
+
+    private final static Logger logger = LoggerFactory.getLogger("ServerStataus");
 
     private boolean connected = false;
     private boolean firstTimeAccess = true;
@@ -52,7 +58,7 @@ public class ServerStataus {
     /**
      * in memory history thresholds
      */
-    private final int memoryHistoryToKeep;
+    private final int systemHistoryToKeep;
     private final int gcHistoryToKeep;
 
     /**
@@ -60,14 +66,16 @@ public class ServerStataus {
      */
     private CPUUtilization cpuUtilization = new CPUUtilization();
 
+    private Map<IAlertType, Long> lastAlertSent = new HashMap<IAlertType, Long>(0);
+
     /**
      * @param serverConfig
      * @param gcHistoryToKeep - how much chunks to keep in memory (aggregated each 20 sec)
-     * @param memoryHistoryToKeep - how much chunks to keep in memory (aggregated each 20 sec)
+     * @param systemHistoryToKeep - how much chunks to keep in memory (aggregated each 20 sec) (CPU & Memory)
      */
-    public ServerStataus(final ServerConfig serverConfig, final int gcHistoryToKeep, final int memoryHistoryToKeep) {
+    public ServerStataus(final ServerConfig serverConfig, final int gcHistoryToKeep, final int systemHistoryToKeep) {
         this.serverConfig = serverConfig;
-        this.memoryHistoryToKeep = memoryHistoryToKeep;
+        this.systemHistoryToKeep = systemHistoryToKeep;
         this.gcHistoryToKeep = gcHistoryToKeep;
     }
 
@@ -115,7 +123,7 @@ public class ServerStataus {
     public MemoryUsage updateMemoryUsage(long init, long used, long committed, long max, String memoryState) {
         MemoryUsage mu = new MemoryUsage(init, used, committed, max, memoryState, DateUtils.roundDate(new Date()));
         memoryUsage.add(mu);
-        if (memoryUsage.size() > memoryHistoryToKeep) {
+        if (memoryUsage.size() > systemHistoryToKeep) {
             memoryUsage.remove();
         }
         return mu;
@@ -125,7 +133,7 @@ public class ServerStataus {
                                        final int availableProcessors,
                                        final long lastMeasureTimeAfter,
                                        final double systemLoadAverage) {
-        return cpuUtilization.evolve(lastMeasurementAfter, availableProcessors, lastMeasureTimeAfter, systemLoadAverage);
+        return cpuUtilization.evolve(lastMeasurementAfter, availableProcessors, lastMeasureTimeAfter, systemLoadAverage, systemHistoryToKeep);
     }
 
     /**
@@ -171,8 +179,17 @@ public class ServerStataus {
         return memoryUsage.size() > 0 ? memoryUsage.getLast() : null;
     }
 
-    public LinkedList<MemoryUsage> getMemoryUsage() {
-        return memoryUsage;
+    /**
+     * @param chunks = number of chunks to return (default is 100)
+     * @return - memory usage chunks, to be used to draw chart
+     */
+    public LinkedList<MemoryUsage> getMemoryUsage(int chunks) {
+        LinkedList<MemoryUsage> ret = new LinkedList<MemoryUsage>();
+        // get last X chunks
+        for (int i = Math.max(0, memoryUsage.size() - chunks); i < memoryUsage.size(); i++) {
+            ret.add(memoryUsage.get(i));
+        }
+        return ret;
     }
 
     public ServerConfig getServerConfig() {
@@ -228,6 +245,29 @@ public class ServerStataus {
 
     public CPUUtilization getCpuUtilization() {
         return cpuUtilization;
+    }
+
+    /**
+     * returns true if alert of a give type can be sent by mail
+     * 
+     * @param alertType
+     * @return
+     */
+    public boolean canSendAlert(IAlertType alertType) {
+        if (!lastAlertSent.containsKey(alertType)) {
+            lastAlertSent.put(alertType, System.currentTimeMillis());
+            logger.debug("can send alter:{}, first time", alertType);
+            return true;
+        }
+        Long lastTime = lastAlertSent.get(alertType);
+        if ((System.currentTimeMillis() - lastTime) > alertType.getAlertFrequency()) {
+            // can send
+            logger.debug("Can send alert:{}, last:{}, current:{}", new Object[] {alertType, lastTime, System.currentTimeMillis()});
+            lastAlertSent.put(alertType, System.currentTimeMillis());
+            return true;
+        }
+        logger.debug("Can NOT send alert:{}, last:{}, current:{}", new Object[] {alertType, lastTime, System.currentTimeMillis()});
+        return false;
     }
 
     @Override

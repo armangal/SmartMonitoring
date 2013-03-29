@@ -14,7 +14,7 @@ import com.googlecode.gwt.charts.client.options.HAxis;
 import com.googlecode.gwt.charts.client.options.VAxis;
 import com.smexec.monitor.shared.ChartFeed;
 
-public class MonitoringLineChart
+public class MonitoringLineChart<V extends Number, X extends Number>
     extends Composite {
 
     private CurveType curveType = CurveType.FUNCTION;
@@ -25,7 +25,7 @@ public class MonitoringLineChart
     private String title;
     private String yColumnName;
     private String xColumnname;
-    private ChartFeed chartFeeds;
+    private ChartFeed<V, X> chartFeeds;
     private boolean lastRowAsColumn;
     private boolean initilized = false;
 
@@ -63,20 +63,20 @@ public class MonitoringLineChart
         initWidget(fp);
     }
 
-    public void updateChart(ChartFeed chartFeeds) {
+    public void updateChart(ChartFeed<V, X> chartFeeds) {
         updateChart(chartFeeds, false);
     }
 
     /**
      * @param chartFeeds
-     * @param lastRowAsColumn - meaning the the last row in the chartFeeds includes X line values (usually
+     * @param hasXLineValues - meaning the the last row in the chartFeeds includes X line values (usually
      *            time)
      */
-    public void updateChart(ChartFeed chartFeeds, boolean lastRowAsColumn) {
+    public void updateChart(ChartFeed<V, X> chartFeeds, boolean hasXLineValues) {
         try {
             if (!initilized) {
                 this.chartFeeds = chartFeeds;
-                this.lastRowAsColumn = lastRowAsColumn;
+                this.lastRowAsColumn = hasXLineValues;
                 return;
             }
 
@@ -92,9 +92,9 @@ public class MonitoringLineChart
             dataTable.addRows(chartFeeds.getValuesLenght());
             Log.debug("Adding:" + chartFeeds.getValuesLenght() + " rows to chart");
 
-            if (lastRowAsColumn) {
+            if (hasXLineValues) {
                 for (int i = 0; i < chartFeeds.getValuesLenght(); i++) {
-                    dataTable.setValue(i, 0, String.valueOf(chartFeeds.getValues(lineTypes.length, i)));
+                    dataTable.setValue(i, 0, String.valueOf(chartFeeds.getXLineValues()[i]));
                 }
             } else {
                 // create X values on chart
@@ -137,35 +137,29 @@ public class MonitoringLineChart
         }
     }
 
-    private double[] drawLine(ChartFeed chartFeeds, ILineType lineType, DataTable dataTable) {
-        double max = Double.MIN_VALUE;
-        double min = Double.MAX_VALUE;
-        long prevNormalValue = Integer.MIN_VALUE;
+    private void drawLine(ChartFeed<V, X> chartFeeds, ILineType lineType, DataTable dataTable) {
+        @SuppressWarnings("unchecked")
+        V prevNormalValue = (V) new Integer(Integer.MIN_VALUE);
 
         Log.debug("Adding line:" + lineType.getName() + ":" + lineType.getIndex() + " with values:" + chartFeeds.getValuesLenght());
         // Log.debug("Data:" + Arrays.toString(chartFeeds.getValues()[lineType.getIndex()]));
         for (int i = 0; i < chartFeeds.getValuesLenght(); i++) {
-            long value = chartFeeds.getValues(lineType.getIndex(), i);
+            V value = chartFeeds.getValues(lineType.getIndex(), i);
 
-            if (value == Integer.MIN_VALUE) {
+            if (value.intValue() == Integer.MIN_VALUE) {
                 // this case means that this line do not have valid value for current "period" or "Y"
-                if (prevNormalValue != Integer.MIN_VALUE) {
+                if (prevNormalValue.intValue() != Integer.MIN_VALUE) {
                     // draw previous value is case it's valid one, we're OK to start drawing the line from a
                     // middle of the chart
-                    dataTable.setValue(i, lineType.getIndex() + 1, prevNormalValue);
+                    dataTable.setValue(i, lineType.getIndex() + 1, prevNormalValue.doubleValue());
                 }
                 continue;
             }
             prevNormalValue = value;
-            if (value > max)
-                max = value;
-            if (value < min)
-                min = value;
 
-            dataTable.setValue(i, lineType.getIndex() + 1, value);
+            dataTable.setValue(i, lineType.getIndex() + 1, value.doubleValue());
         }
 
-        return new double[] {max, min};
     }
 
 }

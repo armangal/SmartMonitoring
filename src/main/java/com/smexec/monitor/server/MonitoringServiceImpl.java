@@ -4,10 +4,10 @@ import java.util.LinkedList;
 
 import com.smexec.monitor.client.MonitoringServiceStd;
 import com.smexec.monitor.server.model.ServerStataus;
-import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.RefreshResult;
+import com.smexec.monitor.shared.alert.Alert;
 
 /**
  * The server side implementation of the monitoring RPC service.

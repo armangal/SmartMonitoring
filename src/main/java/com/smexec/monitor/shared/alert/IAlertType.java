@@ -10,4 +10,6 @@ public interface IAlertType {
     AlertGroup getAlertGroup();
     
     boolean sendMail();
+    
+    long getAlertFrequency();
 }

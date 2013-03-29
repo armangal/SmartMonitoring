@@ -3,6 +3,8 @@ package com.smexec.monitor.client.servers;
 import java.util.LinkedList;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -17,6 +19,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.MonitoringServiceAsync;
@@ -33,19 +36,36 @@ import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
 
-public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
+public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends DialogBox {
 
     private final MonitoringServiceAsync<CS, R, FR> service;
 
+    private MonitoringLineChart<Double, Long> cpuChart = new MonitoringLineChart<Double, Long>(new ILineType[] {ServersLineType.CPU},
+                                                                                               "CPU%",
+                                                                                               "Time",
+                                                                                               "CPU Load");
+    private MonitoringLineChart<Double, Long> sysLoadChart = new MonitoringLineChart<Double, Long>(new ILineType[] {ServersLineType.SYS_LOAD},
+                                                                                                   "SysLoadAvg",
+                                                                                                   "Time",
+                                                                                                   "System Load Average");
+    private MonitoringLineChart<Double, Long> memoryChart = new MonitoringLineChart<Double, Long>(new ILineType[] {ServersLineType.MEMORY},
+                                                                                                  "Memory%",
+                                                                                                  "Time",
+                                                                                                  "Memory Usage");
+
     private FlowPanel fp = new FlowPanel();
     private FlowPanel cpu = new FlowPanel();
     private FlowPanel memory = new FlowPanel();
+    private FlowPanel sysLoad = new FlowPanel();
     private FlowPanel details = new FlowPanel();
 
     private CS cs;
 
-    public ServerStatasPopup(MonitoringServiceAsync<CS, R, FR> service, CS cs) {
+    private Integer chunks = 100;
+    private boolean refresh = true;
+
+    public ServerStatsPopup(MonitoringServiceAsync<CS, R, FR> service, CS cs) {
         this.cs = cs;
         this.service = service;
         setAnimationEnabled(true);
@@ -67,8 +87,45 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
 
         fp.add(tech);
 
-        fp.getElement().setId("channelServerPopup");
+        fp.getElement().setId("xxx");
         setWidget(fp);
+
+        memoryChart.setStyleName("serverPopupChart");
+        memory.add(memoryChart);
+
+        cpuChart.setStyleName("serverPopupChart");
+        cpu.add(cpuChart);
+
+        sysLoadChart.setStyleName("serverPopupChart");
+        sysLoad.add(sysLoadChart);
+
+    }
+
+    private void addRadioButtons(HorizontalPanel hp) {
+        RadioButton r30m = getRadioButton("m30", 100);
+        r30m.setValue(true);
+        hp.add(r30m);
+        hp.add(getRadioButton("1h", 200));
+        hp.add(getRadioButton("2h", 400));
+        hp.add(getRadioButton("6h", 1200));
+        hp.add(getRadioButton("12h", 2400));
+        hp.add(getRadioButton("1d", 4800));
+    }
+
+    private RadioButton getRadioButton(String name, int chunksToSet) {
+        RadioButton r = new RadioButton("chunks", name);
+        r.getElement().setAttribute("chunks", "" + chunksToSet);
+        r.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                Widget w = (Widget) event.getSource();
+                chunks = Integer.valueOf(w.getElement().getAttribute("chunks"));
+                getMemoryStats(chunks);
+                getCpuStats(chunks);
+            }
+        });
+        return r;
     }
 
     @Override
@@ -77,10 +134,10 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
 
         super.center();
 
-
         HorizontalPanel hp = new HorizontalPanel();
         Button threadDump = new Button("Get Thread Dump");
         hp.add(threadDump);
+        addRadioButtons(hp);
         Button close = new Button("Close");
         hp.add(close);
         close.addClickHandler(new ClickHandler() {
@@ -99,6 +156,7 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
         fp.add(hp);
         fp.add(cpu);
         fp.add(memory);
+        fp.add(sysLoad);
         fp.add(details);
 
         threadDump.addClickHandler(new ClickHandler() {
@@ -123,30 +181,8 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
             }
         });
 
-        service.getMemoryStats(cs.getServerCode(), new AsyncCallback<LinkedList<MemoryUsage>>() {
-
-            @Override
-            public void onSuccess(LinkedList<MemoryUsage> result) {
-                updateMemoryChart(result);
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                Log.error("error while getting server memory stats:" + caught.getMessage());
-            };
-        });
-        service.getCpuUsageHistory(cs.getServerCode(), new AsyncCallback<LinkedList<CpuUtilizationChunk>>() {
-
-            @Override
-            public void onSuccess(LinkedList<CpuUtilizationChunk> result) {
-                updateCpuChart(result);
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                Log.error("error while getting server cpu stats:" + caught.getMessage());
-            }
-        });
+        getMemoryStats(chunks);
+        getCpuStats(chunks);
 
         service.getRuntimeInfo(cs.getServerCode(), new AsyncCallback<RuntimeInfo>() {
 
@@ -163,6 +199,57 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
                 Log.error("error while getting server cpu stats:" + caught.getMessage());
 
             }
+        });
+
+        RepeatingCommand refreshCommand = new RepeatingCommand() {
+
+            @Override
+            public boolean execute() {
+                if (refresh) {
+                    getMemoryStats(chunks);
+                    getCpuStats(chunks);
+                    Log.debug("Reschedule refresh");
+                }
+                return refresh;
+            }
+        };
+        Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+        refresh = false;
+    }
+
+    private void getCpuStats(int chunks) {
+        service.getCpuUsageHistory(cs.getServerCode(), chunks, new AsyncCallback<LinkedList<CpuUtilizationChunk>>() {
+
+            @Override
+            public void onSuccess(LinkedList<CpuUtilizationChunk> result) {
+                updateCpuChart(result);
+                updateSysLoadChart(result);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Log.error("error while getting server cpu stats:" + caught.getMessage());
+            }
+        });
+    }
+
+    private void getMemoryStats(int chunks) {
+        service.getMemoryStats(cs.getServerCode(), chunks, new AsyncCallback<LinkedList<MemoryUsage>>() {
+
+            @Override
+            public void onSuccess(LinkedList<MemoryUsage> result) {
+                updateMemoryChart(result);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Log.error("error while getting server memory stats:" + caught.getMessage());
+            };
         });
     }
 
@@ -231,22 +318,35 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
     }
 
     private void updateCpuChart(LinkedList<CpuUtilizationChunk> percentList) {
-        ChartFeed cpuHistory = new ChartFeed(percentList.size(), 2);
+        ChartFeed<Double, Long> cpuHistory = new ChartFeed<Double, Long>(new Double[1][percentList.size()], new Long[percentList.size()]);
         for (int k = 0; k < 2; k++) {
             for (int j = 0; j < percentList.size(); j++) {
                 if (k == 0) {
-                    cpuHistory.getValues()[k][j] = (long) percentList.get(j).getUsage();
+                    cpuHistory.getValues()[k][j] = percentList.get(j).getUsage();
                 } else if (k == 1) {
-                    cpuHistory.getValues()[k][j] = percentList.get(j).getStartTime();
+                    cpuHistory.getXLineValues()[j] = percentList.get(j).getStartTime();
                 }
             }
         }
 
-        Log.debug("ServerStatasPopup.Updating CPU, values size:" + cpuHistory.getValuesLenght());
-        MonitoringLineChart cpuChart = new MonitoringLineChart(new ILineType[] {ServersLineType.CPU}, "CPU%", "Time", "CPU Load");
-        cpuChart.setStyleName("reconnectionsChart");
-        cpu.add(cpuChart);
+        Log.debug("ServerStatsPopup.Updating CPU, values size:" + cpuHistory.getValuesLenght());
         cpuChart.updateChart(cpuHistory, true);
+    }
+
+    private void updateSysLoadChart(LinkedList<CpuUtilizationChunk> percentList) {
+        ChartFeed<Double, Long> sysLoadFeed = new ChartFeed<Double, Long>(new Double[1][percentList.size()], new Long[percentList.size()]);
+        for (int k = 0; k < 2; k++) {
+            for (int j = 0; j < percentList.size(); j++) {
+                if (k == 0) {
+                    sysLoadFeed.getValues()[k][j] = percentList.get(j).getSystemLoadAverage();
+                } else if (k == 1) {
+                    sysLoadFeed.getXLineValues()[j] = percentList.get(j).getStartTime();
+                }
+            }
+        }
+
+        Log.debug("ServerStatsPopup.Updating SysLoad, values size:" + sysLoadFeed.getValuesLenght());
+        sysLoadChart.updateChart(sysLoadFeed, true);
     }
 
     private void updateMemoryChart(LinkedList<MemoryUsage> result) {
@@ -256,20 +356,18 @@ public class ServerStatasPopup<CS extends ConnectedServer, R extends AbstractRef
             return;
         }
 
-        ChartFeed memoryHistory = new ChartFeed(result.size(), 2);
+        ChartFeed<Double, Long> memoryHistory = new ChartFeed<Double, Long>(new Double[1][result.size()], new Long[result.size()]);
         for (int k = 0; k < 2; k++) {
             for (int j = 0; j < result.size(); j++) {
                 if (k == 0) {
-                    memoryHistory.getValues()[k][j] = (long) result.get(j).getPercentage();
+                    memoryHistory.getValues()[k][j] = result.get(j).getPercentage();
                 } else if (k == 1) {
-                    memoryHistory.getValues()[k][j] = result.get(j).getStartTime();
+                    memoryHistory.getXLineValues()[j] = result.get(j).getStartTime();
                 }
             }
         }
-        Log.debug("ServerStatasPopup.Updating memry, values size:" + memoryHistory.getValuesLenght());
-        MonitoringLineChart connected = new MonitoringLineChart(new ILineType[] {ServersLineType.MEMORY}, "Memory%", "Time", "Memory Usage");
-        connected.setStyleName("playersChart");
-        memory.add(connected);
-        connected.updateChart(memoryHistory, true);
+
+        Log.debug("ServerStatsPopup.Updating memry, values size:" + memoryHistory.getValuesLenght());
+        memoryChart.updateChart(memoryHistory, true);
     }
 }

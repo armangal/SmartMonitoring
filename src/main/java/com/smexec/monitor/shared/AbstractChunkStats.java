@@ -22,10 +22,6 @@ public abstract class AbstractChunkStats
         return startTime;
     }
 
-    public long getStartTimeForChart() {
-        return startTime % 10000L;
-    }
-
     public long getEndTime() {
         return endTime;
     }

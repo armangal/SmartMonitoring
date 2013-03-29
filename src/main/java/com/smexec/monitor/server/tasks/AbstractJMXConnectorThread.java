@@ -30,10 +30,10 @@ import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.shared.AbstractRefreshResult;
-import com.smexec.monitor.shared.Alert;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.Version;
+import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
+import com.smexec.monitor.shared.config.Version;
 
 public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>>
     implements IJMXConnectorThread {
@@ -182,7 +182,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                         alertService.addAlert(new Alert("Server went down:" + sc.getName(),
                                                         sc.getServerCode(),
                                                         new Date().toString(),
-                                                        AlertType.SERVER_DISCONNECTED));
+                                                        AlertType.SERVER_DISCONNECTED), serverStataus);
                     }
                 }
             }, null, sc);

@@ -19,7 +19,7 @@ import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.Version;
+import com.smexec.monitor.shared.config.Version;
 
 public class ServerStartUp
     implements ServletContextListener {

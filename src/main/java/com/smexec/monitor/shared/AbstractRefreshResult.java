@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.smexec.monitor.shared.smartpool.PoolsFeed;
+
 public class AbstractRefreshResult<C extends ConnectedServer>
     implements Serializable {
 

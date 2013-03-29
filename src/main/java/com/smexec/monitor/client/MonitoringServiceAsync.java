@@ -22,9 +22,9 @@ public interface MonitoringServiceAsync<CS extends ConnectedServer, R extends Ab
 
     void authenticate(String userName, String password, AsyncCallback<Boolean> callback);
 
-    void getMemoryStats(Integer serverCode, AsyncCallback<LinkedList<MemoryUsage>> callback);
+    void getMemoryStats(Integer serverCode, Integer chunks, AsyncCallback<LinkedList<MemoryUsage>> callback);
 
-    void getCpuUsageHistory(Integer serverCode, AsyncCallback<LinkedList<CpuUtilizationChunk>> callback);
+    void getCpuUsageHistory(Integer serverCode, Integer chunks, AsyncCallback<LinkedList<CpuUtilizationChunk>> callback);
 
     void getClientConfigurations(AsyncCallback<ClientConfigurations> callback);
 
