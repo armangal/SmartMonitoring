@@ -177,10 +177,11 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                     if (notification.getType().contains("closed") || notification.getType().contains("failed")) {
                         ServerConfig sc = (ServerConfig) key;
                         SS serverStataus = connectedServersState.getServerStataus(sc.getServerCode());
-                        serverStataus.resetOnDisconnect();
 
                         alertService.addAlert(new Alert("!!! Server went DOWN !!!:", sc.getServerCode(), new Date().toString(), AlertType.SERVER_DISCONNECTED),
                                               serverStataus);
+
+                        serverStataus.resetOnDisconnect();
                     }
                 }
             }, null, sc);

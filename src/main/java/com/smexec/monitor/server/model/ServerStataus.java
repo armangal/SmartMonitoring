@@ -241,6 +241,9 @@ public class ServerStataus {
         this.connector = null;
         this.gcHistoryMap.clear();
         this.memoryUsage.clear();
+        this.cpuUtilization = new CPUUtilization();
+        this.lastAlertSent.clear();
+        this.upTime = -1;
     }
 
     public CPUUtilization getCpuUtilization() {
