@@ -28,6 +28,9 @@ public class MailService {
     @Inject
     private ConfigurationService configurationService;
 
+    /**
+     * local queue of pending mails
+     */
     private LinkedBlockingQueue<MailItem> mailQueue = new LinkedBlockingQueue<MailService.MailItem>();
 
     public MailService() {
@@ -60,7 +63,9 @@ public class MailService {
 
             msg.setFrom(new InternetAddress(ac.getFromAddress(), ac.getFromName(), MAIL_ENCODING));
 
-            msg.setSubject(ac.getSubjectPrefix() + " ["+ configurationService.getServersConfig().getName() +"] " + mailItem.getSubject(), MAIL_ENCODING);
+            msg.setSubject(ac.getSubjectPrefix() + " [" + configurationService.getServersConfig().getName() + "] [" + mailItem.getServerName() + "]"
+                                           + mailItem.getSubject(),
+                           MAIL_ENCODING);
 
             for (String to : ac.getToAddressList()) {
                 msg.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
@@ -72,9 +77,9 @@ public class MailService {
         }
     }
 
-    public void sendAlert(String subject, String body) {
+    public void sendAlert(String subject, String body, String serverName) {
         if (configurationService.getServersConfig().getAlertsConfig().isEnabled()) {
-            mailQueue.offer(new MailItem(subject, body));
+            mailQueue.offer(new MailItem(subject, body, serverName));
             logger.info("Alert:{} added to queue", subject);
         } else {
             logger.info("Skipping mailing, disabled");
@@ -96,8 +101,9 @@ public class MailService {
 
         String subject;
         String body;
+        String serverName;
 
-        private MailItem(String subject, String body) {
+        private MailItem(String subject, String body, String serverName) {
             super();
             this.subject = subject;
             this.body = body;
@@ -109,6 +115,10 @@ public class MailService {
 
         public String getBody() {
             return body;
+        }
+
+        public String getServerName() {
+            return serverName;
         }
 
     }

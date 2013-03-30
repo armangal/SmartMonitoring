@@ -29,6 +29,14 @@ public class AlertService {
     @Inject
     private MailService mailService;
 
+    /**
+     * Return the latest alerts from a given alertId.<br>
+     * The result is limited to 1000 items, meaning if there're 2K alerts, then only the latest 1K will be
+     * returned.
+     * 
+     * @param alertId
+     * @return
+     */
     public LinkedList<Alert> getAlertsAfter(int alertId) {
         if (alertId == -1) {
             // first time, take the last 1000
@@ -55,7 +63,9 @@ public class AlertService {
     }
 
     /**
-     * use it to add alert message to local storage. Message will be communicated later to client
+     * Use it to add alert message to local storage. <br>
+     * Message will be communicated later to client. <br>
+     * Email alerts are sent as well if applicable.
      * 
      * @param alert
      */
@@ -68,7 +78,7 @@ public class AlertService {
         }
 
         if (alert.getAlertType().sendMail() && ss.canSendAlert(alert.getAlertType())) {
-            mailService.sendAlert(alert.getMessage(), alert.toString());
+            mailService.sendAlert(alert.getMessage(), alert.toString(), ss.getServerConfig().getName());
         }
     }
 }
