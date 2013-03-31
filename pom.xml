@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.smexec</groupId>
-	<artifactId>smartexecutormonitor</artifactId>
+	<artifactId>smartmonitoring</artifactId>
 	<version>1.0.11</version>
-	<name>Smart Executor Monitor</name>
+	<name>Smart Monitoring</name>
 
 	<properties>
 		<maven.compiler.source>1.6</maven.compiler.source>
@@ -194,7 +194,7 @@
 				<executions>
 					<execution>
 						<configuration>
-							<module>com.smexec.monitor.Smartexecutormonitor</module>
+							<module>com.smexec.monitor.Smartmonitoring</module>
 							<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
 							<warSourceDirectory>war</warSourceDirectory>
 						</configuration>
@@ -205,7 +205,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<runTarget>Smartexecutormonitor.html</runTarget>
+					<runTarget>Smartmonitoring.html</runTarget>
 					<hostedWebapp>${webappDirectory}</hostedWebapp>
 					<extraJvmArgs>-Dservers.config=resources/monitoring.xml</extraJvmArgs>
 				</configuration>

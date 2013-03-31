@@ -16,7 +16,7 @@
 	</servlet-mapping>
 
 	<welcome-file-list>
-		<welcome-file>Smartexecutormonitor.html</welcome-file>
+		<welcome-file>Smartmonitoring.html</welcome-file>
 	</welcome-file-list>
 
 	<listener>
