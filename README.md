@@ -2,13 +2,13 @@
 <i>The framework is still under development, more documentation will be available soon.</i>
 ----
 
-SmartMonitoring is an open source Java Monitoring Platform with HTML (GWT) UI.
-The project might be extended to include more monitoring abilities (widgets), the basic once are provided with this project.
+SmartMonitoring is an open source Java Monitoring Platform with HTML (GWT) UI that monitors Java processes via JMX connection.
+The project might be extended to include more monitoring abilities (widgets), the basic once are provided with in a scope of a current projec
 
 <h2 name="features">Features</h2>
-- GWT easy extendible application
+- Easy extendible GWT client side UI application, allowing you to add more widget to the UI.
 - Uses JMX to connect to running java processes.
-- Extensive statistics over the pools performance
+- Extensive statistics over the pools performance.
 - JMX monitoring:
 ** Monitoring connected servers: memory, CPU, garbage collections.
 ** Give ability to get java process thread dump with one mouse click.

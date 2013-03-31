@@ -159,7 +159,7 @@ pip-log.txt
 # Mac crap
 .DS_Store
 /gwt-unitCache
-/war/WEB-INF/classes
+/war/WEB-INF/classes/com
 /war/WEB-INF/lib
 /test-classes
 /.gwt
