@@ -1,9 +1,9 @@
-<h1>Smart Executor Monitoring</h1>
+<h1>Smart Monitoring</h1>
 <i>The framework is still under development, more documentation will be available soon.</i>
 ----
 
-SmartExecutorMonitoring is a part of SmartExecutor project providing web-based monitoring UI.
-The project might be extended to include more monitoring abilities, the basic once are provided with this project.
+SmartMonitoring is an open source Java Monitoring Platform with HTML (GWT) UI.
+The project might be extended to include more monitoring abilities (widgets), the basic once are provided with this project.
 
 <h2 name="features">Features</h2>
 - GWT easy extendible application
