@@ -51,8 +51,8 @@ public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshR
                 if (!map.containsKey(a.getId())) {
                     int insertRow = alertsTable.insertRow(1);
                     alertsTable.setText(insertRow, 0, "" + a.getId());
-                    HTML msg = new HTML(a.getMessage());
-                    msg.setTitle(a.getDetails());
+                    HTML msg = new HTML(a.getMessage() + " [" + a.getServerName() + "]");
+                    msg.setTitle(a.toString());
                     alertsTable.setWidget(insertRow, 1, msg);
                     alertsTable.setText(insertRow, 2, "" + a.getServerCode());
                     alertsTable.setText(insertRow, 3, a.getAlertTime().toString());

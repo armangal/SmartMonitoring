@@ -2,7 +2,6 @@ package com.smexec.monitor.shared.alert;
 
 import java.io.Serializable;
 
-
 public class Alert
     implements Serializable {
 
@@ -12,17 +11,19 @@ public class Alert
     private String message;
     private String details;
     private int serverCode;
+    private String serverName;
     private String alertTime;
     private IAlertType alertType;
 
     public Alert() {}
 
-    public Alert(String message, int serverCode, String alertTime, IAlertType alertType) {
+    public Alert(String message, int serverCode, String serverName, String alertTime, IAlertType alertType) {
         super();
         this.message = message;
         this.serverCode = serverCode;
         this.alertTime = alertTime;
         this.alertType = alertType;
+        this.serverName = serverName;
     }
 
     public void setId(int id) {
@@ -41,6 +42,10 @@ public class Alert
         return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public String getDetails() {
         return details;
     }
@@ -55,6 +60,10 @@ public class Alert
 
     public IAlertType getAlertType() {
         return alertType;
+    }
+
+    public String getServerName() {
+        return serverName;
     }
 
     @Override
@@ -115,6 +124,8 @@ public class Alert
         builder.append(message);
         builder.append(", sc=");
         builder.append(serverCode);
+        builder.append(", sn=");
+        builder.append(serverName);
         builder.append(", at=");
         builder.append(alertTime);
         builder.append(", t=");

@@ -80,14 +80,15 @@ public class AlertService {
         sb.append("Detailed Memory Usage:").append(ss.getMemoryState()).append(" \n ");
 
         alert.setDetails(sb.toString());
+        
+        if (alert.getAlertType().sendMail() && ss.canSendAlert(alert.getAlertType())) {
+            mailService.sendAlert(alert);
+        }
+
         logger.warn("Alert added:{}", alert);
         alertsList.add(alert);
         if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {
             alertsList.remove();
-        }
-
-        if (alert.getAlertType().sendMail() && ss.canSendAlert(alert.getAlertType())) {
-            mailService.sendAlert(alert.getMessage(), alert.toString(), ss.getServerConfig().getName());
         }
     }
 }

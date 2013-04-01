@@ -139,6 +139,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
         JMXConnector jmxConnector;
         SS ss = connectedServersState.getServerStataus(sc.getServerCode());
+        boolean sendAlert = false;
         if (ss == null) {
             // new server, first time
             ServerGroup serverGroup = configurationService.getServersConfig().getServerGroup(sc.getServerGroup());
@@ -149,6 +150,8 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
             } finally {
                 ConnectionSynch.connectionLock.unlock();
             }
+        } else {
+            sendAlert = true;//we send alerts is case the server is reconnected, to keep posted updated
         }
 
         try {
@@ -166,6 +169,12 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
             logger.info("Conneted to:{}", jmxConnector);
 
+            alertService.addAlert(new Alert("(-: Server RE-STARTED :-)",
+                                            sc.getServerCode(),
+                                            sc.getName(),
+                                            new Date().toString(),
+                                            AlertType.SERVER_CONNECTED), ss);
+
             /**
              * adding connection listener that should change the server status in case it's braking JMX
              * connection
@@ -180,8 +189,11 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                         ServerConfig sc = (ServerConfig) key;
                         SS serverStataus = connectedServersState.getServerStataus(sc.getServerCode());
 
-                        alertService.addAlert(new Alert("!!! Server went DOWN !!!:", sc.getServerCode(), new Date().toString(), AlertType.SERVER_DISCONNECTED),
-                                              serverStataus);
+                        alertService.addAlert(new Alert("!!! Server went DOWN !!!",
+                                                        sc.getServerCode(),
+                                                        sc.getName(),
+                                                        new Date().toString(),
+                                                        AlertType.SERVER_DISCONNECTED), serverStataus);
 
                         serverStataus.resetOnDisconnect();
                     }

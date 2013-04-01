@@ -65,6 +65,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
     private Integer chunks = 100;
     private boolean refresh = true;
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public ServerStatsPopup(MonitoringServiceAsync service, CS cs) {
         this.cs = cs;
         this.service = service;
@@ -219,6 +220,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
                 if (refresh) {
                     getMemoryStats(chunks);
                     getCpuStats(chunks);
+                    getExtraData(chunks);
                     Log.debug("Reschedule refresh");
                 }
                 return refresh;

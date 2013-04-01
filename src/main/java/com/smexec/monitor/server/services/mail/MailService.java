@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.smexec.monitor.server.model.config.AlertsConfig;
 import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.shared.alert.Alert;
 
 public class MailService {
 
@@ -63,9 +64,7 @@ public class MailService {
 
             msg.setFrom(new InternetAddress(ac.getFromAddress(), ac.getFromName(), MAIL_ENCODING));
 
-            msg.setSubject(ac.getSubjectPrefix() + " [" + configurationService.getServersConfig().getName() + "] [" + mailItem.getServerName() + "]"
-                                           + mailItem.getSubject(),
-                           MAIL_ENCODING);
+            msg.setSubject(ac.getSubjectPrefix() + mailItem.getSubject(), MAIL_ENCODING);
 
             for (String to : ac.getToAddressList()) {
                 msg.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
@@ -77,10 +76,11 @@ public class MailService {
         }
     }
 
-    public void sendAlert(String subject, String body, String serverName) {
+    public void sendAlert(Alert alert) {
         if (configurationService.getServersConfig().getAlertsConfig().isEnabled()) {
-            mailQueue.offer(new MailItem(subject, body, serverName));
-            logger.info("Alert:{} added to queue", subject);
+            mailQueue.offer(new MailItem(" [" + configurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] " + alert.getMessage(),
+                                         alert.toString()));
+            logger.info("Alert:{} added to mail queue", alert.getId());
         } else {
             logger.info("Skipping mailing, disabled");
         }
@@ -101,13 +101,11 @@ public class MailService {
 
         String subject;
         String body;
-        String serverName;
 
-        private MailItem(String subject, String body, String serverName) {
+        private MailItem(String subject, String body) {
             super();
             this.subject = subject;
             this.body = body;
-            this.serverName = serverName;
         }
 
         public String getSubject() {
@@ -117,11 +115,6 @@ public class MailService {
         public String getBody() {
             return body;
         }
-
-        public String getServerName() {
-            return serverName;
-        }
-
     }
 
     private Session getSession() {

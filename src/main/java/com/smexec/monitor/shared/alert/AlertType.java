@@ -4,7 +4,8 @@ public enum AlertType implements IAlertType {
 
     MEMORY("mem", 1, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
     CPU("cpu", 2, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
-    SERVER_DISCONNECTED("srvDisc", 3, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1));
+    SERVER_DISCONNECTED("srvDisc", 3, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)),//
+    SERVER_CONNECTED("srvCon", 4, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1));
 
     private String name;
     private Integer id;
