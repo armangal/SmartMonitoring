@@ -109,7 +109,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         }
     }
 
-    private void checkAuthenticated() {
+    void checkAuthenticated() {
         HttpSession session = getThreadLocalRequest().getSession();
         Object auth = session.getAttribute(AUTHENTICATED);
         if (auth == null || !(auth instanceof Boolean) || (((Boolean) auth).booleanValue() == false)) {

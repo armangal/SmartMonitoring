@@ -1,7 +1,6 @@
 package com.smexec.monitor.shared.runtime;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 public class GCHistory
     implements Serializable {
@@ -19,18 +18,15 @@ public class GCHistory
 
     private long lastColleactionTime;
 
-    private String[] memoryPoolNames;
-
     private String time;
 
     public GCHistory() {}
 
-    public GCHistory(String collectorName, long collectionCount, long collectionTime, String[] memoryPoolNames, String time) {
+    public GCHistory(String collectorName, long collectionCount, long collectionTime, String time) {
         super();
         this.collectorName = collectorName;
         this.collectionCount = collectionCount;
         this.collectionTime = collectionTime;
-        this.memoryPoolNames = memoryPoolNames;
         this.time = time;
     }
 
@@ -44,10 +40,6 @@ public class GCHistory
 
     public long getCollectionTime() {
         return collectionTime;
-    }
-
-    public String[] getMemoryPoolNames() {
-        return memoryPoolNames;
     }
 
     public long getLastColleactionTime() {
@@ -70,7 +62,6 @@ public class GCHistory
         result = prime * result + (int) (collectionTime ^ (collectionTime >>> 32));
         result = prime * result + ((collectorName == null) ? 0 : collectorName.hashCode());
         result = prime * result + (int) (lastColleactionTime ^ (lastColleactionTime >>> 32));
-        result = prime * result + Arrays.hashCode(memoryPoolNames);
         return result;
     }
 
@@ -94,8 +85,6 @@ public class GCHistory
             return false;
         if (lastColleactionTime != other.lastColleactionTime)
             return false;
-        if (!Arrays.equals(memoryPoolNames, other.memoryPoolNames))
-            return false;
         return true;
     }
 
@@ -110,8 +99,6 @@ public class GCHistory
         builder.append(collectionTime);
         builder.append(", lct=");
         builder.append(lastColleactionTime);
-        builder.append(", pn=");
-        builder.append(Arrays.toString(memoryPoolNames));
         builder.append(", t=").append(time);
         builder.append("]");
         return builder.toString();

@@ -93,4 +93,34 @@ public class AlertsConfig {
     public String getUserName() {
         return userName;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("AlertsConfig [enabled=");
+        builder.append(enabled);
+        builder.append(", fromAddress=");
+        builder.append(fromAddress);
+        builder.append(", fromName=");
+        builder.append(fromName);
+        builder.append(", subjectPrefix=");
+        builder.append(subjectPrefix);
+        builder.append(", mailServerAddress=");
+        builder.append(mailServerAddress);
+        builder.append(", mainServerPort=");
+        builder.append(mainServerPort);
+        builder.append(", authenticate=");
+        builder.append(authenticate);
+        builder.append(", userName=");
+        builder.append(userName);
+        builder.append(", password=");
+        builder.append(password);
+        builder.append(", inMemoryAlerts=");
+        builder.append(inMemoryAlerts);
+        builder.append(", toAddressList=");
+        builder.append(toAddressList);
+        builder.append("]");
+        return builder.toString();
+    }
+
 }

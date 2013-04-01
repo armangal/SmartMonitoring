@@ -90,5 +90,10 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
 
     public abstract R getRefresher(S ss, Date executionDate, int excutionNumber);
 
+    /**
+     * prepares ConnectedServer with relevant to client/UI information
+     * @param ss
+     * @return
+     */
     public abstract C getConnectedServer(S ss);
 }

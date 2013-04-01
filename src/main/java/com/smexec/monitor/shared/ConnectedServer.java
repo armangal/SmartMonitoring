@@ -25,6 +25,7 @@ public class ConnectedServer
     private MemoryUsage memoryUsage;
     private ArrayList<GCHistory> gcHistories;
     private long upTime;
+    private String memoryState;
 
     private CpuUtilizationChunk cpuUtilizationChunk;
 
@@ -36,6 +37,7 @@ public class ConnectedServer
                            Integer jmxPort,
                            Boolean status,
                            MemoryUsage memoryUsage,
+                           String memoryState,
                            ArrayList<GCHistory> gcHistories,
                            long upTime,
                            CpuUtilizationChunk cpuUtilizationChunk) {
@@ -46,6 +48,7 @@ public class ConnectedServer
         this.jmxPort = jmxPort;
         this.status = status;
         this.memoryUsage = memoryUsage;
+        this.memoryState = memoryState;
         this.gcHistories = gcHistories;
         this.upTime = upTime;
         this.cpuUtilizationChunk = cpuUtilizationChunk;
@@ -75,6 +78,10 @@ public class ConnectedServer
         return memoryUsage;
     }
 
+    public String getMemoryState() {
+        return memoryState;
+    }
+
     public ArrayList<GCHistory> getGcHistories() {
         return gcHistories;
     }
@@ -102,6 +109,8 @@ public class ConnectedServer
                .append(status)
                .append(", mu=")
                .append(memoryUsage)
+               .append(", ms=")
+               .append(memoryState)
                .append(", gc=")
                .append(gcHistories)
                .append(", ut=")

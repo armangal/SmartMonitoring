@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.smexec.monitor.server.model.config.ServerConfig;
+import com.smexec.monitor.server.model.config.ServerGroup;
 import com.smexec.monitor.server.utils.DateUtils;
 import com.smexec.monitor.shared.StringFormatter;
 import com.smexec.monitor.shared.alert.IAlertType;
@@ -37,11 +38,14 @@ public class ServerStataus {
     private boolean firstTimeAccess = true;
     private JMXConnector connector;
     private ServerConfig serverConfig;
+    private ServerGroup serverGroup;
 
     /**
      * Memory usage history stats
      */
     private LinkedList<MemoryUsage> memoryUsage = new LinkedList<MemoryUsage>();
+
+    private String memoryState;
 
     /**
      * Map of available GCs with a map of last XXX GC cycles
@@ -66,15 +70,16 @@ public class ServerStataus {
      */
     private CPUUtilization cpuUtilization = new CPUUtilization();
 
-    private Map<IAlertType, Long> lastAlertSent = new HashMap<IAlertType, Long>(0);
+    private Map<IAlertType, LinkedList<Long>> alertTimerMap = new HashMap<IAlertType, LinkedList<Long>>(0);
 
     /**
      * @param serverConfig
      * @param gcHistoryToKeep - how much chunks to keep in memory (aggregated each 20 sec)
      * @param systemHistoryToKeep - how much chunks to keep in memory (aggregated each 20 sec) (CPU & Memory)
      */
-    public ServerStataus(final ServerConfig serverConfig, final int gcHistoryToKeep, final int systemHistoryToKeep) {
+    public ServerStataus(final ServerConfig serverConfig, final ServerGroup serverGroup, final int gcHistoryToKeep, final int systemHistoryToKeep) {
         this.serverConfig = serverConfig;
+        this.serverGroup = serverGroup;
         this.systemHistoryToKeep = systemHistoryToKeep;
         this.gcHistoryToKeep = gcHistoryToKeep;
     }
@@ -121,7 +126,8 @@ public class ServerStataus {
     }
 
     public MemoryUsage updateMemoryUsage(long init, long used, long committed, long max, String memoryState) {
-        MemoryUsage mu = new MemoryUsage(init, used, committed, max, memoryState, DateUtils.roundDate(new Date()));
+        MemoryUsage mu = new MemoryUsage(init, used, committed, max, DateUtils.roundDate(new Date()));
+        this.memoryState = memoryState;
         memoryUsage.add(mu);
         if (memoryUsage.size() > systemHistoryToKeep) {
             memoryUsage.remove();
@@ -179,6 +185,10 @@ public class ServerStataus {
         return memoryUsage.size() > 0 ? memoryUsage.getLast() : null;
     }
 
+    public String getMemoryState() {
+        return memoryState;
+    }
+
     /**
      * @param chunks = number of chunks to return (default is 100)
      * @return - memory usage chunks, to be used to draw chart
@@ -194,6 +204,10 @@ public class ServerStataus {
 
     public ServerConfig getServerConfig() {
         return serverConfig;
+    }
+
+    public ServerGroup getServerGroup() {
+        return serverGroup;
     }
 
     public JMXConnector getConnector() {
@@ -242,7 +256,7 @@ public class ServerStataus {
         this.gcHistoryMap.clear();
         this.memoryUsage.clear();
         this.cpuUtilization = new CPUUtilization();
-        this.lastAlertSent.clear();
+        this.alertTimerMap.clear();
         this.upTime = -1;
     }
 
@@ -257,20 +271,47 @@ public class ServerStataus {
      * @return
      */
     public boolean canSendAlert(IAlertType alertType) {
-        if (!lastAlertSent.containsKey(alertType)) {
-            lastAlertSent.put(alertType, System.currentTimeMillis());
-            logger.debug("can send alter:{}, first time", alertType);
-            return true;
+        boolean allow = false;
+        LinkedList<Long> alertOccured = null;
+        long currentTimeMillis = System.currentTimeMillis();
+        if (!alertTimerMap.containsKey(alertType)) {
+            synchronized (alertTimerMap) {
+                if (!alertTimerMap.containsKey(alertType)) {
+                    // first time the alert occurs
+                    alertOccured = new LinkedList<Long>();
+
+                    alertTimerMap.put(alertType, alertOccured);
+                }
+            }
         }
-        Long lastTime = lastAlertSent.get(alertType);
-        if ((System.currentTimeMillis() - lastTime) > alertType.getAlertFrequency()) {
-            // can send
-            logger.debug("Can send alert:{}, last:{}, current:{}", new Object[] {alertType, lastTime, System.currentTimeMillis()});
-            lastAlertSent.put(alertType, System.currentTimeMillis());
-            return true;
+
+        alertOccured = alertTimerMap.get(alertType);
+        alertOccured.add(currentTimeMillis);
+
+        // clean old alerts
+        boolean doIt = true;
+        do {
+            Long last = alertOccured.getLast();
+            if (last != null && //
+                (currentTimeMillis - last) > alertType.getAlertThreshold().getAlertTriggerTime()) {
+                // remove, too old element
+                Long remove = alertOccured.remove();
+                logger.debug("Removed old alert type:{}, time:{}, surrent time:{}", new Object[] {alertType, remove, currentTimeMillis});
+            } else {
+                doIt = false;
+            }
+        } while (doIt);
+
+        // check if we have enough to send the alert
+        if (alertOccured.size() >= alertType.getAlertThreshold().getAlertTriggerCount()) {
+            allow = true;
+            logger.debug("Can send alter:{}, list size:{}", alertType, alertOccured.size());
+            alertOccured.clear();
+        } else {
+            logger.debug("Can't send alter:{}, list size:{}", alertType, alertOccured.size());
         }
-        logger.debug("Can NOT send alert:{}, last:{}, current:{}", new Object[] {alertType, lastTime, System.currentTimeMillis()});
-        return false;
+
+        return allow;
     }
 
     @Override

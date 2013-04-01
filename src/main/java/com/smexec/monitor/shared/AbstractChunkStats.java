@@ -7,21 +7,31 @@ public abstract class AbstractChunkStats
 
     private static final long serialVersionUID = 1L;
 
-    private long startTime;
+    private long fullEndTime;
     private long endTime;
 
     public AbstractChunkStats() {}
 
-    public AbstractChunkStats(long startTime, long endTime) {
+    public AbstractChunkStats(long fullEndTime, long endTime) {
         super();
-        this.startTime = startTime;
+        this.fullEndTime = fullEndTime;
         this.endTime = endTime;
     }
 
-    public long getStartTime() {
-        return startTime;
+    /**
+     * usually to be used for server side, getting delta chunks from connected servers
+     * 
+     * @return
+     */
+    public long getFullEndTime() {
+        return fullEndTime;
     }
 
+    /**
+     * usually for client usage
+     * 
+     * @return
+     */
     public long getEndTime() {
         return endTime;
     }
@@ -29,8 +39,8 @@ public abstract class AbstractChunkStats
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("st=");
-        builder.append(startTime);
+        builder.append("fet=");
+        builder.append(fullEndTime);
         builder.append(", et=");
         builder.append(endTime);
         return builder.toString();
@@ -41,7 +51,7 @@ public abstract class AbstractChunkStats
         final int prime = 31;
         int result = 1;
         result = prime * result + (int) (endTime ^ (endTime >>> 32));
-        result = prime * result + (int) (startTime ^ (startTime >>> 32));
+        result = prime * result + (int) (fullEndTime ^ (fullEndTime >>> 32));
         return result;
     }
 
@@ -56,7 +66,7 @@ public abstract class AbstractChunkStats
         AbstractChunkStats other = (AbstractChunkStats) obj;
         if (endTime != other.endTime)
             return false;
-        if (startTime != other.startTime)
+        if (fullEndTime != other.fullEndTime)
             return false;
         return true;
     }

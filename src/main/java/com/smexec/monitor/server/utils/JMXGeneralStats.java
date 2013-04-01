@@ -16,6 +16,7 @@ import java.lang.management.RuntimeMXBean;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +44,6 @@ import com.sun.management.OperatingSystemMXBean;
 /**
  * Using the java.lang.management API to monitor the memory usage and garbage collection statistics.
  */
-@SuppressWarnings("restriction")
 public class JMXGeneralStats {
 
     @Inject
@@ -56,7 +56,8 @@ public class JMXGeneralStats {
         String time = DATE_FORMAT.format(new Date());
         List<GCHistory> retList = new ArrayList<GCHistory>(0);
         for (GarbageCollectorMXBean gc : gcmbeans) {
-            retList.add(new GCHistory(gc.getName(), gc.getCollectionCount(), gc.getCollectionTime(), gc.getMemoryPoolNames(), time));
+            String name = gc.getName() + "," + Arrays.toString(gc.getMemoryPoolNames());
+            retList.add(new GCHistory(name, gc.getCollectionCount(), gc.getCollectionTime(), time));
         }
         return retList;
     }
@@ -144,8 +145,8 @@ public class JMXGeneralStats {
                                                                                            heapMemoryUsage.getCommitted(),
                                                                                            heapMemoryUsage.getMax(),
                                                                                            memoryState);
-
-        if (mu.getPercentage() > 90d) {
+        // check the groups settings
+        if (mu.getPercentage() > serverStataus.getServerGroup().getMemoryUsage()) {
             Alert alert = new Alert("Memory Usage Alert:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
                                     serverStataus.getServerConfig().getServerCode(),
                                     DATE_FORMAT.format(new Date()),
@@ -165,7 +166,8 @@ public class JMXGeneralStats {
                                                          System.nanoTime(),
                                                          operatingSystemMXBean.getSystemLoadAverage());
 
-        if (load > 90d) {
+        // check the groups settings
+        if (load > serverStataus.getServerGroup().getCpuLoad()) {
             Alert alert = new Alert("CPU Alert:" + DECIMAL_FORMAT.format(load) + "%",
                                     serverStataus.getServerConfig().getServerCode(),
                                     DATE_FORMAT.format(new Date()),

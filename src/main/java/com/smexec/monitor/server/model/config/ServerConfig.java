@@ -15,6 +15,7 @@ public class ServerConfig {
     private boolean authenticate = false;
     private String username;
     private String password;
+    private String serverGroup = "DEFAULT";
 
     public ServerConfig() {}
 
@@ -54,25 +55,33 @@ public class ServerConfig {
         return password;
     }
 
+    public String getServerGroup() {
+        return serverGroup;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ServerConfig [name=");
-        builder.append(name);
-        builder.append(", serverCode=");
-        builder.append(serverCode);
-        builder.append(", ip=");
-        builder.append(ip);
-        builder.append(", jmxPort=");
-        builder.append(jmxPort);
-        builder.append(", authenticate=");
-        builder.append(authenticate);
-        builder.append(", username=");
-        builder.append(username);
-        builder.append(", password=");
-        builder.append(password);
-        builder.append("]\n");
+        builder.append("ServerConfig [name=")
+               .append(name)
+               .append(", serverCode=")
+               .append(serverCode)
+               .append(", ip=")
+               .append(ip)
+               .append(", jmxPort=")
+               .append(jmxPort)
+               .append(", authenticate=")
+               .append(authenticate)
+               .append(", username=")
+               .append(username)
+               .append(", password=")
+               .append(password)
+               .append(", serverGroup=")
+               .append(serverGroup)
+               .append("]");
         return builder.toString();
     }
+
+
 
 }

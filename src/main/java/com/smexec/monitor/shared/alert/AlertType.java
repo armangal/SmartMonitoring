@@ -2,22 +2,22 @@ package com.smexec.monitor.shared.alert;
 
 public enum AlertType implements IAlertType {
 
-    MEMORY("mem", 1, AlertGroup.SYSTEM, true, 2 * 60 * 1000L), //
-    CPU("cpu", 2, AlertGroup.SYSTEM, true, 2 * 60 * 1000L), //
-    SERVER_DISCONNECTED("srvDisc", 3, AlertGroup.SYSTEM, true, 5 * 1000L);
+    MEMORY("mem", 1, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
+    CPU("cpu", 2, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
+    SERVER_DISCONNECTED("srvDisc", 3, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1));
 
     private String name;
     private Integer id;
     private AlertGroup alertGroup;
     private boolean sendMail;
-    private long alertFrequency;
+    private AlertThreshold alertThreshold;
 
-    private AlertType(String name, Integer id, AlertGroup alertGroup, boolean sendMail, long alertFrequency) {
+    private AlertType(String name, Integer id, AlertGroup alertGroup, boolean sendMail, AlertThreshold alertThreshold) {
         this.name = name;
         this.id = id;
         this.alertGroup = alertGroup;
         this.sendMail = sendMail;
-        this.alertFrequency = alertFrequency;
+        this.alertThreshold = alertThreshold;
     }
 
     @Override
@@ -41,7 +41,7 @@ public enum AlertType implements IAlertType {
     }
 
     @Override
-    public long getAlertFrequency() {
-        return alertFrequency;
+    public AlertThreshold getAlertThreshold() {
+        return alertThreshold;
     }
 }

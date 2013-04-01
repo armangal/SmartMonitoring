@@ -21,6 +21,14 @@
 		<password>pass</password>
 	</alertsConfig>
 
+	<serverGroups>
+		<group>
+			<name>special</name>
+			<cpuLoad>50</cpuLoad>
+			<memoryUsage>50</memoryUsage>
+		</group>
+	</serverGroups>
+	
 	<servers>
 		<server>
 			<name>Local (1)</name>
@@ -30,6 +38,7 @@
 			<authenticate>true</authenticate>
 			<username>admin</username>
 			<password>password</password>
+			<serverGroup>special</serverGroup>
 		</server>
 
 	</servers>

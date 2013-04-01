@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
@@ -70,7 +71,15 @@ public class AlertService {
      * @param alert
      */
     public <SS extends ServerStataus> void addAlert(Alert alert, SS ss) {
-        alert.setId(alertCounter.getAndIncrement());
+        alert.setId(alertCounter.getAndIncrement()); 
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n Server Up Time:").append(ClientStringFormatter.formatMilisecondsToHours(ss.getUpTime())).append(" \n ");
+        sb.append("CPU:").append(ss.getCpuUtilization().getLastPercent().getUsage()).append("% \n ");
+        sb.append("System Load AVG:").append(ss.getCpuUtilization().getLastPercent().getSystemLoadAverage()).append(" \n ");
+        sb.append("Memory Usage:").append(ss.getLastMemoryUsage().getPercentage()).append("% \n ");
+        sb.append("Detailed Memory Usage:").append(ss.getMemoryState()).append(" \n ");
+
+        alert.setDetails(sb.toString());
         logger.warn("Alert added:{}", alert);
         alertsList.add(alert);
         if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {

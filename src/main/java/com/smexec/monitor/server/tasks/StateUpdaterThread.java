@@ -24,6 +24,7 @@ public class StateUpdaterThread
                                    sc.getJmxPort(),
                                    ss.isConnected(),
                                    ss.getLastMemoryUsage(),
+                                   ss.getMemoryState(),
                                    ss.getLastGCHistory(),
                                    ss.getUpTime(),
                                    ss.getCpuUtilization().getLastPercent());

@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.config.ServerConfig;
+import com.smexec.monitor.server.model.config.ServerGroup;
 import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
@@ -140,7 +141,8 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
         SS ss = connectedServersState.getServerStataus(sc.getServerCode());
         if (ss == null) {
             // new server, first time
-            ss = getServerStatus(sc);
+            ServerGroup serverGroup = configurationService.getServersConfig().getServerGroup(sc.getServerGroup());
+            ss = getServerStatus(sc, serverGroup);
             try {
                 ConnectionSynch.connectionLock.lock();
                 connectedServersState.addServer(ss);
@@ -195,5 +197,5 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
     }
 
     @Override
-    public abstract SS getServerStatus(final ServerConfig sc);
+    public abstract SS getServerStatus(final ServerConfig sc, final ServerGroup serverGroup);
 }

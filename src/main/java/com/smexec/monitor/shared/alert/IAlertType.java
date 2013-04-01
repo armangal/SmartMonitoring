@@ -11,5 +11,5 @@ public interface IAlertType {
     
     boolean sendMail();
     
-    long getAlertFrequency();
+    AlertThreshold getAlertThreshold();
 }

@@ -19,17 +19,15 @@ public class MemoryUsage
     private long init;
     private long max;
     private long used;
-    private String memoryState;
 
     public MemoryUsage() {}
 
-    public MemoryUsage(long init, long used, long committed, long max, String memoryState, long time) {
+    public MemoryUsage(long init, long used, long committed, long max, long time) {
         super(time, time);
         this.committed = committed;
         this.init = init;
         this.max = max;
         this.used = used;
-        this.memoryState = memoryState;
     }
 
     public long getCommitted() {
@@ -52,10 +50,6 @@ public class MemoryUsage
         return used * 100d / max;
     }
 
-    public String getMemoryState() {
-        return memoryState;
-    }
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -72,6 +66,5 @@ public class MemoryUsage
         builder.append("%, ").append(super.toString()).append("]");
         return builder.toString();
     }
-    
 
 }

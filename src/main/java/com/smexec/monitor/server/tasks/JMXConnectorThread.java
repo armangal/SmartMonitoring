@@ -4,6 +4,7 @@ import javax.xml.bind.JAXBException;
 
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.config.ServerConfig;
+import com.smexec.monitor.server.model.config.ServerGroup;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
 
@@ -16,8 +17,8 @@ public class JMXConnectorThread
     }
 
     @Override
-    public ServerStataus getServerStatus(ServerConfig sc) {
+    public ServerStataus getServerStatus(ServerConfig sc, final ServerGroup serverGroup) {
         // keeping history stats for 24 hours
-        return new ServerStataus(sc, (24 * 60 * 3), (24 * 60 * 3));
+        return new ServerStataus(sc, serverGroup, (24 * 60 * 3), (24 * 60 * 3));
     }
 }

@@ -212,12 +212,12 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
                 HTML usage = new HTML(ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + " of "
                                       + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB");
-                usage.setTitle(cs.getMemoryUsage().getMemoryState());
+                usage.setTitle(cs.getMemoryState());
                 usage.addMouseOverHandler(handCursor);
                 ft.setWidget(i, j++, usage);
 
                 HTML percent = new HTML(ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%");
-                percent.setTitle(cs.getMemoryUsage().getMemoryState());
+                percent.setTitle(cs.getMemoryState());
                 ft.setWidget(i, j++, percent);
 
                 String gcs = "";
@@ -256,7 +256,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                 HTML cpu = new HTML(cs.getCpuUtilizationChunk().getUsage() + "%");
                 ft.setWidget(i, j++, cpu);
                 if (cs.getCpuUtilizationChunk().getUsage() > 90d) {
-                    Style style = ft.getFlexCellFormatter().getElement(i , j - 1).getStyle();
+                    Style style = ft.getFlexCellFormatter().getElement(i, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
                     style.setColor("white");

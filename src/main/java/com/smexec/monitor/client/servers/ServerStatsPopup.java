@@ -65,7 +65,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
     private Integer chunks = 100;
     private boolean refresh = true;
 
-    public ServerStatsPopup(MonitoringServiceAsync<CS, R, FR> service, CS cs) {
+    public ServerStatsPopup(MonitoringServiceAsync service, CS cs) {
         this.cs = cs;
         this.service = service;
         setAnimationEnabled(true);
@@ -123,9 +123,17 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
                 chunks = Integer.valueOf(w.getElement().getAttribute("chunks"));
                 getMemoryStats(chunks);
                 getCpuStats(chunks);
+                getExtraData(chunks);
             }
         });
         return r;
+    }
+
+    /**
+     * for extending popups to add additional elements to the panel
+     */
+    public void addExtraElements(FlowPanel fp) {
+
     }
 
     @Override
@@ -157,6 +165,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
         fp.add(cpu);
         fp.add(memory);
         fp.add(sysLoad);
+        addExtraElements(fp);
         fp.add(details);
 
         threadDump.addClickHandler(new ClickHandler() {
@@ -201,6 +210,8 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
             }
         });
 
+        getExtraData(chunks);
+
         RepeatingCommand refreshCommand = new RepeatingCommand() {
 
             @Override
@@ -214,6 +225,10 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
             }
         };
         Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
+    }
+
+    public void getExtraData(Integer chunks) {
+
     }
 
     @Override
@@ -324,7 +339,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
                 if (k == 0) {
                     cpuHistory.getValues()[k][j] = percentList.get(j).getUsage();
                 } else if (k == 1) {
-                    cpuHistory.getXLineValues()[j] = percentList.get(j).getStartTime();
+                    cpuHistory.getXLineValues()[j] = percentList.get(j).getEndTime();
                 }
             }
         }
@@ -340,7 +355,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
                 if (k == 0) {
                     sysLoadFeed.getValues()[k][j] = percentList.get(j).getSystemLoadAverage();
                 } else if (k == 1) {
-                    sysLoadFeed.getXLineValues()[j] = percentList.get(j).getStartTime();
+                    sysLoadFeed.getXLineValues()[j] = percentList.get(j).getEndTime();
                 }
             }
         }
@@ -362,12 +377,20 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
                 if (k == 0) {
                     memoryHistory.getValues()[k][j] = result.get(j).getPercentage();
                 } else if (k == 1) {
-                    memoryHistory.getXLineValues()[j] = result.get(j).getStartTime();
+                    memoryHistory.getXLineValues()[j] = result.get(j).getEndTime();
                 }
             }
         }
 
         Log.debug("ServerStatsPopup.Updating memry, values size:" + memoryHistory.getValuesLenght());
         memoryChart.updateChart(memoryHistory, true);
+    }
+
+    public CS getConnectedServer() {
+        return cs;
+    }
+
+    public MonitoringServiceAsync getService() {
+        return service;
     }
 }

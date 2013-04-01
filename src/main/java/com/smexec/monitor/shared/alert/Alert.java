@@ -113,14 +113,14 @@ public class Alert
         builder.append(id);
         builder.append(", ms=");
         builder.append(message);
-        builder.append(", de=");
-        builder.append(details);
         builder.append(", sc=");
         builder.append(serverCode);
         builder.append(", at=");
         builder.append(alertTime);
         builder.append(", t=");
         builder.append(alertType);
+        builder.append(",\nde=");
+        builder.append(details);
         builder.append("]");
         return builder.toString();
     }

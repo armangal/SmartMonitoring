@@ -22,8 +22,8 @@ public class MailService {
     private static Logger logger = LoggerFactory.getLogger("MailService");
 
     private static final String MAIL_ENCODING = "UTF-8";
-    // private static final String MAIL_TYPE_TEXT = "text/plain; charset=";
-    private static final String MAIL_TYPE_HTML = "text/html; charset=";
+    private static final String MAIL_TYPE_TEXT = "text/plain; charset=";
+    // private static final String MAIL_TYPE_HTML = "text/html; charset=";
 
     @Inject
     private ConfigurationService configurationService;
@@ -55,7 +55,7 @@ public class MailService {
         try {
             AlertsConfig ac = configurationService.getServersConfig().getAlertsConfig();
 
-            String mailType = MAIL_TYPE_HTML;
+            String mailType = MAIL_TYPE_TEXT;
 
             MimeMessage msg = new MimeMessage(getSession());
 
@@ -107,6 +107,7 @@ public class MailService {
             super();
             this.subject = subject;
             this.body = body;
+            this.serverName = serverName;
         }
 
         public String getSubject() {

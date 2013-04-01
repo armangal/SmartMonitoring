@@ -4,7 +4,7 @@
 
 	<groupId>org.smexec</groupId>
 	<artifactId>smartmonitoring</artifactId>
-	<version>1.0.11</version>
+	<version>1.0.12</version>
 	<name>Smart Monitoring</name>
 
 	<properties>
@@ -53,7 +53,6 @@
 				<version>2.0.0</version>
 				<scope>provided</scope>
 			</dependency>
-
 			<!-- server -->
 
 			<dependency>
@@ -100,6 +99,12 @@
 				<version>1.4</version>
 				<scope>compile</scope>
 			</dependency>
+<!-- 			<dependency>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongo-java-driver</artifactId>
+				<version>2.10.1</version>
+				<scope>compile</scope>
+			</dependency>  -->
 
 		</dependencies>
 	</dependencyManagement>
@@ -172,8 +177,13 @@
 			<artifactId>mail</artifactId>
 			<scope>provided</scope>
 		</dependency>
+<!--  			<dependency>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongo-java-driver</artifactId>
+				<scope>compile</scope>
+			</dependency>  -->
 
-	</dependencies>
+	</dependencies> 
 
 	<build>
 		<resources>

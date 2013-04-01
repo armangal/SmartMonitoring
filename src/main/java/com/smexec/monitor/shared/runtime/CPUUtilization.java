@@ -41,14 +41,6 @@ public class CPUUtilization
         return percent;
     }
 
-    public long getLastMeasurement() {
-        return lastMeasurement;
-    }
-
-    public long getLastMeasureTime() {
-        return lastMeasureTime;
-    }
-
     public CpuUtilizationChunk getLastPercent() {
         return list.isEmpty() ? new CpuUtilizationChunk() : list.getLast();
     }

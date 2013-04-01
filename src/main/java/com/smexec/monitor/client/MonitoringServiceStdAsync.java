@@ -5,4 +5,6 @@ import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.RefreshResult;
 
 public interface MonitoringServiceStdAsync
-    extends MonitoringServiceAsync<ConnectedServer, RefreshResult, FullRefreshResult<RefreshResult, ConnectedServer>> {}
+    extends MonitoringServiceAsync<ConnectedServer, RefreshResult, FullRefreshResult<RefreshResult, ConnectedServer>> {
+    // should not have any methods, all methods should go to MonitoringServiceAsync
+}

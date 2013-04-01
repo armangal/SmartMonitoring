@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name = "ServersConfig", namespace = "")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -20,6 +21,13 @@ public class ServersConfig {
     @XmlElementWrapper
     private List<ServerConfig> servers;
 
+    @XmlElement(name = "group")
+    @XmlElementWrapper
+    private List<ServerGroup> serverGroups;
+
+    @XmlTransient
+    private Map<String, ServerGroup> groupsMap = null;
+
     private String name;
 
     private String username;
@@ -27,14 +35,24 @@ public class ServersConfig {
 
     private AlertsConfig alertsConfig;
 
+    private MongoConfig mongoConfig;
+
     public ServersConfig() {}
 
     public List<ServerConfig> getServers() {
         return servers;
     }
 
-    public void setServers(List<ServerConfig> servers) {
+    private void setServers(List<ServerConfig> servers) {
         this.servers = servers;
+    }
+
+    public List<ServerGroup> getServerGroups() {
+        return serverGroups;
+    }
+
+    private void setServerGroups(List<ServerGroup> serverGroups) {
+        this.serverGroups = serverGroups;
     }
 
     public String getName() {
@@ -57,19 +75,55 @@ public class ServersConfig {
         this.alertsConfig = alertsConfig;
     }
 
+    public MongoConfig getMongoConfig() {
+        return mongoConfig;
+    }
+
+    /**
+     * returns the server group by name
+     * 
+     * @param groupName
+     * @return
+     */
+    public ServerGroup getServerGroup(String groupName) {
+        if (groupsMap == null) {
+            synchronized (this.getClass()) {
+                if (groupsMap == null) {
+                    groupsMap = new HashMap<String, ServerGroup>(1);
+                    for (ServerGroup sg : serverGroups) {
+                        ServerGroup put = groupsMap.put(sg.getName(), sg);
+                        if (put != null) {
+                            throw new RuntimeException("Server group names should ne unique:" + sg.getName());
+                        }
+                    }
+                    groupsMap.put(ServerGroup.DEFAULT_GROUP_NAME, new ServerGroup());
+                }
+            }
+        }
+        if (groupsMap.containsKey(groupName)) {
+            return groupsMap.get(groupName);
+        }
+
+        return new ServerGroup();// default in case something goes wrong
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("ServersConfig [servers=");
         builder.append(servers);
+        builder.append(",\nGroups=");
+        builder.append(serverGroups);
         builder.append(", name=");
         builder.append(name);
         builder.append(", username=");
         builder.append(username);
         builder.append(", password=");
         builder.append(password);
-        builder.append(", alertsConfig=");
+        builder.append(",\nalertsConfig=");
         builder.append(alertsConfig);
+        builder.append(",\nmongoConfig=");
+        builder.append(mongoConfig);
         builder.append("]");
         return builder.toString();
     }
@@ -93,6 +147,12 @@ public class ServersConfig {
             toAddressList.add("t2");
             AlertsConfig ac = new AlertsConfig(true, "fromAd", "FromN", "sub", "mailServerAddress", "mailServerport", 10000, toAddressList);
             sc.setAlertsConfig(ac);
+
+            ServerGroup sg = new ServerGroup("test", 55d, 66d);
+            List<ServerGroup> sgList = new ArrayList<ServerGroup>();
+            sgList.add(sg);
+            sc.setServerGroups(sgList);
+
             context.createMarshaller().marshal(sc, System.out);
         } catch (Exception e) {
             e.printStackTrace();
