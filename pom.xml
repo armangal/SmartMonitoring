@@ -99,12 +99,12 @@
 				<version>1.4</version>
 				<scope>compile</scope>
 			</dependency>
-<!-- 			<dependency>
-				<groupId>org.mongodb</groupId>
-				<artifactId>mongo-java-driver</artifactId>
-				<version>2.10.1</version>
+			<dependency>
+				<groupId>com.github.jmkgreen.morphia</groupId>
+				<artifactId>morphia</artifactId>
+				<version>1.2.2</version>
 				<scope>compile</scope>
-			</dependency>  -->
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
@@ -177,11 +177,11 @@
 			<artifactId>mail</artifactId>
 			<scope>provided</scope>
 		</dependency>
-<!--  			<dependency>
-				<groupId>org.mongodb</groupId>
-				<artifactId>mongo-java-driver</artifactId>
-				<scope>compile</scope>
-			</dependency>  -->
+		<dependency>
+			<groupId>com.github.jmkgreen.morphia</groupId>
+			<artifactId>morphia</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 	</dependencies> 
 
