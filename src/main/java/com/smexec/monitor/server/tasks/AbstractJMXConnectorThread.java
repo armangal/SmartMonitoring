@@ -1,8 +1,5 @@
 package com.smexec.monitor.server.tasks;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +13,6 @@ import javax.management.NotificationListener;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +29,6 @@ import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
-import com.smexec.monitor.shared.config.Version;
 
 public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>>
     implements IJMXConnectorThread {
@@ -52,7 +46,6 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
     });
 
-    private JAXBContext context;
 
     @Inject
     private IConnectedServersState<SS, CS, RR> connectedServersState;
@@ -63,10 +56,8 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
     @Inject
     private AlertService alertService;
 
-    public AbstractJMXConnectorThread()
-        throws JAXBException {
+    public AbstractJMXConnectorThread(){
         logger.info("AbstractJMXConnectorThread");
-        context = JAXBContext.newInstance(ServersConfig.class);
     }
 
     private class Connector
@@ -87,29 +78,8 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
     };
 
     public void run() {
-        String location = System.getProperty("servers.config", "servers.xml");
-        if (location == null || location.length() < 0) {
-            location = "/opt/local/bex/conf/monitoring.xml";
-        }
-
-        logger.info("Loading configuraiotns:{}", location);
         try {
-            File file = new File(location);
-            if (!file.canRead()) {
-                logger.error("Configuration file wasn't found at:{}", location);
-            }
-            logger.info("Configuration file:{}", file);
-
-            InputStream configXML = new FileInputStream(file);
-            ServersConfig serversConfig = (ServersConfig) context.createUnmarshaller().unmarshal(configXML);
-
-            serversConfig.validate();
-
-            logger.info("Initilized:{}", serversConfig);
-            configurationService.setServersConfig(serversConfig);
-
-            Version.setEnvName(serversConfig.getName());
-
+            ServersConfig serversConfig = configurationService.getServersConfig();
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {
                     if (connectedServersState.getServerStataus(sc.getServerCode()) != null) {

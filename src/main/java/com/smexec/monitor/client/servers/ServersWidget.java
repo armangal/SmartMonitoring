@@ -12,6 +12,9 @@ import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Cookies;
@@ -95,6 +98,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
     };
 
     private Map<Integer, CS> serversMap = new HashMap<Integer, CS>(0);
+    ArrayList<CS> servesList;
 
     private HorizontalPanel title = new HorizontalPanel();
     private TextBox filter = new TextBox();
@@ -123,6 +127,17 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
             filter.setText(filterText.trim().toLowerCase());
         }
 
+        filter.addKeyPressHandler(new KeyPressHandler() {
+
+            @Override
+            public void onKeyPress(KeyPressEvent event) {
+                Log.debug("Key:" + event.getNativeEvent().getKeyCode());
+                if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+                    updateServersTable();
+                }
+            }
+        });
+
         String showOff = Cookies.getCookie(SERVERS_SHOW_OFF);
         if (showOff != null && (showOff.equals("1") || showOff.equals("0"))) {
             chkShowOffline.setValue(showOff.equals("1"));
@@ -144,23 +159,15 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
     }
 
-    @Override
-    public void update(FR fullResult) {
-        R result = fullResult.getRefreshResult();
-
-        ArrayList<CS> list = (ArrayList<CS>) result.getServers();
-        Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
-        serversMap.clear();
-
+    private void updateServersTable() {
         sp.clear();
-
         FlexTable ft = new FlexTable();
         sp.add(ft);
         ft.getElement().setId("infoTable");
         ft.setCellPadding(0);
         ft.setCellSpacing(0);
 
-        Collections.sort(list, new Comparator<CS>() {
+        Collections.sort(servesList, new Comparator<CS>() {
 
             @Override
             public int compare(CS o1, CS o2) {
@@ -191,7 +198,9 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
         int offline = 0;
 
-        for (CS cs : list) {
+        serversMap.clear();
+
+        for (CS cs : servesList) {
             serversMap.put(cs.getServerCode(), cs);
 
             j = 0;
@@ -285,7 +294,17 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
         }
 
         ft.getColumnFormatter().setWidth(0, "100px");
-        serversLabel.setText("Servers:" + list.size() + " (" + offline + ")");
+        serversLabel.setText("Servers:" + servesList.size() + " (" + offline + ")");
+    }
+
+    @Override
+    public void update(FR fullResult) {
+        R result = fullResult.getRefreshResult();
+
+        this.servesList = (ArrayList<CS>) result.getServers();
+        Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
+
+        updateServersTable();
 
     }
 

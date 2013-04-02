@@ -115,9 +115,13 @@ public class MailService {
 
         StringBuilder details = new StringBuilder();
         details.append("<tr><td>ID:</td><td>").append(alert.getId()).append(" </td></tr> ");
-        details.append("<tr><td>ID:</td><td>").append(alert.getId()).append(" </td></tr> ");
-        
-        String ret = alerTemplate.replace("{1}", alert.toString()).replace("{2}", sb.toString());
+        details.append("<tr><td>Message:</td><td>").append(alert.getMessage()).append(" </td></tr> ");
+        details.append("<tr><td>Details:</td><td>").append(alert.getDetails() == null ? "" : alert.getDetails()).append(" </td></tr> ");
+        details.append("<tr><td>Time:</td><td>").append(alert.getAlertTime()).append(" </td></tr> ");
+        details.append("<tr><td>Server:</td><td>").append(alert.getServerCode() + ", " + alert.getServerName()).append(" </td></tr> ");
+        details.append("<tr><td>Type:</td><td>").append(alert.getAlertType()).append(" </td></tr> ");
+
+        String ret = alerTemplate.replace("{1}", details.toString()).replace("{2}", sb.toString());
         return ret;
     }
 

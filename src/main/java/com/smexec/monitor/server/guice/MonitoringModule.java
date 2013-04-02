@@ -22,6 +22,8 @@ public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServ
 
     @Override
     protected void configure() {
+        bind(ConfigurationService.class).asEagerSingleton();
+        
         bind(new TypeLiteral<IConnectedServersState<ServerStataus, ConnectedServer, RefreshResult>>() {}).to(ConnectedServersState.class).in(Singleton.class);
 
         bind(IJMXConnectorThread.class).to(JMXConnectorThread.class).in(Singleton.class);
@@ -29,7 +31,6 @@ public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServ
 
         bind(JMXThreadDumpUtils.class).in(Singleton.class);
         bind(AlertService.class).in(Singleton.class);
-        bind(ConfigurationService.class).in(Singleton.class);
         bind(MailService.class).in(Singleton.class);
         
     }

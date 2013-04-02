@@ -3,16 +3,10 @@
 <meta charset='utf-8'>
 <title>Alert</title>
 <style>
-#details {
-	color: red;
-	font-weight: bold;
-}
-
 #infoTable {
 	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
 	font-size: 12px;
 	background: #fff;
-	/*width: 100%;*/
 	border-collapse: collapse;
 	text-align: left;
 }
@@ -36,7 +30,20 @@
 
 </head>
 <body>
-	<p id="details">{1}</p>
+	<table id="infoTable">
+		<colgroup>
+			<col>
+		</colgroup>
+		<tbody>
+			<tr id="th">
+				<td colspan=2>Alert Details</td>
+			</tr>
+			{1}
+		</tbody>
+	</table>
+</br>
+<hr>
+</br>
 	<table id="infoTable">
 		<colgroup>
 			<col>
