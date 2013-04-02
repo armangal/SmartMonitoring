@@ -5,12 +5,62 @@
 	<groupId>org.smexec</groupId>
 	<artifactId>smartmonitoring</artifactId>
 	<version>1.0.12</version>
-	<name>Smart Monitoring</name>
+	<packaging>war</packaging>
+	<name>Smart Monitoring, open-source JMX monitoring server with HTML (GWT) UI</name>
+	<description>Smart Monitoring</description>
+
+	<url>http://github.com/armangal/SmartMonitoring</url>
+
+	<scm>
+		<connection>scm:git:git@github.com:armangal/SmartMonitoring.git</connection>
+		<developerConnection>scm:git:git@github.com:armangal/SmartMonitoring.git</developerConnection>
+		<url>https://github.com/armangal/SmartMonitoring</url>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>armangal</id>
+			<name>Arman Gal</name>
+			<email>arman@armangal.com</email>
+		</developer>
+		<developer>
+			<id>Erdoan</id>
+			<name>Erdoan Veliev</name>
+		</developer>
+	</developers>
 
 	<properties>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
+
+		<morphia.version>1.2.2</morphia.version>
+		<proxytoys.version>1.0</proxytoys.version>
+		<cglib-nodep.version>2.2.2</cglib-nodep.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
+		<validation-api.version>1.0.0.GA</validation-api.version>
+		<javarebel.version>2.0.2</javarebel.version>
+		<guice.version>3.0</guice.version>
+		<reflections.version>0.9.8</reflections.version>
+		<guava.version>13.0.1</guava.version>
+		<scannotation.version>1.0.2</scannotation.version>
+		<junit.version>4.11</junit.version>
+		<javax.mail.version>1.4</javax.mail.version>
+
 		<gwt.version>2.5.0</gwt.version>
+		<gin.version>2.0.0</gin.version>
+		<gwt-charts.version>0.9.9</gwt-charts.version>
+		<gwt-log.version>3.1.8</gwt-log.version>
+
+		<github.global.server>github</github.global.server>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<test.skip>true</test.skip>
 	</properties>
@@ -38,19 +88,19 @@
 			<dependency>
 				<groupId>com.allen-sauer.gwt.log</groupId>
 				<artifactId>gwt-log</artifactId>
-				<version>3.1.8</version>
+				<version>${gwt-log.version}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.gwt-charts</groupId>
 				<artifactId>gwt-charts</artifactId>
-				<version>0.9.9</version>
+				<version>${gwt-charts.version}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.google.gwt.inject</groupId>
 				<artifactId>gin</artifactId>
-				<version>2.0.0</version>
+				<version>${gin.version}</version>
 				<scope>provided</scope>
 			</dependency>
 			<!-- server -->
@@ -58,51 +108,56 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.10</version>
+				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<!-- SLF4J Dependencies -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.5.10</version>
+				<version>${slf4j.version}</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.5.10</version>
+				<version>${slf4j.version}</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
-				<version>1.2.14</version>
+				<version>${log4j.version}</version>
 				<scope>compile</scope>
 			</dependency>
 			<!-- Google Guice Dependencies -->
 			<dependency>
 				<groupId>com.google.inject</groupId>
 				<artifactId>guice</artifactId>
-				<version>3.0</version>
+				<version>${guice.version}</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.google.inject.extensions</groupId>
 				<artifactId>guice-assistedinject</artifactId>
-				<version>3.0</version>
+				<version>${guice.version}</version>
 				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
 				<artifactId>mail</artifactId>
-				<version>1.4</version>
+				<version>${javax.mail.version}</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.github.jmkgreen.morphia</groupId>
 				<artifactId>morphia</artifactId>
-				<version>1.2.2</version>
+				<version>${morphia.version}</version>
 				<scope>compile</scope>
 			</dependency>
 
@@ -140,6 +195,11 @@
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-assistedinject</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -183,7 +243,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-	</dependencies> 
+	</dependencies>
 
 	<build>
 		<resources>
@@ -228,6 +288,48 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<header>resources/header.txt</header>
+					<strictCheck>true</strictCheck>
+
+					<quiet>false</quiet>
+					<failIfMissing>true</failIfMissing>
+					<aggregate>false</aggregate>
+					<includes>
+						<include>src/**</include>
+						<include>**/test/**</include>
+					</includes>
+					<excludes>
+						<exclude>target/**</exclude>
+						<exclude>**/**.txt</exclude>
+						<exclude>**/**.xml</exclude>
+						<exclude>**/**.html</exclude>
+					</excludes>
+					<useDefaultExcludes>true</useDefaultExcludes>
+					<mapping>
+						<jwc>XML_STYLE</jwc>
+						<application>XML_STYLE</application>
+						<myFileExtension>JAVADOC_STYLE</myFileExtension>
+					</mapping>
+					<useDefaultMapping>true</useDefaultMapping>
+					<properties>
+						<year>2013</year>
+						<email>arman@armangal.com</email>
+					</properties>
+					<encoding>UTF-8</encoding>
+
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<!-- creating version file for deployed version to -->
 			<plugin>
