@@ -1,0 +1,52 @@
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Alert</title>
+<style>
+#details {
+	color: red;
+	font-weight: bold;
+}
+
+#infoTable {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	background: #fff;
+	/*width: 100%;*/
+	border-collapse: collapse;
+	text-align: left;
+}
+
+#infoTable td {
+	color: #669;
+	padding: 0px 0px 0;
+	border: 1px solid #ccc;
+	height: 16px;
+}
+
+#infoTable #th {
+	background-color: #E0E0E0;
+	border-bottom: 2px solid #6678B1;
+	color: #003399;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 10px 8px;
+}
+</style>
+
+</head>
+<body>
+	<p id="details">{1}</p>
+	<table id="infoTable">
+		<colgroup>
+			<col>
+		</colgroup>
+		<tbody>
+			<tr id="th">
+				<td colspan=2>Server Details</td>
+			</tr>
+			{2}
+		</tbody>
+	</table>
+</body>
+</html>

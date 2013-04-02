@@ -162,4 +162,8 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
         return new ClientConfigurations(Version.getEnvName(), Version.getVersion());
     }
+
+    public AlertService getAlertService() {
+        return alertService;
+    }
 }

@@ -267,6 +267,7 @@
 							<includes>
 								<include>log4j.xml</include>
 								<include>version.txt</include>
+								<include>AlertTemplate.html</include>
 							</includes>
 							<targetPath>WEB-INF/classes</targetPath>
 						</resource>

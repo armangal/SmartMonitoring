@@ -1,5 +1,6 @@
 package com.smexec.monitor.server.services.mail;
 
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.client.utils.ClientStringFormatter;
+import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.config.AlertsConfig;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.shared.alert.Alert;
@@ -23,11 +26,13 @@ public class MailService {
     private static Logger logger = LoggerFactory.getLogger("MailService");
 
     private static final String MAIL_ENCODING = "UTF-8";
-    private static final String MAIL_TYPE_TEXT = "text/plain; charset=";
-    // private static final String MAIL_TYPE_HTML = "text/html; charset=";
+    // private static final String MAIL_TYPE_TEXT = "text/plain; charset=";
+    private static final String MAIL_TYPE_HTML = "text/html; charset=";
 
     @Inject
     private ConfigurationService configurationService;
+
+    private String alerTemplate = "{1}, {2}";
 
     /**
      * local queue of pending mails
@@ -50,13 +55,24 @@ public class MailService {
             }
         }, "MAIL_DISPATCHER");
         dispatcher.start();
+
+        try {
+            InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("AlertTemplate.html");
+            byte[] bytes = new byte[resourceAsStream.available()];
+            resourceAsStream.read(bytes);
+            String temp = new String(bytes);
+            alerTemplate = temp;
+            resourceAsStream.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     private void sendAlert(MailItem mailItem) {
         try {
             AlertsConfig ac = configurationService.getServersConfig().getAlertsConfig();
 
-            String mailType = MAIL_TYPE_TEXT;
+            String mailType = MAIL_TYPE_HTML;
 
             MimeMessage msg = new MimeMessage(getSession());
 
@@ -76,14 +92,29 @@ public class MailService {
         }
     }
 
-    public void sendAlert(Alert alert) {
+    public <SS extends ServerStataus> void sendAlert(Alert alert, SS ss) {
         if (configurationService.getServersConfig().getAlertsConfig().isEnabled()) {
+            String body = createAlerMailBody(alert, ss);
             mailQueue.offer(new MailItem(" [" + configurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] " + alert.getMessage(),
-                                         alert.toString()));
+                                         body));
             logger.info("Alert:{} added to mail queue", alert.getId());
         } else {
             logger.info("Skipping mailing, disabled");
         }
+    }
+
+    private <SS extends ServerStataus> String createAlerMailBody(Alert alert, SS ss) {
+        StringBuilder sb = new StringBuilder();
+        if (ss.isConnected() && !ss.isFirstTimeAccess()) {
+            sb.append("<tr><td>Server Up Time: </td><td>").append(ClientStringFormatter.formatMilisecondsToHours(ss.getUpTime())).append(" </td></tr> ");
+            sb.append("<tr><td>CPU: </td><td>").append(ss.getCpuUtilization().getLastPercent().getUsage()).append("% </td></tr> ");
+            sb.append("<tr><td>System Load AVG: </td><td>").append(ss.getCpuUtilization().getLastPercent().getSystemLoadAverage()).append(" </td></tr> ");
+            sb.append("<tr><td>Memory Usage: </td><td>").append(ss.getLastMemoryUsage().getPercentage()).append("% </td></tr> ");
+            sb.append("<tr><td>Detailed Memory Usage: </td><td>").append(ss.getMemoryState().replace("\n", "</br>")).append(" </td></tr> ");
+        }
+
+        String ret = alerTemplate.replace("{1}", alert.toString()).replace("{2}", sb.toString());
+        return ret;
     }
 
     class SMTPAuthenticator

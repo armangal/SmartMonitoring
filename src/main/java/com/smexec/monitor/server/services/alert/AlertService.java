@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
@@ -49,17 +48,20 @@ public class AlertService {
 
         LinkedList<Alert> alerts = new LinkedList<Alert>();
         // starting from back
-        Iterator<Alert> it = alertsList.descendingIterator();
-        for (int i = alertId + 1; i < alertCounter.get(); i++) {
-            alerts.add(it.next());
-        }
-        Collections.sort(alerts, new Comparator<Alert>() {
+        synchronized (alertsList) {
 
-            @Override
-            public int compare(Alert o1, Alert o2) {
-                return o1.getId() - o2.getId();
+            Iterator<Alert> it = alertsList.descendingIterator();
+            for (int i = alertId + 1; i < alertCounter.get(); i++) {
+                alerts.add(it.next());
             }
-        });
+            Collections.sort(alerts, new Comparator<Alert>() {
+
+                @Override
+                public int compare(Alert o1, Alert o2) {
+                    return o1.getId() - o2.getId();
+                }
+            });
+        }
         return alerts;
     }
 
@@ -71,24 +73,18 @@ public class AlertService {
      * @param alert
      */
     public <SS extends ServerStataus> void addAlert(Alert alert, SS ss) {
-        alert.setId(alertCounter.getAndIncrement()); 
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n Server Up Time:").append(ClientStringFormatter.formatMilisecondsToHours(ss.getUpTime())).append(" \n ");
-        sb.append("CPU:").append(ss.getCpuUtilization().getLastPercent().getUsage()).append("% \n ");
-        sb.append("System Load AVG:").append(ss.getCpuUtilization().getLastPercent().getSystemLoadAverage()).append(" \n ");
-        sb.append("Memory Usage:").append(ss.getLastMemoryUsage().getPercentage()).append("% \n ");
-        sb.append("Detailed Memory Usage:").append(ss.getMemoryState()).append(" \n ");
+        alert.setId(alertCounter.getAndIncrement());
 
-        alert.setDetails(sb.toString());
-        
         if (alert.getAlertType().sendMail() && ss.canSendAlert(alert.getAlertType())) {
-            mailService.sendAlert(alert);
+            mailService.sendAlert(alert, ss);
         }
 
         logger.warn("Alert added:{}", alert);
-        alertsList.add(alert);
-        if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {
-            alertsList.remove();
+        synchronized (alertsList) {
+            alertsList.add(alert);
+            if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {
+                alertsList.remove();
+            }
         }
     }
 }

@@ -62,6 +62,51 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
         }
     };
 
+    private AsyncCallback<FR> refreshCallback = new AsyncCallback<FR>() {
+
+        @Override
+        public void onSuccess(FR fullResult) {
+            if (fullResult == null) {
+                Log.debug("Received NULL response.");
+                return;
+            }
+            R result = fullResult.getRefreshResult();
+            if (result == null) {
+                Log.debug("Received NULL response.");
+                return;
+            }
+
+            ArrayList<CS> servers = result.getServers();
+            if (servers != null && !servers.isEmpty()) {
+                Log.debug("Received FULL refresh response.");
+
+                for (IMonitoringWidget<CS, R, FR> widget : widgets) {
+                    widget.update(fullResult);
+                }
+
+            } else {
+                Log.debug("Received EMPTY response.");
+                for (IMonitoringWidget<CS, R, FR> widget : widgets) {
+                    widget.clear(fullResult);
+                }
+
+            }
+
+            lastAlertId = fullResult.getLastAlertId();
+            title.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime() + ")</h1>");
+
+        }
+
+        @Override
+        public void onFailure(Throwable caught) {
+            Log.error("Received refresh response error:" + caught.getMessage());
+            Window.setTitle("Error:" + caught.getMessage());
+            refresh = false;
+            RootPanel.get().clear();
+            RootPanel.get().add(loginWidget);
+        }
+    };
+
     public AbstractEntryPoint(MonitoringServiceAsync<CS, R, FR> service) {
         this.service = service;
         this.loginWidget = new LoginWidget<CS, R, FR>(service);
@@ -121,55 +166,14 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
         widgets.add((IMonitoringWidget<CS, R, FR>) widget);
     }
 
-    private void refresh() {
+    /**
+     * might be overridden to call other refresh function
+     */
+    public void refresh() {
 
         Log.debug("Send refresh request.");
 
-        service.refresh(lastAlertId, new AsyncCallback<FR>() {
-
-            @Override
-            public void onSuccess(FR fullResult) {
-                if (fullResult == null) {
-                    Log.debug("Received NULL response.");
-                    return;
-                }
-                R result = fullResult.getRefreshResult();
-                if (result == null) {
-                    Log.debug("Received NULL response.");
-                    return;
-                }
-
-                ArrayList<CS> servers = result.getServers();
-                if (servers != null && !servers.isEmpty()) {
-                    Log.debug("Received FULL refresh response.");
-
-                    for (IMonitoringWidget<CS, R, FR> widget : widgets) {
-                        widget.update(fullResult);
-                    }
-
-                } else {
-                    Log.debug("Received EMPTY response.");
-                    for (IMonitoringWidget<CS, R, FR> widget : widgets) {
-                        widget.clear(fullResult);
-                    }
-
-                }
-
-                lastAlertId = fullResult.getLastAlertId();
-                title.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime()
-                              + ")</h1>");
-
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                Log.error("Received refresh response error:" + caught.getMessage());
-                Window.setTitle("Error:" + caught.getMessage());
-                refresh = false;
-                RootPanel.get().clear();
-                RootPanel.get().add(loginWidget);
-            }
-        });
+        service.refresh(lastAlertId, refreshCallback);
     }
 
     /**
@@ -202,5 +206,13 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
 
     public MonitoringServiceAsync<CS, R, FR> getService() {
         return service;
+    }
+
+    public int getLastAlertId() {
+        return lastAlertId;
+    }
+
+    public AsyncCallback<FR> getRefreshCallback() {
+        return refreshCallback;
     }
 }

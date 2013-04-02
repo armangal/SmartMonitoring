@@ -23,6 +23,4 @@ public class MonitoringServiceImpl
     public FullRefreshResult<RefreshResult, ConnectedServer> createFullRefreshResult(RefreshResult refreshResult, LinkedList<Alert> alerts) {
         return new FullRefreshResult<RefreshResult, ConnectedServer>(refreshResult, alerts);
     }
-
-
 }
