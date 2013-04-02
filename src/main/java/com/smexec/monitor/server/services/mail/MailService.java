@@ -113,6 +113,10 @@ public class MailService {
             sb.append("<tr><td>Detailed Memory Usage: </td><td>").append(ss.getMemoryState().replace("\n", "</br>")).append(" </td></tr> ");
         }
 
+        StringBuilder details = new StringBuilder();
+        details.append("<tr><td>ID:</td><td>").append(alert.getId()).append(" </td></tr> ");
+        details.append("<tr><td>ID:</td><td>").append(alert.getId()).append(" </td></tr> ");
+        
         String ret = alerTemplate.replace("{1}", alert.toString()).replace("{2}", sb.toString());
         return ret;
     }

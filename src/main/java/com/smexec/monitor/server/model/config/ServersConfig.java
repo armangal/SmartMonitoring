@@ -161,6 +161,7 @@ public class ServersConfig {
     }
 
     public void validate() {
+        //validating unique server code.
         Map<Integer, Boolean> map = new HashMap<Integer, Boolean>();
         for (ServerConfig sc : servers) {
             Boolean put = map.put(sc.getServerCode(), Boolean.TRUE);
