@@ -44,6 +44,10 @@ public class ClientStringFormatter {
         return NumberFormat.getFormat("#,##0").format(ms);
     }
 
+    public static String formatNumber(Long ms) {
+        return NumberFormat.getFormat("#,##0").format(ms);
+    }
+
     public static String formatBytes(long bytes) {
         long kb = bytes;
         if (bytes > 0) {
