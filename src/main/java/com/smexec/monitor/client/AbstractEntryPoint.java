@@ -58,7 +58,9 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
     final Button refreshBtn = new Button("Stop Refresh");
     boolean refresh = true;
 
-    private HTML title = new HTML("<h1>----------------------------</h1>");
+    private FlowPanel mainHeader = new FlowPanel();
+    private HTML mainHeaderLabel = new HTML("--------------------------");
+    private HTML footer = new HTML("<ul><li><img title=\"Feedback\" src=\"//1.www.s81c.com/i/v17/opinionlab/oo_icon.gif\"><span>&nbsp;&nbsp;Created by </span><a target='blank' href=\"https://twitter.com/armangal\">@armangal</a><span>, based on </span><a href='https://github.com/armangal/SmartMonitoring' target='blank'>SmartMonitoring</a><span> project.</span></span></li></ul>");
 
     /**
      * used to filter alerts coming from server
@@ -108,7 +110,9 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
             }
 
             lastAlertId = fullResult.getLastAlertId();
-            title.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime() + ")</h1>");
+            mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime()
+                                    + ")</h1>");
+            mainHeader.add(mainHeaderLabel);
 
         }
 
@@ -134,11 +138,13 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
                 RootPanel.get().clear();
                 addMainWidgets();
                 RootPanel.get().add(mainPanel);
-                RootPanel.get().add(refreshBtn);
+                footer.setStyleName("footer");
+                RootPanel.get().add(footer);
+
                 refresh = true;
                 refresh();
                 Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
-                title.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
+                mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
 
             }
         });
@@ -164,7 +170,9 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
         });
 
         mainPanel.setStyleName("mainPanel");
-        mainPanel.add(title);
+        mainHeader.setStyleName("mainHeader");
+        mainHeader.add(refreshBtn);
+        mainPanel.add(mainHeader);
 
         registerWidgets();
 

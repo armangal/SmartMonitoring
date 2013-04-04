@@ -15,6 +15,7 @@
  */
 package com.smexec.monitor.server.model.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -30,9 +31,9 @@ public class MongoConfig {
     private Boolean enabled = false;
     @XmlElement(name = "host")
     @XmlElementWrapper
-    private List<String> hosts;
-    private String username;
-    private String password;
+    private List<String> hosts = new ArrayList<String>(0);
+    private String username = "";
+    private String password = "";
 
     public MongoConfig() {}
 

@@ -28,15 +28,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AlertsConfig {
 
     private Boolean enabled = false;
-    private String fromAddress;
-    private String fromName;
+    private String fromAddress = "";
+    private String fromName = "";
     private String subjectPrefix = "Smart Monitoring, Alert:";
-    private String mailServerAddress;
-    private String mainServerPort;
+    private String mailServerAddress = "";
+    private String mainServerPort = "";
 
     private Boolean authenticate = false;
-    private String userName;
-    private String password;
+    private String userName = "";
+    private String password = "";
 
     private Integer inMemoryAlerts = 10000;
 

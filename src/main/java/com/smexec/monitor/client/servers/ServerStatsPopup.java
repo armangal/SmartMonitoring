@@ -74,7 +74,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
                                                                                                   "Time",
                                                                                                   "Memory Usage");
 
-    private MonitoringDynamicLinesChart<Long, Long> memoryDetailsChart = new MonitoringDynamicLinesChart<Long, Long>("Bytes", "Time", "Memory Details");
+    private MonitoringDynamicLinesChart<Long, Long> memoryDetailsChart = new MonitoringDynamicLinesChart<Long, Long>("M.B.", "Time", "Memory Details");
 
     private FlowPanel fp = new FlowPanel();
     private FlowPanel cpu = new FlowPanel();

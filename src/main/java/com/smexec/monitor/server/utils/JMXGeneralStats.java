@@ -87,10 +87,11 @@ public class JMXGeneralStats {
 
     private LinkedList<MemoryState> getMemoryState(List<MemoryPoolMXBean> pools) {
         LinkedList<MemoryState> list = new LinkedList<MemoryState>();
+        long div = 1024 * 1024;
         try {
             for (MemoryPoolMXBean p : pools) {
                 MemoryUsage u = p.getUsage();
-                list.add(new MemoryState(p.getName(), u.getUsed(), u.getCommitted(), u.getMax(), p.getType().equals(MemoryType.HEAP)));
+                list.add(new MemoryState(p.getName(), u.getUsed() / div, u.getCommitted() / div, u.getMax() / div, p.getType().equals(MemoryType.HEAP)));
             }
 
             return list;

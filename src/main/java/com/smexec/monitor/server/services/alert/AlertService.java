@@ -88,18 +88,22 @@ public class AlertService {
      * @param alert
      */
     public <SS extends ServerStataus> void addAlert(Alert alert, SS ss) {
-        alert.setId(alertCounter.getAndIncrement());
+        try {
+            alert.setId(alertCounter.getAndIncrement());
 
-        if (alert.getAlertType().sendMail() && ss.canSendAlert(alert.getAlertType())) {
-            mailService.sendAlert(alert, ss);
-        }
-
-        logger.warn("Alert added:{}", alert);
-        synchronized (alertsList) {
-            alertsList.add(alert);
-            if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {
-                alertsList.remove();
+            if (alert.getAlertType().sendMail() && ss.canSendAlert(alert.getAlertType())) {
+                mailService.sendAlert(alert, ss);
             }
+
+            logger.warn("Alert added:{}", alert);
+            synchronized (alertsList) {
+                alertsList.add(alert);
+                if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {
+                    alertsList.remove();
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
     }
 }

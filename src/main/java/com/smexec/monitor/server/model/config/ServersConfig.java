@@ -48,9 +48,9 @@ public class ServersConfig {
     private String username;
     private String password;
 
-    private AlertsConfig alertsConfig;
+    private AlertsConfig alertsConfig = new AlertsConfig();
 
-    private MongoConfig mongoConfig;
+    private MongoConfig mongoConfig = new MongoConfig();
 
     public ServersConfig() {}
 

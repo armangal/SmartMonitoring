@@ -273,9 +273,10 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
                 if (cs.getMemoryUsage().getPercentage() > 90) {
                     ft.getRowFormatter().getElement(i).setId("memoryVeryHigh");
-                } else if (cs.getMemoryUsage().getPercentage() > 80) {
-                    ft.getRowFormatter().getElement(i).setId("memoryHigh");
-                }
+                } 
+//                else if (cs.getMemoryUsage().getPercentage() > 80) {
+//                    ft.getRowFormatter().getElement(i).setId("memoryHigh");
+//                }
 
                 HTML cpu = new HTML(cs.getCpuUtilizationChunk().getUsage() + "%");
                 ft.setWidget(i, j++, cpu);

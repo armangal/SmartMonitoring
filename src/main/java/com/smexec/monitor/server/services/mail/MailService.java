@@ -59,14 +59,14 @@ public class MailService {
 
             @Override
             public void run() {
-                try {
-                    do {
+                do {
+                    try {
                         MailItem take = mailQueue.take();
                         sendAlert(take);
-                    } while (true);
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                } while (true);
             }
         }, "MAIL_DISPATCHER");
         dispatcher.start();
@@ -108,36 +108,45 @@ public class MailService {
     }
 
     public <SS extends ServerStataus> void sendAlert(Alert alert, SS ss) {
-        if (configurationService.getServersConfig().getAlertsConfig().isEnabled()) {
-            String body = createAlerMailBody(alert, ss);
-            mailQueue.offer(new MailItem(" [" + configurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] " + alert.getMessage(),
-                                         body));
-            logger.info("Alert:{} added to mail queue", alert.getId());
-        } else {
-            logger.info("Skipping mailing, disabled");
+        try {
+            if (configurationService.getServersConfig().getAlertsConfig().isEnabled()) {
+                String body = createAlerMailBody(alert, ss);
+                mailQueue.offer(new MailItem(" [" + configurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] "
+                                             + alert.getMessage(), body));
+                logger.info("Alert:{} added to mail queue", alert.getId());
+            } else {
+                logger.info("Skipping mailing, disabled");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
     }
 
     private <SS extends ServerStataus> String createAlerMailBody(Alert alert, SS ss) {
-        StringBuilder sb = new StringBuilder();
-        if (ss.isConnected() && !ss.isFirstTimeAccess()) {
-            sb.append("<tr><td>Server Up Time: </td><td>").append(ClientStringFormatter.formatMilisecondsToHours(ss.getUpTime())).append(" </td></tr> ");
-            sb.append("<tr><td>CPU: </td><td>").append(ss.getCpuUtilization().getLastPercent().getUsage()).append("% </td></tr> ");
-            sb.append("<tr><td>System Load AVG: </td><td>").append(ss.getCpuUtilization().getLastPercent().getSystemLoadAverage()).append(" </td></tr> ");
-            sb.append("<tr><td>Memory Usage: </td><td>").append(ss.getLastMemoryUsage().getPercentage()).append("% </td></tr> ");
-            sb.append("<tr><td>Detailed Memory Usage: </td><td>").append(ss.getMemoryState().replace("\n", "</br>")).append(" </td></tr> ");
+        try {
+            StringBuilder sb = new StringBuilder();
+            if (ss.isConnected() && !ss.isFirstTimeAccess()) {
+                sb.append("<tr><td>Server Up Time: </td><td>").append(ClientStringFormatter.formatMilisecondsToHours(ss.getUpTime())).append(" </td></tr> ");
+                sb.append("<tr><td>CPU: </td><td>").append(ss.getCpuUtilization().getLastPercent().getUsage()).append("% </td></tr> ");
+                sb.append("<tr><td>System Load AVG: </td><td>").append(ss.getCpuUtilization().getLastPercent().getSystemLoadAverage()).append(" </td></tr> ");
+                sb.append("<tr><td>Memory Usage: </td><td>").append(ss.getLastMemoryUsage().getPercentage()).append("% </td></tr> ");
+                sb.append("<tr><td>Detailed Memory Usage: </td><td>").append(ss.getMemoryState().replace("\n", "</br>")).append(" </td></tr> ");
+            }
+
+            StringBuilder details = new StringBuilder();
+            details.append("<tr><td>ID:</td><td>").append(alert.getId()).append(" </td></tr> ");
+            details.append("<tr><td>Message:</td><td>").append(alert.getMessage()).append(" </td></tr> ");
+            details.append("<tr><td>Details:</td><td>").append(alert.getDetails() == null ? "" : alert.getDetails()).append(" </td></tr> ");
+            details.append("<tr><td>Time:</td><td>").append(alert.getAlertTime()).append(" </td></tr> ");
+            details.append("<tr><td>Server:</td><td>").append(alert.getServerCode() + ", " + alert.getServerName()).append(" </td></tr> ");
+            details.append("<tr><td>Type:</td><td>").append(alert.getAlertType()).append(" </td></tr> ");
+
+            String ret = alerTemplate.replace("{1}", details.toString()).replace("{2}", sb.toString());
+            return ret;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return alert.toString();
         }
-
-        StringBuilder details = new StringBuilder();
-        details.append("<tr><td>ID:</td><td>").append(alert.getId()).append(" </td></tr> ");
-        details.append("<tr><td>Message:</td><td>").append(alert.getMessage()).append(" </td></tr> ");
-        details.append("<tr><td>Details:</td><td>").append(alert.getDetails() == null ? "" : alert.getDetails()).append(" </td></tr> ");
-        details.append("<tr><td>Time:</td><td>").append(alert.getAlertTime()).append(" </td></tr> ");
-        details.append("<tr><td>Server:</td><td>").append(alert.getServerCode() + ", " + alert.getServerName()).append(" </td></tr> ");
-        details.append("<tr><td>Type:</td><td>").append(alert.getAlertType()).append(" </td></tr> ");
-
-        String ret = alerTemplate.replace("{1}", details.toString()).replace("{2}", sb.toString());
-        return ret;
     }
 
     class SMTPAuthenticator

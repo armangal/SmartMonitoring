@@ -32,7 +32,9 @@ public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends 
     
     private String serverTime;
 
-    public FullRefreshResult() {}
+    public FullRefreshResult() {
+        this.alerts = new LinkedList<Alert>();
+    }
 
     public FullRefreshResult(RR refreshResult, LinkedList<Alert> alerts) {
         super();
