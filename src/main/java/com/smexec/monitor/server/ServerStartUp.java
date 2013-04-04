@@ -15,6 +15,8 @@
  */
 package com.smexec.monitor.server;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.xml.bind.JAXBContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,8 @@ import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.guice.MonitoringModule;
 import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
 import com.smexec.monitor.shared.ConnectedServer;
@@ -58,18 +63,22 @@ public class ServerStartUp
     @Inject
     private IStateUpdaterThread stateUpdaterThread;
 
+    @Inject
+    private ConfigurationService configurationService;
+
     /**
      * for extensions to override
      */
-    public void initGuice() {
-        GuiceUtils.init(new MonitoringModule<ServerStataus, ConnectedServer>());
+    public void initGuice(ServersConfig serversConfig) {
+        GuiceUtils.init(new MonitoringModule<ServerStataus, ConnectedServer>(serversConfig));
     }
 
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
-        initGuice();
-
+        ServersConfig serversConfig = getServersConfig();
+        initGuice(serversConfig);
         GuiceUtils.getInjector().injectMembers(this);
+        configurationService.setServersConfig(serversConfig);
 
         try {
             InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("version.txt");
@@ -95,5 +104,39 @@ public class ServerStartUp
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
         executor.shutdown();
+    }
+
+    public ServersConfig getServersConfig() {
+        JAXBContext context;
+        try {
+            context = JAXBContext.newInstance(ServersConfig.class);
+
+            String location = System.getProperty("servers.config", "servers.xml");
+            if (location == null || location.length() < 0) {
+                location = "/opt/local/bex/conf/monitoring.xml";
+            }
+
+            logger.info("Loading configuraiotns:{}", location);
+            File file = new File(location);
+            if (!file.canRead()) {
+                logger.error("Configuration file wasn't found at:{}", location);
+            }
+            logger.info("Configuration file:{}", file);
+
+            InputStream configXML = new FileInputStream(file);
+            ServersConfig serversConfig = (ServersConfig) context.createUnmarshaller().unmarshal(configXML);
+
+            serversConfig.validate();
+
+            logger.info("Initilized:{}", serversConfig);
+
+            Version.setEnvName(serversConfig.getName());
+            return serversConfig;
+        } catch (Throwable e) {
+            logger.error("Error loading config:{}", e.getMessage());
+            logger.error(e.getMessage(), e);
+            Runtime.getRuntime().exit(1);
+            return null;
+        }
     }
 }

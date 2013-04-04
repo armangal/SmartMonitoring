@@ -67,7 +67,7 @@ public class ServerGroup {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ServerGroup [name=").append(name).append(", cpuLoad=").append(cpuLoad).append(", memoryUsage=").append(memoryUsage).append("]");
+        builder.append("ServerGroup [name=").append(name).append(", cpuLoad=").append(cpuLoad).append(", memoryUsage=").append(memoryUsage).append("]\n");
         return builder.toString();
     }
 

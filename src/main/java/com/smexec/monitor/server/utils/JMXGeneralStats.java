@@ -52,8 +52,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.server.dao.entities.ServerStatEntity;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.services.alert.AlertService;
+import com.smexec.monitor.server.services.persistence.IPersistenceService;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
 import com.smexec.monitor.shared.runtime.GCHistory;
@@ -71,6 +73,8 @@ public class JMXGeneralStats {
 
     @Inject
     private AlertService alertService;
+    @Inject
+    private IPersistenceService persistenceService;
 
     public JMXGeneralStats() {}
 
@@ -199,6 +203,7 @@ public class JMXGeneralStats {
             alertService.addAlert(alert, serverStataus);
         }
 
+        persistenceService.saveServerStat(new ServerStatEntity(System.currentTimeMillis(), System.currentTimeMillis(), mu.getPercentage(), load));
     }
 
     public RuntimeInfo getRuntimeInfo(ServerStataus serverStataus)

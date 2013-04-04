@@ -61,17 +61,17 @@ public class MemoryState
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("MemoryState [name=")
+        builder.append("MS [n=")
                .append(name)
-               .append(", used=")
+               .append(", u=")
                .append(used)
-               .append(", commited=")
+               .append(", c=")
                .append(commited)
-               .append(", max=")
+               .append(", ma=")
                .append(max)
-               .append(", heap=")
+               .append(", he=")
                .append(heap)
-               .append("]");
+               .append("]\n");
         return builder.toString();
     }
 

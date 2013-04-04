@@ -21,6 +21,19 @@
 	<username>admin</username>
 	<password>password</password>
 
+	<mongoConfig>
+		<enabled>false</enabled>
+		<hosts>
+			<hostAddress>
+				<hostName>localhost</hostName>
+				<port>27017</port>
+			</hostAddress>
+		</hosts>
+		<username>user</username>
+		<password>pass</password>
+		<databaseName>smartDB</databaseName>
+	</mongoConfig>
+
 	<alertsConfig>
 		<enabled>true</enabled>
 		<fromAddress>test@test.com</fromAddress>

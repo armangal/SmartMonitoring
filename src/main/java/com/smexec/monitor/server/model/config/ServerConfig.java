@@ -93,7 +93,7 @@ public class ServerConfig {
                .append(password)
                .append(", serverGroup=")
                .append(serverGroup)
-               .append("]");
+               .append("]\n");
         return builder.toString();
     }
 

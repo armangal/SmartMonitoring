@@ -61,7 +61,6 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
     });
 
-
     @Inject
     private IConnectedServersState<SS, CS, RR> connectedServersState;
 
@@ -71,7 +70,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
     @Inject
     private AlertService alertService;
 
-    public AbstractJMXConnectorThread(){
+    public AbstractJMXConnectorThread() {
         logger.info("AbstractJMXConnectorThread");
     }
 
@@ -170,11 +169,10 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                 @Override
                 public void handleNotification(Notification notification, Object key) {
                     logger.info("Notification for key:{}", key);
-                    logger.info("Notificatio n:{}" + notification);
-                    if (notification.getType().contains("closed") || notification.getType().contains("failed")) {
-                        ServerConfig sc = (ServerConfig) key;
-                        SS serverStataus = connectedServersState.getServerStataus(sc.getServerCode());
-
+                    logger.info("Notification:{}" + notification);
+                    ServerConfig sc = (ServerConfig) key;
+                    SS serverStataus = connectedServersState.getServerStataus(sc.getServerCode());
+                    if (notification.getType().contains("closed")) {
                         alertService.addAlert(new Alert("!!! Server went DOWN !!!",
                                                         sc.getServerCode(),
                                                         sc.getName(),
@@ -182,6 +180,14 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                                                         AlertType.SERVER_DISCONNECTED), serverStataus);
 
                         serverStataus.resetOnDisconnect();
+                    }
+                    if (notification.getType().contains("failed")) {
+                        alertService.addAlert(new Alert("Failed to make JMX comm. with server!",
+                                                        sc.getServerCode(),
+                                                        sc.getName(),
+                                                        new Date().toString(),
+                                                        AlertType.SERVER_COMM_FAILED), serverStataus);
+
                     }
                 }
             }, null, sc);

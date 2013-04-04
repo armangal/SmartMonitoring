@@ -29,11 +29,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class MongoConfig {
 
     private Boolean enabled = false;
-    @XmlElement(name = "host")
+    @XmlElement(name = "hostAddress")
     @XmlElementWrapper
-    private List<String> hosts = new ArrayList<String>(0);
+    private List<HostAddress> hosts = new ArrayList<MongoConfig.HostAddress>(0);
     private String username = "";
     private String password = "";
+    private String databaseName = "test";
 
     public MongoConfig() {}
 
@@ -41,7 +42,7 @@ public class MongoConfig {
         return enabled;
     }
 
-    public List<String> getHosts() {
+    public List<HostAddress> getHosts() {
         return hosts;
     }
 
@@ -53,19 +54,85 @@ public class MongoConfig {
         return password;
     }
 
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setHosts(List<HostAddress> hosts) {
+        this.hosts = hosts;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("MongoConfig [enabled=");
-        builder.append(enabled);
-        builder.append(", hosts=");
-        builder.append(hosts);
-        builder.append(", username=");
-        builder.append(username);
-        builder.append(", password=");
-        builder.append(password);
-        builder.append("]");
+        builder.append("MongoConfig [enabled=")
+               .append(enabled)
+               .append(", hosts=")
+               .append(hosts)
+               .append(", username=")
+               .append(username)
+               .append(", password=")
+               .append(password)
+               .append(", databaseName=")
+               .append(databaseName)
+               .append("]");
         return builder.toString();
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlRootElement(name = "hostAddress")
+    public static class HostAddress {
+
+        private String hostName = "";
+        private Integer port = -1;
+
+        public HostAddress() {}
+
+        public HostAddress(String hostName, Integer port) {
+            super();
+            this.hostName = hostName;
+            this.port = port;
+        }
+
+        public String getHostName() {
+            return hostName;
+        }
+
+        public Integer getPort() {
+            return port;
+        }
+
+        public void setHostName(String hostName) {
+            this.hostName = hostName;
+        }
+
+        public void setPort(Integer port) {
+            this.port = port;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append("HostAddress [hostName=").append(hostName).append(", port=").append(port).append("]");
+            return builder.toString();
+        }
+
     }
 
 }

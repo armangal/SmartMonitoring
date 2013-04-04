@@ -139,7 +139,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
         hp.add(getRadioButton("1d", 4800));
     }
 
-    private RadioButton getRadioButton(String name, int chunksToSet) {
+    private RadioButton getRadioButton(final String name, int chunksToSet) {
         RadioButton r = new RadioButton("chunks", name);
         r.getElement().setAttribute("chunks", "" + chunksToSet);
         r.addClickHandler(new ClickHandler() {

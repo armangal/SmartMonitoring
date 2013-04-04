@@ -28,6 +28,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.smexec.monitor.server.model.config.MongoConfig.HostAddress;
+
 @XmlRootElement(name = "ServersConfig", namespace = "")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ServersConfig {
@@ -94,6 +96,10 @@ public class ServersConfig {
         return mongoConfig;
     }
 
+    public void setMongoConfig(MongoConfig mongoConfig) {
+        this.mongoConfig = mongoConfig;
+    }
+
     /**
      * returns the server group by name
      * 
@@ -129,7 +135,7 @@ public class ServersConfig {
         builder.append(servers);
         builder.append(",\nGroups=");
         builder.append(serverGroups);
-        builder.append(", name=");
+        builder.append(",\n name=");
         builder.append(name);
         builder.append(", username=");
         builder.append(username);
@@ -167,7 +173,18 @@ public class ServersConfig {
             List<ServerGroup> sgList = new ArrayList<ServerGroup>();
             sgList.add(sg);
             sc.setServerGroups(sgList);
-
+            
+            MongoConfig mc = new MongoConfig();
+            sc.setMongoConfig(mc);
+            mc.setEnabled(false);
+            mc.setDatabaseName("smartDB");
+            mc.setPassword("pass");
+            mc.setUsername("user");
+            List<HostAddress> hosts = new ArrayList<MongoConfig.HostAddress>(0);
+            hosts.add(new HostAddress("localhost", 27017));
+            mc.setHosts(hosts);
+            
+            
             context.createMarshaller().marshal(sc, System.out);
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,7 +193,7 @@ public class ServersConfig {
     }
 
     public void validate() {
-        //validating unique server code.
+        // validating unique server code.
         Map<Integer, Boolean> map = new HashMap<Integer, Boolean>();
         for (ServerConfig sc : servers) {
             Boolean put = map.put(sc.getServerCode(), Boolean.TRUE);
