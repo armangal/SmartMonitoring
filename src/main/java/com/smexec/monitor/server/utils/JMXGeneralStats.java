@@ -116,7 +116,7 @@ public class JMXGeneralStats {
      * @throws IOException
      * @throws MalformedObjectNameException
      */
-    public void getMemoryStats(ServerStataus serverStataus)
+    public void getMemoryStats(ServerStataus serverStataus, Date executionDate)
         throws MBeanException, AttributeNotFoundException, InstanceNotFoundException, ReflectionException, IOException, MalformedObjectNameException {
 
         final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##");
@@ -203,7 +203,18 @@ public class JMXGeneralStats {
             alertService.addAlert(alert, serverStataus);
         }
 
-        persistenceService.saveServerStat(new ServerStatEntity(System.currentTimeMillis(), System.currentTimeMillis(), mu.getPercentage(), load));
+        persistenceService.saveServerStat(new ServerStatEntity(executionDate.getTime(),
+                                                               serverStataus.getUpTime(),
+                                                               serverStataus.getServerConfig().getServerCode(),
+                                                               serverStataus.getServerConfig().getName(),
+                                                               serverStataus.getCpuUtilization().getLastPercent().getUsage(),
+                                                               serverStataus.getCpuUtilization().getLastPercent().getSystemLoadAverage(),
+                                                               serverStataus.getLastMemoryUsage().getCommitted(),
+                                                               serverStataus.getLastMemoryUsage().getInit(),
+                                                               serverStataus.getLastMemoryUsage().getMax(),
+                                                               serverStataus.getLastMemoryUsage().getUsed(),
+                                                               serverStataus.getMemoryState(),
+                                                               serverStataus.isConnected()));
     }
 
     public RuntimeInfo getRuntimeInfo(ServerStataus serverStataus)

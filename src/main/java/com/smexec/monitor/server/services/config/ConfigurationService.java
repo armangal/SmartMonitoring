@@ -15,8 +15,6 @@
  */
 package com.smexec.monitor.server.services.config;
 
-import javax.xml.bind.JAXBException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +26,13 @@ public class ConfigurationService {
     /**
      * current most up-to-date configurations
      */
-    private ServersConfig serversConfig;
+    private static ServersConfig serversConfig;
 
     public ConfigurationService() {
 
     }
 
-    public void setServersConfig(ServersConfig sc) {
+    public static void setServersConfig(ServersConfig sc) {
         serversConfig = sc;
     }
 

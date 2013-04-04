@@ -63,9 +63,6 @@ public class ServerStartUp
     @Inject
     private IStateUpdaterThread stateUpdaterThread;
 
-    @Inject
-    private ConfigurationService configurationService;
-
     /**
      * for extensions to override
      */
@@ -76,9 +73,9 @@ public class ServerStartUp
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
         ServersConfig serversConfig = getServersConfig();
+        ConfigurationService.setServersConfig(serversConfig);
         initGuice(serversConfig);
         GuiceUtils.getInjector().injectMembers(this);
-        configurationService.setServersConfig(serversConfig);
 
         try {
             InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("version.txt");

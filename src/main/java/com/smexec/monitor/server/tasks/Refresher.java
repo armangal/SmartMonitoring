@@ -62,7 +62,7 @@ public class Refresher<S extends ServerStataus>
             Thread.currentThread().setName("REF_" + ss.getServerConfig().getName());
             if (ss.isConnected()) {
                 logger.info("Refreshing:{}", ss.getServerConfig().getName());
-                jmxGeneralStats.getMemoryStats(ss);
+                jmxGeneralStats.getMemoryStats(ss, executionDate);
                 jmxSmartExecutorStats.getSmartThreadPoolStats(ss);
                 fillExtraData(ss);
 
