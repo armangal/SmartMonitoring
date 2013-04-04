@@ -62,7 +62,7 @@ public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends 
     }
 
     public Integer getLastAlertId() {
-        int id = 0;
+        int id = -1;
         if (alerts != null && !alerts.isEmpty()) {
             for (Alert alert : alerts) {
                 if (alert.getId() > id) {

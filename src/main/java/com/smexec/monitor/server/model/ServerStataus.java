@@ -35,6 +35,7 @@ import com.smexec.monitor.shared.StringFormatter;
 import com.smexec.monitor.shared.alert.IAlertType;
 import com.smexec.monitor.shared.runtime.CPUUtilization;
 import com.smexec.monitor.shared.runtime.GCHistory;
+import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
@@ -140,9 +141,9 @@ public class ServerStataus {
 
     }
 
-    public MemoryUsage updateMemoryUsage(long init, long used, long committed, long max, String memoryState) {
-        MemoryUsage mu = new MemoryUsage(init, used, committed, max, DateUtils.roundDate(new Date()));
-        this.memoryState = memoryState;
+    public MemoryUsage updateMemoryUsage(long init, long used, long committed, long max, LinkedList<MemoryState> memoryState) {
+        MemoryUsage mu = new MemoryUsage(init, used, committed, max, DateUtils.roundDate(new Date()), memoryState);
+        this.memoryState = memoryState.toString();
         memoryUsage.add(mu);
         if (memoryUsage.size() > systemHistoryToKeep) {
             memoryUsage.remove();

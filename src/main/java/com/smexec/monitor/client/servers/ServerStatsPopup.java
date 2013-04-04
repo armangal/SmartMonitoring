@@ -15,6 +15,7 @@
  */
 package com.smexec.monitor.client.servers;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import com.allen_sauer.gwt.log.client.Log;
@@ -37,9 +38,12 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
+import com.googlecode.gwt.charts.client.ColumnType;
 import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
+import com.smexec.monitor.client.widgets.DynamicLine;
 import com.smexec.monitor.client.widgets.ILineType;
+import com.smexec.monitor.client.widgets.MonitoringDynamicLinesChart;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ChartFeed;
@@ -47,6 +51,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.GCHistory;
+import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
@@ -69,9 +74,12 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
                                                                                                   "Time",
                                                                                                   "Memory Usage");
 
+    private MonitoringDynamicLinesChart<Long, Long> memoryDetailsChart = new MonitoringDynamicLinesChart<Long, Long>("Bytes", "Time", "Memory Details");
+
     private FlowPanel fp = new FlowPanel();
     private FlowPanel cpu = new FlowPanel();
     private FlowPanel memory = new FlowPanel();
+    private FlowPanel memoryDetails = new FlowPanel();
     private FlowPanel sysLoad = new FlowPanel();
     private FlowPanel details = new FlowPanel();
 
@@ -108,6 +116,9 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
 
         memoryChart.setStyleName("serverPopupChart");
         memory.add(memoryChart);
+
+        memoryDetailsChart.setStyleName("serverPopupChart");
+        memoryDetails.add(memoryDetailsChart);
 
         cpuChart.setStyleName("serverPopupChart");
         cpu.add(cpuChart);
@@ -180,6 +191,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
         fp.add(hp);
         fp.add(cpu);
         fp.add(memory);
+        fp.add(memoryDetails);
         fp.add(sysLoad);
         addExtraElements(fp);
         fp.add(details);
@@ -276,6 +288,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
             @Override
             public void onSuccess(LinkedList<MemoryUsage> result) {
                 updateMemoryChart(result);
+                updateMemoryDetailsChart(result);
             }
 
             @Override
@@ -401,6 +414,43 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
 
         Log.debug("ServerStatsPopup.Updating memry, values size:" + memoryHistory.getValuesLenght());
         memoryChart.updateChart(memoryHistory, true);
+    }
+
+    private void updateMemoryDetailsChart(LinkedList<MemoryUsage> result) {
+
+        if (result == null) {
+            Log.warn("Empty result in memmory stats");
+            return;
+        }
+
+        String[] colors = new String[] {"blue", "#EC3B83", "#7C0A02", "#568203", "red", "black", "#00FFFF"};
+        HashMap<String, DynamicLine> names = new HashMap<String, DynamicLine>(0);
+        int i = 0;
+        for (MemoryUsage mu : result) {
+            for (MemoryState memoryState : mu.getMemoryState()) {
+                if (memoryState.isHeap() && !names.containsKey(memoryState.getName())) {
+                    names.put(memoryState.getName(), new DynamicLine(i, memoryState.getName(), colors[i], ColumnType.NUMBER));
+                    i++;
+                }
+            }
+        }
+
+        ChartFeed<Long, Long> memoryDetailsHistory = new ChartFeed<Long, Long>(new Long[names.size()][result.size()], new Long[result.size()]);
+        for (int j = 0; j < result.size(); j++) {
+            LinkedList<MemoryState> memoryState = result.get(j).getMemoryState();
+            for (MemoryState ms : memoryState) {
+                if (names.containsKey(ms.getName())) {
+                    memoryDetailsHistory.getValues()[names.get(ms.getName()).getIndex()][j] = ms.getUsed();
+                }
+            }
+
+            memoryDetailsHistory.getXLineValues()[j] = result.get(j).getEndTime();
+        }
+
+        Log.debug("ServerStatsPopup.Updating memry, values size:" + memoryDetailsHistory.getValuesLenght());
+        ILineType[] ilt = new DynamicLine[names.values().size()];
+        names.values().toArray(ilt);
+        memoryDetailsChart.updateChart(ilt, memoryDetailsHistory, true);
     }
 
     public CS getConnectedServer() {

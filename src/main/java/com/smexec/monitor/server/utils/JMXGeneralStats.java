@@ -26,6 +26,7 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryType;
 import java.lang.management.MemoryUsage;
 import java.lang.management.RuntimeMXBean;
 import java.text.DecimalFormat;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -46,13 +48,16 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.services.alert.AlertService;
-import com.smexec.monitor.shared.StringFormatter;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
 import com.smexec.monitor.shared.runtime.GCHistory;
+import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.sun.management.OperatingSystemMXBean;
 
@@ -61,6 +66,8 @@ import com.sun.management.OperatingSystemMXBean;
  */
 @SuppressWarnings("restriction")
 public class JMXGeneralStats {
+
+    private static Logger logger = LoggerFactory.getLogger("JMXGeneralStats");
 
     @Inject
     private AlertService alertService;
@@ -78,20 +85,18 @@ public class JMXGeneralStats {
         return retList;
     }
 
-    private String getMemoryState(List<MemoryPoolMXBean> pools) {
+    private LinkedList<MemoryState> getMemoryState(List<MemoryPoolMXBean> pools) {
+        LinkedList<MemoryState> list = new LinkedList<MemoryState>();
         try {
-            StringBuilder sb = new StringBuilder();
             for (MemoryPoolMXBean p : pools) {
-                sb.append("  [" + p.getName() + ":");
                 MemoryUsage u = p.getUsage();
-                sb.append(" Used=" + StringFormatter.formatBytes(u.getUsed()));
-                sb.append(" Committed=" + StringFormatter.formatBytes(u.getCommitted()));
-                sb.append("]\n");
+                list.add(new MemoryState(p.getName(), u.getUsed(), u.getCommitted(), u.getMax(), p.getType().equals(MemoryType.HEAP)));
             }
 
-            return sb.toString();
+            return list;
         } catch (Throwable e) {
-            return e.getMessage();
+            logger.error(e.getMessage(), e);
+            return list;
         }
     }
 
@@ -152,7 +157,7 @@ public class JMXGeneralStats {
             }
         }
 
-        String memoryState = getMemoryState(pools);
+        LinkedList<MemoryState> memoryState = getMemoryState(pools);
 
         serverStataus.setUptime(rmbean.getUptime());
 

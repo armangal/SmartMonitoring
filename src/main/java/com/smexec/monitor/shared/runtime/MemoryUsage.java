@@ -16,6 +16,7 @@
 package com.smexec.monitor.shared.runtime;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 
 import com.smexec.monitor.shared.AbstractChunkStats;
 
@@ -34,15 +35,17 @@ public class MemoryUsage
     private long init;
     private long max;
     private long used;
+    private LinkedList<MemoryState> memoryState;
 
     public MemoryUsage() {}
 
-    public MemoryUsage(long init, long used, long committed, long max, long time) {
+    public MemoryUsage(long init, long used, long committed, long max, long time, LinkedList<MemoryState> memoryState) {
         super(time, time);
         this.committed = committed;
         this.init = init;
         this.max = max;
         this.used = used;
+        this.memoryState = memoryState;
     }
 
     public long getCommitted() {
@@ -63,6 +66,10 @@ public class MemoryUsage
 
     public double getPercentage() {
         return used * 100d / max;
+    }
+
+    public LinkedList<MemoryState> getMemoryState() {
+        return memoryState;
     }
 
     @Override
