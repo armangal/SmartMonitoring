@@ -1,11 +1,17 @@
-<h1>Smart Monitoring</h1>
+## Smart Monitoring
 <i>The framework is still under development, more documentation will be available soon.</i>
-----
+<hr>
 
 SmartMonitoring is an open source Java Monitoring Platform with HTML (GWT) UI that monitors Java processes via JMX connection.
 The project might be extended to include more monitoring abilities (widgets), the basic once are provided with in a scope of a current projec
 
-<h2 name="features">Features</h2>
+## Communication
+
+- Twitter: [@armangal](http://twitter.com/armangal)
+- [GitHub Issues](https://github.com/armangal/SmartMonitoring/issues)
+
+
+## Features
 - Easy extendible GWT client side UI application, allowing you to add more widget to the UI.
 - Uses JMX to connect to running java processes.
 - Extensive statistics over the pools performance.
@@ -19,22 +25,27 @@ The project might be extended to include more monitoring abilities (widgets), th
  
 <h2>Members:</h2>
 <b>Owner: </b>
-- Arman Gal, @armangal, arman@armangal.com
+- Arman Gal, <a href='https://twitter.com/armangal'> @armangal</a>, arman@armangal.com
 
 <b>Contributors:</b>
+- Erdoan Veliev, erdoan.veliev@gmail.com
 
+<hr>
+<h1>Example, Customized Monitoring</h1>
 
-----
-MIT License
+<hr>
 
-Copyright (c) 2013 Arman Gal
+ Copyright (C) 2013 Arman Gal
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+         http://www.apache.org/licenses/LICENSE-2.0
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
