@@ -16,6 +16,7 @@
 package com.smexec.monitor.server.services.mail;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -145,7 +146,7 @@ public class MailService {
             details.append("<tr><td>ID:</td><td>").append(alert.getId()).append(" </td></tr> ");
             details.append("<tr><td>Message:</td><td>").append(alert.getMessage()).append(" </td></tr> ");
             details.append("<tr><td>Details:</td><td>").append(alert.getDetails() == null ? "" : alert.getDetails()).append(" </td></tr> ");
-            details.append("<tr><td>Time:</td><td>").append(alert.getAlertTime()).append(" </td></tr> ");
+            details.append("<tr><td>Time:</td><td>").append(new Date(alert.getAlertTime())).append(" </td></tr> ");
             details.append("<tr><td>Server:</td><td>").append(alert.getServerCode() + ", " + alert.getServerName()).append(" </td></tr> ");
             details.append("<tr><td>Type:</td><td>").append(alert.getAlertType()).append(" </td></tr> ");
 
