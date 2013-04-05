@@ -32,7 +32,9 @@ The project might be extended to include more monitoring abilities (widgets), th
 
 <hr>
 <h1>Example, Customized Monitoring</h1>
-
+<img src="https://raw.github.com/armangal/SmartMonitoring/master/docs/example_pok.png">
+<p></p>
+<img src="https://raw.github.com/armangal/SmartMonitoring/master/docs/example_server_details_extended.png">
 <hr>
 
  Copyright (C) 2013 Arman Gal
