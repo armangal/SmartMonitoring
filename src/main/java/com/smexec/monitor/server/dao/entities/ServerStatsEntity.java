@@ -15,20 +15,15 @@
  */
 package com.smexec.monitor.server.dao.entities;
 
-import org.bson.types.ObjectId;
-
 import com.github.jmkgreen.morphia.annotations.Entity;
-import com.github.jmkgreen.morphia.annotations.Id;
 
-@Entity("serverstat")
-public class ServerStatEntity {
+@Entity("serverStats")
+public class ServerStatsEntity
+    extends AbstractEntity {
 
-    @Id
-    private ObjectId id;
-    private Long time;
+    private static final long serialVersionUID = 1L;
+
     private Long upTime;
-    private Integer serverCode;
-    private String serverName;
     private Double cpuUsage;
     private Double systemLoadAverage;
     private long committed;
@@ -38,25 +33,24 @@ public class ServerStatEntity {
     private String memoryState;
     private Boolean status;
 
-    public ServerStatEntity() {}
-
-    public ServerStatEntity(Long time,
-                            Long upTime,
-                            Integer serverCode,
-                            String serverName,
-                            Double cpuUsage,
-                            Double systemLoadAverage,
-                            long committed,
-                            long init,
-                            long max,
-                            long used,
-                            String memoryState,
-                            Boolean status) {
+    ServerStatsEntity() {
         super();
-        this.time = time;
+    }
+
+    public ServerStatsEntity(Long time,
+                             Long upTime,
+                             Integer serverCode,
+                             String serverName,
+                             Double cpuUsage,
+                             Double systemLoadAverage,
+                             long committed,
+                             long init,
+                             long max,
+                             long used,
+                             String memoryState,
+                             Boolean status) {
+        super(time, serverCode, serverName);
         this.upTime = upTime;
-        this.serverCode = serverCode;
-        this.serverName = serverName;
         this.cpuUsage = cpuUsage;
         this.systemLoadAverage = systemLoadAverage;
         this.committed = committed;
@@ -67,24 +61,8 @@ public class ServerStatEntity {
         this.status = status;
     }
 
-    public ObjectId getId() {
-        return id;
-    }
-
     public Long getUpTime() {
         return upTime;
-    }
-
-    public Integer getServerCode() {
-        return serverCode;
-    }
-
-    public String getServerName() {
-        return serverName;
-    }
-
-    public Long getTime() {
-        return time;
     }
 
     public Double getCpuUsage() {
@@ -122,14 +100,8 @@ public class ServerStatEntity {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ServerStatEntity [id=")
-               .append(id)
-               .append(", serverCode=")
-               .append(serverCode)
-               .append(", serverName=")
-               .append(serverName)
-               .append(", time=")
-               .append(time)
+        builder.append("ServerStatsEntity [")
+               .append(super.toString())
                .append(", cpuUsage=")
                .append(cpuUsage)
                .append(", systemLoadAverage=")
@@ -153,18 +125,15 @@ public class ServerStatEntity {
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
+        int result = super.hashCode();
         result = prime * result + (int) (committed ^ (committed >>> 32));
         result = prime * result + ((cpuUsage == null) ? 0 : cpuUsage.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + (int) (init ^ (init >>> 32));
         result = prime * result + (int) (max ^ (max >>> 32));
         result = prime * result + ((memoryState == null) ? 0 : memoryState.hashCode());
-        result = prime * result + ((serverCode == null) ? 0 : serverCode.hashCode());
-        result = prime * result + ((serverName == null) ? 0 : serverName.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((systemLoadAverage == null) ? 0 : systemLoadAverage.hashCode());
-        result = prime * result + ((time == null) ? 0 : time.hashCode());
+        result = prime * result + ((upTime == null) ? 0 : upTime.hashCode());
         result = prime * result + (int) (used ^ (used >>> 32));
         return result;
     }
@@ -173,22 +142,17 @@ public class ServerStatEntity {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null)
+        if (!super.equals(obj))
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ServerStatEntity other = (ServerStatEntity) obj;
+        ServerStatsEntity other = (ServerStatsEntity) obj;
         if (committed != other.committed)
             return false;
         if (cpuUsage == null) {
             if (other.cpuUsage != null)
                 return false;
         } else if (!cpuUsage.equals(other.cpuUsage))
-            return false;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
             return false;
         if (init != other.init)
             return false;
@@ -198,16 +162,6 @@ public class ServerStatEntity {
             if (other.memoryState != null)
                 return false;
         } else if (!memoryState.equals(other.memoryState))
-            return false;
-        if (serverCode == null) {
-            if (other.serverCode != null)
-                return false;
-        } else if (!serverCode.equals(other.serverCode))
-            return false;
-        if (serverName == null) {
-            if (other.serverName != null)
-                return false;
-        } else if (!serverName.equals(other.serverName))
             return false;
         if (status == null) {
             if (other.status != null)
@@ -219,10 +173,10 @@ public class ServerStatEntity {
                 return false;
         } else if (!systemLoadAverage.equals(other.systemLoadAverage))
             return false;
-        if (time == null) {
-            if (other.time != null)
+        if (upTime == null) {
+            if (other.upTime != null)
                 return false;
-        } else if (!time.equals(other.time))
+        } else if (!upTime.equals(other.upTime))
             return false;
         if (used != other.used)
             return false;

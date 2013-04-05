@@ -17,9 +17,9 @@ package com.smexec.monitor.server.dao;
 
 import org.bson.types.ObjectId;
 
-import com.smexec.monitor.server.dao.entities.ServerStatEntity;
+import com.smexec.monitor.server.dao.entities.ServerStatsEntity;
 
 
-public interface IServerStatEntityDao extends IMongoDbDao<ServerStatEntity, ObjectId>{
+public interface IServerStatEntityDao extends IMongoDbDao<ServerStatsEntity, ObjectId>{
 
 }

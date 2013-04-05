@@ -28,6 +28,7 @@ import com.google.inject.Inject;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
+import com.smexec.monitor.server.services.persistence.IPersistenceService;
 import com.smexec.monitor.shared.alert.Alert;
 
 public class AlertService {
@@ -43,6 +44,9 @@ public class AlertService {
 
     @Inject
     private MailService mailService;
+
+    @Inject
+    private IPersistenceService persistenceService;
 
     /**
      * Return the latest alerts from a given alertId.<br>
@@ -90,17 +94,18 @@ public class AlertService {
     public <SS extends ServerStataus> void addAlert(Alert alert, SS ss) {
         try {
             alert.setId(alertCounter.getAndIncrement());
-
+            boolean mailSent = false;
             if (alert.getAlertType().sendMail() && ss.canSendAlert(alert.getAlertType())) {
-                mailService.sendAlert(alert, ss);
+                mailSent = mailService.sendAlert(alert, ss);
             }
 
-            logger.warn("Alert added:{}", alert);
+            logger.warn("AlertEntity added:{}", alert);
             synchronized (alertsList) {
                 alertsList.add(alert);
                 if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {
                     alertsList.remove();
                 }
+                persistenceService.saveAlert(alert, mailSent);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

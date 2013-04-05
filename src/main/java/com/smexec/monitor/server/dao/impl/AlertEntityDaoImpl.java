@@ -17,11 +17,11 @@ package com.smexec.monitor.server.dao.impl;
 
 import org.bson.types.ObjectId;
 
-import com.smexec.monitor.server.dao.IServerStatEntityDao;
-import com.smexec.monitor.server.dao.entities.ServerStatsEntity;
+import com.smexec.monitor.server.dao.IAlertEntityDao;
+import com.smexec.monitor.server.dao.entities.AlertEntity;
 
-public class ServerStatEntityDaoImpl
-    extends GenericMongoDao<ServerStatsEntity, ObjectId>
-    implements IServerStatEntityDao {
+public class AlertEntityDaoImpl
+    extends GenericMongoDao<AlertEntity, ObjectId>
+    implements IAlertEntityDao {
 
 }

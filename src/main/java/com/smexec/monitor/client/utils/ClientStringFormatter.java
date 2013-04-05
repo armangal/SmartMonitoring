@@ -15,7 +15,11 @@
  */
 package com.smexec.monitor.client.utils;
 
+import java.util.Date;
+
 import com.google.gwt.i18n.client.NumberFormat;
+import com.googlecode.gwt.charts.client.format.DateFormat;
+import com.googlecode.gwt.charts.client.format.DateFormatOptions;
 
 public class ClientStringFormatter {
 
@@ -62,6 +66,11 @@ public class ClientStringFormatter {
             kb = bytes / 1024 / 1024;
         }
         return String.valueOf(kb);
+    }
+    
+    public static String formatLongToDate(long value) {
+        DateFormat dateFormat = DateFormat.create(DateFormatOptions.create());
+        return dateFormat.formatValue(new Date(value));
     }
 
 }

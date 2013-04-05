@@ -22,6 +22,9 @@ public class AlertThreshold
 
     private static final long serialVersionUID = 1L;
 
+    public static final AlertThreshold ALWAYS = new AlertThreshold(Long.MAX_VALUE, -1);
+    public static final AlertThreshold NEVER = new AlertThreshold(Long.MIN_VALUE, Integer.MAX_VALUE);
+
     /**
      * when we don't want to send alert immediately after it occurs but want to make sure that X alerts
      * occurred during Y period of time. So this's the Y
@@ -35,6 +38,22 @@ public class AlertThreshold
 
     AlertThreshold() {}
 
+    /**
+     * Example: <br>
+     * <p>
+     * <b>new AlertThreshold(2 * 60 * 1000L, 5)</b = send main_alert after we had 5 times alert during last 2
+     * minutes
+     * </p>
+     * <p>
+     * new AlertThreshold(Long.MIN_VALUE, Integer.MAX_VALUE) = never
+     * </p>
+     * <p>
+     * new AlertThreshold(Long.MAX_VALUE, -1) = always
+     * </p>
+     * 
+     * @param alertTriggerTime
+     * @param alertTriggerCount
+     */
     public AlertThreshold(long alertTriggerTime, int alertTriggerCount) {
         super();
         this.alertTriggerTime = alertTriggerTime;

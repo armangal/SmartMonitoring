@@ -17,6 +17,7 @@ package com.smexec.monitor.server.utils;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -57,17 +58,16 @@ public class JMXUtils {
     public static Long getLongTimeFromComposite(CompositeData cd, String name) {
         try {
             long time = Long.valueOf(cd.get(name).toString());
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date(time));
-            int hours = calendar.get(Calendar.HOUR_OF_DAY);
 
-            int minutes = calendar.get(Calendar.MINUTE);
+            Calendar date = new GregorianCalendar();
+            date.setTime(new Date(time));
+            int deltaMin = date.get(Calendar.SECOND) / 30;
 
-            int month = calendar.get(Calendar.MONTH) + 1;
+            date.set(Calendar.SECOND, 0);
+            date.set(Calendar.MILLISECOND, 0);
+            date.add(Calendar.MINUTE, deltaMin);
 
-            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-
-            return Long.valueOf((month * 1000000) + (dayOfMonth * 10000) + (hours * 100) + minutes);
+            return date.getTime().getTime();
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

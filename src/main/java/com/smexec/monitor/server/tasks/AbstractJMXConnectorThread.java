@@ -155,9 +155,10 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
             if (sendAlert) {
                 alertService.addAlert(new Alert("(-: Server RE-STARTED :-)",
+                                                "",
                                                 sc.getServerCode(),
                                                 sc.getName(),
-                                                new Date().toString(),
+                                                new Date().getTime(),
                                                 AlertType.SERVER_CONNECTED), ss);
             }
             /**
@@ -174,18 +175,20 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                     SS serverStataus = connectedServersState.getServerStataus(sc.getServerCode());
                     if (notification.getType().contains("closed")) {
                         alertService.addAlert(new Alert("!!! Server went DOWN !!!",
+                                                        "",
                                                         sc.getServerCode(),
                                                         sc.getName(),
-                                                        new Date().toString(),
+                                                        new Date().getTime(),
                                                         AlertType.SERVER_DISCONNECTED), serverStataus);
 
                         serverStataus.resetOnDisconnect();
                     }
                     if (notification.getType().contains("failed")) {
                         alertService.addAlert(new Alert("Failed to make JMX comm. with server!",
+                                                        "",
                                                         sc.getServerCode(),
                                                         sc.getName(),
-                                                        new Date().toString(),
+                                                        new Date().getTime(),
                                                         AlertType.SERVER_COMM_FAILED), serverStataus);
 
                     }

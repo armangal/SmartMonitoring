@@ -30,7 +30,7 @@ public class AlertsConfig {
     private Boolean enabled = false;
     private String fromAddress = "";
     private String fromName = "";
-    private String subjectPrefix = "Smart Monitoring, Alert:";
+    private String subjectPrefix = "Smart Monitoring, AlertEntity:";
     private String mailServerAddress = "";
     private String mainServerPort = "";
 

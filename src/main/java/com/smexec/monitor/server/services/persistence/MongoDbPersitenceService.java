@@ -19,8 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.server.dao.IAlertEntityDao;
 import com.smexec.monitor.server.dao.IServerStatEntityDao;
-import com.smexec.monitor.server.dao.entities.ServerStatEntity;
+import com.smexec.monitor.server.dao.entities.AlertEntity;
+import com.smexec.monitor.server.dao.entities.ServerStatsEntity;
+import com.smexec.monitor.shared.alert.Alert;
 
 public class MongoDbPersitenceService
     implements IPersistenceService {
@@ -30,13 +33,32 @@ public class MongoDbPersitenceService
     @Inject(optional = true)
     private IServerStatEntityDao serverStatDao;
 
+    @Inject(optional = true)
+    private IAlertEntityDao alertEntityDao;
+
     /**
      * Save server entry data
      * 
      * @param entity
      */
-    public void saveServerStat(ServerStatEntity entity) {
+    @Override
+    public void saveServerStat(ServerStatsEntity entity) {
         logger.debug("Saving:{}", entity);
         serverStatDao.save(entity);
+    }
+
+    @Override
+    public void saveAlert(Alert alert, boolean mailSent) {
+        AlertEntity ae = new AlertEntity(alert.getAlertTime(),
+                                         alert.getServerCode(),
+                                         alert.getServerName(),
+                                         alert.getId(),
+                                         alert.getMessage(),
+                                         alert.getDetails(),
+                                         alert.getAlertType().getId(),
+                                         alert.getAlertType().getName(),
+                                         mailSent);
+
+        alertEntityDao.save(ae);
     }
 }

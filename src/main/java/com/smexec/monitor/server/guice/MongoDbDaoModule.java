@@ -17,7 +17,9 @@ package com.smexec.monitor.server.guice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import com.smexec.monitor.server.dao.IAlertEntityDao;
 import com.smexec.monitor.server.dao.IServerStatEntityDao;
+import com.smexec.monitor.server.dao.impl.AlertEntityDaoImpl;
 import com.smexec.monitor.server.dao.impl.ServerStatEntityDaoImpl;
 
 public class MongoDbDaoModule
@@ -26,6 +28,7 @@ public class MongoDbDaoModule
     @Override
     protected void configure() {
         bind(IServerStatEntityDao.class).to(ServerStatEntityDaoImpl.class).in(Singleton.class);
+        bind(IAlertEntityDao.class).to(AlertEntityDaoImpl.class).in(Singleton.class);
     }
-    
+
 }

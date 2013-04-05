@@ -15,9 +15,12 @@
  */
 package com.smexec.monitor.server.services.persistence;
 
-import com.smexec.monitor.server.dao.entities.ServerStatEntity;
+import com.smexec.monitor.server.dao.entities.ServerStatsEntity;
+import com.smexec.monitor.shared.alert.Alert;
 
 public interface IPersistenceService {
 
-    void saveServerStat(ServerStatEntity entity);
+    void saveServerStat(ServerStatsEntity entity);
+    
+    void saveAlert(Alert alert, boolean mailSent);
 }

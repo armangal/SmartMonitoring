@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.smexec.monitor.server.dao.entities.ServerStatEntity;
+import com.smexec.monitor.server.dao.entities.ServerStatsEntity;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.persistence.IPersistenceService;
@@ -91,7 +91,7 @@ public class JMXGeneralStats {
 
     private LinkedList<MemoryState> getMemoryState(List<MemoryPoolMXBean> pools) {
         LinkedList<MemoryState> list = new LinkedList<MemoryState>();
-        long div = 1024 * 1024;
+        long div = 1024; // to store values in KBytes
         try {
             for (MemoryPoolMXBean p : pools) {
                 MemoryUsage u = p.getUsage();
@@ -120,8 +120,6 @@ public class JMXGeneralStats {
         throws MBeanException, AttributeNotFoundException, InstanceNotFoundException, ReflectionException, IOException, MalformedObjectNameException {
 
         final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##");
-
-        final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         MBeanServerConnection mbsc = serverStataus.getConnector().getMBeanServerConnection();
         RuntimeMXBean rmbean = newPlatformMXBeanProxy(mbsc, RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
@@ -173,10 +171,11 @@ public class JMXGeneralStats {
                                                                                            memoryState);
         // check the groups settings
         if (mu.getPercentage() > serverStataus.getServerGroup().getMemoryUsage()) {
-            Alert alert = new Alert("Memory Usage Alert:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
+            Alert alert = new Alert("Memory Usage AlertEntity:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
+                                    "",
                                     serverStataus.getServerConfig().getServerCode(),
                                     serverStataus.getServerConfig().getName(),
-                                    DATE_FORMAT.format(new Date()),
+                                    new Date().getTime(),
                                     AlertType.MEMORY);
             alertService.addAlert(alert, serverStataus);
         }
@@ -195,26 +194,27 @@ public class JMXGeneralStats {
 
         // check the groups settings
         if (load > serverStataus.getServerGroup().getCpuLoad()) {
-            Alert alert = new Alert("CPU Alert:" + DECIMAL_FORMAT.format(load) + "%",
+            Alert alert = new Alert("CPU AlertEntity:" + DECIMAL_FORMAT.format(load) + "%",
+                                    "",
                                     serverStataus.getServerConfig().getServerCode(),
                                     serverStataus.getServerConfig().getName(),
-                                    DATE_FORMAT.format(new Date()),
+                                    new Date().getTime(),
                                     AlertType.CPU);
             alertService.addAlert(alert, serverStataus);
         }
 
-        persistenceService.saveServerStat(new ServerStatEntity(executionDate.getTime(),
-                                                               serverStataus.getUpTime(),
-                                                               serverStataus.getServerConfig().getServerCode(),
-                                                               serverStataus.getServerConfig().getName(),
-                                                               serverStataus.getCpuUtilization().getLastPercent().getUsage(),
-                                                               serverStataus.getCpuUtilization().getLastPercent().getSystemLoadAverage(),
-                                                               serverStataus.getLastMemoryUsage().getCommitted(),
-                                                               serverStataus.getLastMemoryUsage().getInit(),
-                                                               serverStataus.getLastMemoryUsage().getMax(),
-                                                               serverStataus.getLastMemoryUsage().getUsed(),
-                                                               serverStataus.getMemoryState(),
-                                                               serverStataus.isConnected()));
+        persistenceService.saveServerStat(new ServerStatsEntity(executionDate.getTime(),
+                                                                serverStataus.getUpTime(),
+                                                                serverStataus.getServerConfig().getServerCode(),
+                                                                serverStataus.getServerConfig().getName(),
+                                                                serverStataus.getCpuUtilization().getLastPercent().getUsage(),
+                                                                serverStataus.getCpuUtilization().getLastPercent().getSystemLoadAverage(),
+                                                                serverStataus.getLastMemoryUsage().getCommitted(),
+                                                                serverStataus.getLastMemoryUsage().getInit(),
+                                                                serverStataus.getLastMemoryUsage().getMax(),
+                                                                serverStataus.getLastMemoryUsage().getUsed(),
+                                                                serverStataus.getMemoryState(),
+                                                                serverStataus.isConnected()));
     }
 
     public RuntimeInfo getRuntimeInfo(ServerStataus serverStataus)

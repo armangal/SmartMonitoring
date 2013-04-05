@@ -15,19 +15,33 @@
  */
 package com.smexec.monitor.shared.alert;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum AlertType implements IAlertType {
 
     MEMORY("mem", 1, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
     CPU("cpu", 2, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
-    SERVER_COMM_FAILED("srvComFailed", 3, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)),//
-    SERVER_DISCONNECTED("srvDisc", 3, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)),//
-    SERVER_CONNECTED("srvCon", 4, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1));
+    SERVER_COMM_FAILED("srvComFailed", 3, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
+    SERVER_DISCONNECTED("srvDisc", 4, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
+    SERVER_CONNECTED("srvCon", 5, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1));
 
     private String name;
     private Integer id;
     private AlertGroup alertGroup;
     private boolean sendMail;
     private AlertThreshold alertThreshold;
+
+    private static Map<Integer, AlertType> map = new HashMap<Integer, AlertType>(values().length);
+
+    static {
+        for (AlertType atp : values()) {
+            AlertType put = map.put(atp.getId(), atp);
+            if (put != null) {
+                throw new RuntimeException("Duplicate alert ID:" + put.getId());
+            }
+        }
+    }
 
     private AlertType(String name, Integer id, AlertGroup alertGroup, boolean sendMail, AlertThreshold alertThreshold) {
         this.name = name;

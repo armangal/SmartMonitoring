@@ -21,6 +21,7 @@ public class MemoryState
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     private String name;
     private long used;
     private long commited;
@@ -29,6 +30,14 @@ public class MemoryState
 
     public MemoryState() {}
 
+    /**
+     * Set values in KBytes
+     * @param name
+     * @param used
+     * @param commited
+     * @param max
+     * @param heap
+     */
     public MemoryState(String name, long used, long commited, long max, boolean heap) {
         super();
         this.name = name;
@@ -42,6 +51,10 @@ public class MemoryState
         return name;
     }
 
+    /**
+     * user memory in KBytes
+     * @return
+     */
     public long getUsed() {
         return used;
     }
@@ -61,11 +74,11 @@ public class MemoryState
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("MS [n=")
+        builder.append("MS [")
                .append(name)
-               .append(", u=")
+               .append(": us=")
                .append(used)
-               .append(", c=")
+               .append(", co=")
                .append(commited)
                .append(", ma=")
                .append(max)

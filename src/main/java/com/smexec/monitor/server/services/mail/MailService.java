@@ -107,18 +107,26 @@ public class MailService {
         }
     }
 
-    public <SS extends ServerStataus> void sendAlert(Alert alert, SS ss) {
+    /**
+     * @param alert
+     * @param ss
+     * @return - true if the alert was sent
+     */
+    public <SS extends ServerStataus> boolean sendAlert(Alert alert, SS ss) {
         try {
             if (configurationService.getServersConfig().getAlertsConfig().isEnabled()) {
                 String body = createAlerMailBody(alert, ss);
                 mailQueue.offer(new MailItem(" [" + configurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] "
                                              + alert.getMessage(), body));
-                logger.info("Alert:{} added to mail queue", alert.getId());
+                logger.info("AlertEntity:{} added to mail queue", alert.getId());
+                return true;
             } else {
                 logger.info("Skipping mailing, disabled");
+                return false;
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            return false;
         }
     }
 

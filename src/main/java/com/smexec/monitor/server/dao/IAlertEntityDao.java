@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server.dao.impl;
+package com.smexec.monitor.server.dao;
 
 import org.bson.types.ObjectId;
 
-import com.smexec.monitor.server.dao.IServerStatEntityDao;
-import com.smexec.monitor.server.dao.entities.ServerStatsEntity;
+import com.smexec.monitor.server.dao.entities.AlertEntity;
 
-public class ServerStatEntityDaoImpl
-    extends GenericMongoDao<ServerStatsEntity, ObjectId>
-    implements IServerStatEntityDao {
+public interface IAlertEntityDao
+    extends IMongoDbDao<AlertEntity, ObjectId> {
 
 }
