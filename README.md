@@ -19,7 +19,7 @@ The project might be extended to include more monitoring abilities (widgets), th
  
 <h2>Members:</h2>
 <b>Owner: </b>
-- Arman Gal, @armangal, arman@armangal.com
+- Arman Gal, <a href='https://twitter.com/armangal'> @armangal</a>, arman@armangal.com
 
 <b>Contributors:</b>
 - Erdoan Veliev, erdoan.veliev@gmail.com
