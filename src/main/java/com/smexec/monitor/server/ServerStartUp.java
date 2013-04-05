@@ -64,7 +64,7 @@ public class ServerStartUp
     private IStateUpdaterThread stateUpdaterThread;
 
     /**
-     * for extensions to override
+     * for extensions to override and initilize other module
      */
     public void initGuice(ServersConfig serversConfig) {
         GuiceUtils.init(new MonitoringModule<ServerStataus, ConnectedServer>(serversConfig));
