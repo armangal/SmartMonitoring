@@ -31,14 +31,14 @@ The project might be extended to include more monitoring abilities (widgets), th
 - Erdoan Veliev, erdoan.veliev@gmail.com
 
 <hr>
-<h1>Example, Customized Monitoring</h1>
-In the below example you can see extended version that monitors 80 server.
-Servers & Alers are the open source widget, the rest of widgets are custom made for certain business purpose.
+<h1>Example, Customised Monitoring Tool</h1>
+In the below example you can see extended version that monitors 80 server.<br>
+Servers & Alerts are the open source widgets, the rest of the widgets are custom made for certain business needs.
 
-# Main Screen
+#### Main Screen
 <img src="https://raw.github.com/armangal/SmartMonitoring/master/docs/example_pok.png">
 
-# Extended Server Popup.
+#### Extended Server Popup.
 Here you can see the basic charts of memory, cpu and system load.
 Two other charts are server specific.
 <img src="https://raw.github.com/armangal/SmartMonitoring/master/docs/example_server_details_extended.png">
