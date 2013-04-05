@@ -33,6 +33,7 @@ public class ConfigurationService {
     }
 
     public static void setServersConfig(ServersConfig sc) {
+        logger.debug("setting configurations:{}", sc);
         serversConfig = sc;
     }
 
