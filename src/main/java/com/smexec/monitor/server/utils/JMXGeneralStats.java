@@ -171,12 +171,12 @@ public class JMXGeneralStats {
                                                                                            memoryState);
         // check the groups settings
         if (mu.getPercentage() > serverStataus.getServerGroup().getMemoryUsage()) {
-            Alert alert = new Alert("Memory Usage AlertEntity:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
-                                    "",
-                                    serverStataus.getServerConfig().getServerCode(),
-                                    serverStataus.getServerConfig().getName(),
-                                    new Date().getTime(),
-                                    AlertType.MEMORY);
+            Alert alert = alertService.createAlert("Memory Usage AlertEntity:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
+                                                   "",
+                                                   serverStataus.getServerConfig().getServerCode(),
+                                                   serverStataus.getServerConfig().getName(),
+                                                   new Date().getTime(),
+                                                   AlertType.MEMORY);
             alertService.addAlert(alert, serverStataus);
         }
 
@@ -194,12 +194,12 @@ public class JMXGeneralStats {
 
         // check the groups settings
         if (load > serverStataus.getServerGroup().getCpuLoad()) {
-            Alert alert = new Alert("CPU AlertEntity:" + DECIMAL_FORMAT.format(load) + "%",
-                                    "",
-                                    serverStataus.getServerConfig().getServerCode(),
-                                    serverStataus.getServerConfig().getName(),
-                                    new Date().getTime(),
-                                    AlertType.CPU);
+            Alert alert = alertService.createAlert("CPU AlertEntity:" + DECIMAL_FORMAT.format(load) + "%",
+                                                   "",
+                                                   serverStataus.getServerConfig().getServerCode(),
+                                                   serverStataus.getServerConfig().getName(),
+                                                   new Date().getTime(),
+                                                   AlertType.CPU);
             alertService.addAlert(alert, serverStataus);
         }
 

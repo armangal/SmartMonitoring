@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server.model;
+package com.smexec.monitor.server.tasks.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 
-public interface IConnectedServersState<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>> {
+public class PeriodicalUpdater
+    extends AbstractPeriodicalUpdater<ServerStataus, ConnectedServer, AbstractRefreshResult<ConnectedServer>>
+    implements IPeriodicalUpdater {
 
-    SS getServerStataus(final Integer serevrCode);
-    
-    List<SS> getAllServers();
-    
-    SS removeServer(final Integer serevrCode);
-    
-    SS addServer(SS serverStataus);
-
-    void mergeStats(ArrayList<CS> servers);
-
-    RR getRefreshResult();
-
+    @Override
+    public String getExtraInfo() {
+        return "";
+    }
 }

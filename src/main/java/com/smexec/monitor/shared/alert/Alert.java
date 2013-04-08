@@ -28,11 +28,12 @@ public class Alert
     private int serverCode;
     private String serverName;
     private long alertTime;
+    private String alertTimeStr;
     private IAlertType alertType;
 
     public Alert() {}
 
-    public Alert(String message, String details, int serverCode, String serverName, long alertTime, IAlertType alertType) {
+    public Alert(String message, String details, int serverCode, String serverName, long alertTime, String alertTimeStr, IAlertType alertType) {
         super();
         this.message = message;
         this.serverCode = serverCode;
@@ -40,6 +41,7 @@ public class Alert
         this.alertType = alertType;
         this.serverName = serverName;
         this.details = details;
+        this.alertTimeStr = alertTimeStr;
     }
 
     public void setId(int id) {
@@ -74,10 +76,14 @@ public class Alert
         return serverName;
     }
 
+    public String getAlertTimeStr() {
+        return alertTimeStr;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("AlertEntity [id=");
+        builder.append("Alert [id=");
         builder.append(id);
         builder.append(", ms=");
         builder.append(message);

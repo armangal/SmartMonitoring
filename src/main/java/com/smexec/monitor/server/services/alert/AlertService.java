@@ -15,8 +15,10 @@
  */
 package com.smexec.monitor.server.services.alert;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,6 +32,7 @@ import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.server.services.persistence.IPersistenceService;
 import com.smexec.monitor.shared.alert.Alert;
+import com.smexec.monitor.shared.alert.IAlertType;
 
 public class AlertService {
 
@@ -110,5 +113,11 @@ public class AlertService {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    public Alert createAlert(String message, String details, int serverCode, String serverName, long alertTime, IAlertType alertType) {
+        SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return new Alert(message, details, serverCode, serverName, alertTime, DATE_FORMAT.format(new Date(alertTime)), alertType);
+
     }
 }

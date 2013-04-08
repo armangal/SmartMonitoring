@@ -23,7 +23,6 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.AbstractRefreshResult;
@@ -71,7 +70,7 @@ public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshR
                     msg.setTitle(a.toString());
                     alertsTable.setWidget(insertRow, 1, msg);
                     alertsTable.setText(insertRow, 2, "" + a.getServerCode());
-                    alertsTable.setText(insertRow, 3, ClientStringFormatter.formatLongToDate(a.getAlertTime()));
+                    alertsTable.setText(insertRow, 3, a.getAlertTimeStr());
                     alertsTable.getRowFormatter().getElement(insertRow).setAttribute("id", "" + a.getId());
 
                     map.put(a.getId(), a);

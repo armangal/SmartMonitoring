@@ -16,8 +16,8 @@
 package com.smexec.monitor.server.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -46,8 +46,8 @@ public abstract class AbstractConnectedServersState<SS extends ServerStataus, RR
         return connectedServersMap.get(serverCode);
     }
 
-    public Collection<SS> getAllServers() {
-        return connectedServersMap.values();
+    public List<SS> getAllServers() {
+        return new ArrayList<SS>(connectedServersMap.values());
     }
 
     public SS removeServer(final Integer serevrCode) {

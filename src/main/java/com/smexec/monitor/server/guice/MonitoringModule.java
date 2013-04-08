@@ -26,9 +26,11 @@ import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
+import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
-import com.smexec.monitor.server.tasks.JMXConnectorThread;
-import com.smexec.monitor.server.tasks.StateUpdaterThread;
+import com.smexec.monitor.server.tasks.impl.JMXConnectorThread;
+import com.smexec.monitor.server.tasks.impl.PeriodicalUpdater;
+import com.smexec.monitor.server.tasks.impl.StateUpdaterThread;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.RefreshResult;
@@ -51,6 +53,7 @@ public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServ
 
         bind(IJMXConnectorThread.class).to(JMXConnectorThread.class).in(Singleton.class);
         bind(IStateUpdaterThread.class).to(StateUpdaterThread.class).in(Singleton.class);
+        bind(IPeriodicalUpdater.class).to(PeriodicalUpdater.class).in(Singleton.class);
 
         bind(JMXThreadDumpUtils.class).in(Singleton.class);
         bind(AlertService.class).in(Singleton.class);

@@ -54,6 +54,8 @@ public class ServersConfig {
 
     private MongoConfig mongoConfig = new MongoConfig();
 
+    private MailUpdaterConfig mailUpdaterConfig = new MailUpdaterConfig();
+
     public ServersConfig() {}
 
     public List<ServerConfig> getServers() {
@@ -98,6 +100,14 @@ public class ServersConfig {
 
     public void setMongoConfig(MongoConfig mongoConfig) {
         this.mongoConfig = mongoConfig;
+    }
+
+    public MailUpdaterConfig getMailUpdaterConfig() {
+        return mailUpdaterConfig;
+    }
+
+    public void setMailUpdaterConfig(MailUpdaterConfig mailUpdaterConfig) {
+        this.mailUpdaterConfig = mailUpdaterConfig;
     }
 
     /**
@@ -145,6 +155,8 @@ public class ServersConfig {
         builder.append(alertsConfig);
         builder.append(",\nmongoConfig=");
         builder.append(mongoConfig);
+        builder.append(",\nMailUpdaterConfig=");
+        builder.append(mailUpdaterConfig);
         builder.append("]");
         return builder.toString();
     }
@@ -173,7 +185,7 @@ public class ServersConfig {
             List<ServerGroup> sgList = new ArrayList<ServerGroup>();
             sgList.add(sg);
             sc.setServerGroups(sgList);
-            
+
             MongoConfig mc = new MongoConfig();
             sc.setMongoConfig(mc);
             mc.setEnabled(false);
@@ -184,7 +196,15 @@ public class ServersConfig {
             hosts.add(new HostAddress("localhost", 27017));
             mc.setHosts(hosts);
             
-            
+            MailUpdaterConfig muc = new MailUpdaterConfig();
+            muc.setEnabled(true);
+            muc.setPeriod(20);
+            List<String> to = new ArrayList<String>();
+            to.add("arman.gal@playtech.com");
+            muc.setTo(to);
+                          
+            sc.setMailUpdaterConfig(muc);
+
             context.createMarshaller().marshal(sc, System.out);
         } catch (Exception e) {
             e.printStackTrace();

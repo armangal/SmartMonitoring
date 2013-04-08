@@ -273,10 +273,10 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
                 if (cs.getMemoryUsage().getPercentage() > 90) {
                     ft.getRowFormatter().getElement(i).setId("memoryVeryHigh");
-                } 
-//                else if (cs.getMemoryUsage().getPercentage() > 80) {
-//                    ft.getRowFormatter().getElement(i).setId("memoryHigh");
-//                }
+                }
+                // else if (cs.getMemoryUsage().getPercentage() > 80) {
+                // ft.getRowFormatter().getElement(i).setId("memoryHigh");
+                // }
 
                 HTML cpu = new HTML(cs.getCpuUtilizationChunk().getUsage() + "%");
                 ft.setWidget(i, j++, cpu);
@@ -325,16 +325,21 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
     }
 
     private boolean toShow(String serverName) {
-        filter.setText(filter.getText().trim().toLowerCase());
+        filter.setText(filter.getText().trim().toLowerCase().replace(",", " "));
         if (filter.getText().length() > 0) {
             // filter
             Cookies.setCookie(SERVERS_FILTER, filter.getText());
             filter.getElement().getStyle().setBackgroundColor("#66FF00");
-            if (serverName.trim().toLowerCase().contains(filter.getText())) {
-                return true;
-            } else {
-                return false;
+
+            String[] fil = filter.getText().split(" ");
+            for (String f : fil) {
+                if (f.trim().length() > 0 && serverName.trim().toLowerCase().contains(f)) {
+                    return true;
+                }
             }
+
+            return false;
+
         } else {
             filter.getElement().getStyle().setBackgroundColor("white");
             Cookies.removeCookie(SERVERS_FILTER);

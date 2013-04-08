@@ -17,6 +17,7 @@ package com.smexec.monitor.server.services.mail;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -63,7 +64,7 @@ public class MailService {
                 do {
                     try {
                         MailItem take = mailQueue.take();
-                        sendAlert(take);
+                        sendAlertMail(take);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }
@@ -84,7 +85,29 @@ public class MailService {
         }
     }
 
-    private void sendAlert(MailItem mailItem) {
+    public void sendMail(MailItem mailItem) {
+        try {
+            String mailType = MAIL_TYPE_HTML;
+
+            MimeMessage msg = new MimeMessage(getSession());
+
+            msg.setContent(mailItem.getBody(), mailType + MAIL_ENCODING);
+
+            msg.setFrom(new InternetAddress(mailItem.getFromAddress(), mailItem.getFromName(), MAIL_ENCODING));
+
+            msg.setSubject(mailItem.getSubject(), MAIL_ENCODING);
+
+            for (String to : mailItem.getToAddressList()) {
+                msg.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
+            }
+            logger.debug("sending mail with subject:{}.", (mailItem.getSubject()));
+            Transport.send(msg);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    private void sendAlertMail(MailItem mailItem) {
         try {
             AlertsConfig ac = configurationService.getServersConfig().getAlertsConfig();
 
@@ -169,15 +192,27 @@ public class MailService {
         }
     }
 
-    private static class MailItem {
+    public static class MailItem {
 
         String subject;
         String body;
+        String fromAddress;
+        String fromName;
+        List<String> toAddressList;
 
         private MailItem(String subject, String body) {
             super();
             this.subject = subject;
             this.body = body;
+        }
+
+        public MailItem(String subject, String body, String fromAddress, String fromName, List<String> toAddressList) {
+            super();
+            this.subject = subject;
+            this.body = body;
+            this.fromAddress = fromAddress;
+            this.fromName = fromName;
+            this.toAddressList = toAddressList;
         }
 
         public String getSubject() {
@@ -186,6 +221,18 @@ public class MailService {
 
         public String getBody() {
             return body;
+        }
+
+        public String getFromAddress() {
+            return fromAddress;
+        }
+
+        public String getFromName() {
+            return fromName;
+        }
+
+        public List<String> getToAddressList() {
+            return toAddressList;
         }
     }
 

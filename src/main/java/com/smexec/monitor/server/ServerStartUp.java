@@ -37,6 +37,7 @@ import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
+import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.Version;
@@ -46,7 +47,7 @@ public class ServerStartUp
 
     private static Logger logger = LoggerFactory.getLogger(ServerStartUp.class);
 
-    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2, new ThreadFactory() {
+    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(3, new ThreadFactory() {
 
         int count = 0;
 
@@ -62,6 +63,9 @@ public class ServerStartUp
 
     @Inject
     private IStateUpdaterThread stateUpdaterThread;
+
+    @Inject
+    private IPeriodicalUpdater periodicalUpdater;
 
     /**
      * for extensions to override and initilize other module
@@ -96,6 +100,14 @@ public class ServerStartUp
 
         logger.info("Starting StateUpdaterThread");
         executor.scheduleAtFixedRate(stateUpdaterThread, 20, 20, TimeUnit.SECONDS);
+
+        if (serversConfig.getMailUpdaterConfig().isEnabled()) {
+            logger.info("Starting Periodicat Updater");
+            executor.scheduleAtFixedRate(periodicalUpdater,
+                                         serversConfig.getMailUpdaterConfig().getPeriod(),
+                                         serversConfig.getMailUpdaterConfig().getPeriod(),
+                                         TimeUnit.SECONDS);
+        }
     }
 
     @Override
