@@ -18,6 +18,7 @@ package com.smexec.monitor.server.tasks.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -37,6 +38,7 @@ import com.smexec.monitor.server.tasks.ConnectionSynch;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.runtime.GCHistory;
 
 public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R extends Refresher<S>, C extends ConnectedServer, RR extends AbstractRefreshResult<C>>
     implements IStateUpdaterThread {
@@ -109,8 +111,27 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
 
     /**
      * prepares ConnectedServer with relevant to client/UI information
+     * 
      * @param ss
      * @return
      */
     public abstract C getConnectedServer(S ss);
+
+    /**
+     * preparing the array for client presentation
+     * @param lastGCHistory
+     * @return
+     */
+    public Double[] getLastHistory(ArrayList<GCHistory> lastGCHistory) {
+        List<Double> history = new ArrayList<Double>(0);
+        for (GCHistory gch : lastGCHistory) {
+            if (gch.getLastColleactionTime() > 0 && gch.getCollectionCount() > 0) {
+                double time = gch.getLastColleactionTime() / 1000d;
+                history.add(time);
+            }
+        }
+        Double[] lastHistory = new Double[history.size()];
+        history.toArray(lastHistory);
+        return lastHistory;
+    }
 }

@@ -51,7 +51,6 @@ import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
-import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
@@ -105,8 +104,8 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
         fp.add(new HTML("<h2>Up Time:" + ClientStringFormatter.formatMilisecondsToHours(cs.getUpTime()) + "</h2>"));
 
         String gcs = "";
-        for (GCHistory gch : cs.getGcHistories()) {
-            gcs += ClientStringFormatter.formatMillisShort(gch.getCollectionTime()) + ":(" + gch.getCollectionCount() + ");";
+        for (Double gch : cs.getGcHistories()) {
+            gcs += ClientStringFormatter.formatMillisShort(gch) + ";";
         }
         HTML tech = new HTML("<h2>Memory:" + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + " of "
                              + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB, Usage:"

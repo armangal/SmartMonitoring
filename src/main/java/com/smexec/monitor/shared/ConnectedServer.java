@@ -16,10 +16,7 @@
 package com.smexec.monitor.shared;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
-import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
-import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 
 /**
@@ -38,11 +35,11 @@ public class ConnectedServer
     private Integer jmxPort;
     private Boolean status;
     private MemoryUsage memoryUsage;
-    private ArrayList<GCHistory> gcHistories;
+    private Double[] gcHistories;
     private long upTime;
-    private String memoryState;
 
-    private CpuUtilizationChunk cpuUtilizationChunk;
+    private double cpuUsage;
+    private double systemLoadAverage;
 
     public ConnectedServer() {}
 
@@ -52,10 +49,10 @@ public class ConnectedServer
                            Integer jmxPort,
                            Boolean status,
                            MemoryUsage memoryUsage,
-                           String memoryState,
-                           ArrayList<GCHistory> gcHistories,
+                           Double[] gcHistories,
                            long upTime,
-                           CpuUtilizationChunk cpuUtilizationChunk) {
+                           double cpuUsage,
+                           double systemLoadAverage) {
         super();
         this.name = name;
         this.serverCode = serverCode;
@@ -63,10 +60,10 @@ public class ConnectedServer
         this.jmxPort = jmxPort;
         this.status = status;
         this.memoryUsage = memoryUsage;
-        this.memoryState = memoryState;
         this.gcHistories = gcHistories;
         this.upTime = upTime;
-        this.cpuUtilizationChunk = cpuUtilizationChunk;
+        this.cpuUsage = cpuUsage;
+        this.systemLoadAverage = systemLoadAverage;
     }
 
     public String getName() {
@@ -93,11 +90,7 @@ public class ConnectedServer
         return memoryUsage;
     }
 
-    public String getMemoryState() {
-        return memoryState;
-    }
-
-    public ArrayList<GCHistory> getGcHistories() {
+    public Double[] getGcHistories() {
         return gcHistories;
     }
 
@@ -105,8 +98,12 @@ public class ConnectedServer
         return upTime;
     }
 
-    public CpuUtilizationChunk getCpuUtilizationChunk() {
-        return cpuUtilizationChunk;
+    public double getCpuUsage() {
+        return cpuUsage;
+    }
+
+    public double getSystemLoadAverage() {
+        return systemLoadAverage;
     }
 
     @Override
@@ -124,14 +121,14 @@ public class ConnectedServer
                .append(status)
                .append(", mu=")
                .append(memoryUsage)
-               .append(", ms=")
-               .append(memoryState)
                .append(", gc=")
                .append(gcHistories)
                .append(", ut=")
                .append(upTime)
                .append(", cp=")
-               .append(cpuUtilizationChunk)
+               .append(cpuUsage)
+               .append(", sla=")
+               .append(systemLoadAverage)
                .append("]");
         return builder.toString();
     }

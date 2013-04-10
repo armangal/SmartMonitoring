@@ -33,16 +33,17 @@ public class StateUpdaterThread
     @Override
     public ConnectedServer getConnectedServer(ServerStataus ss) {
         ServerConfig sc = ss.getServerConfig();
+
         return new ConnectedServer(sc.getName(),
                                    sc.getServerCode(),
                                    sc.getIp(),
                                    sc.getJmxPort(),
                                    ss.isConnected(),
                                    ss.getLastMemoryUsage(),
-                                   ss.getMemoryState(),
-                                   ss.getLastGCHistory(),
+                                   getLastHistory(ss.getLastGCHistory()),
                                    ss.getUpTime(),
-                                   ss.getCpuUtilization().getLastPercent());
+                                   ss.getCpuUtilization().getLastPercent().getUsage(),
+                                   ss.getCpuUtilization().getLastPercent().getSystemLoadAverage());
     }
 
 }

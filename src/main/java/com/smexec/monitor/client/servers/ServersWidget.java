@@ -51,7 +51,6 @@ import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.runtime.GCHistory;
 
 public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
     extends AbstractMonitoringWidget
@@ -188,10 +187,10 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
             public int compare(CS o1, CS o2) {
                 double o1p = 0, o2p = 0;
                 if (o1.getStatus() && o2.getStatus()) {
-                    if (o1.getCpuUtilizationChunk().getUsage() > 80 || o2.getCpuUtilizationChunk().getUsage() > 80) {
+                    if (o1.getCpuUsage() > 80 || o2.getCpuUsage() > 80) {
                         // sort by CPU
-                        o1p = o1.getCpuUtilizationChunk().getUsage();
-                        o2p = o2.getCpuUtilizationChunk().getUsage();
+                        o1p = o1.getCpuUsage();
+                        o2p = o2.getCpuUsage();
                     } else {
                         // sort by memory
                         o1p = o1.getMemoryUsage().getPercentage();
@@ -243,28 +242,26 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
                 HTML usage = new HTML(ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + " of "
                                       + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB");
-                usage.setTitle(cs.getMemoryState());
                 usage.addMouseOverHandler(handCursor);
                 ft.setWidget(i, j++, usage);
 
                 HTML percent = new HTML(ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%");
-                percent.setTitle(cs.getMemoryState());
                 ft.setWidget(i, j++, percent);
 
-                String gcs = "";
+                StringBuilder gcs = new StringBuilder();
                 double gcMax = Double.MIN_VALUE;
 
                 // Iterating over all available pools
-                for (GCHistory gch : cs.getGcHistories()) {
-                    if (gch.getLastColleactionTime() > 0 && gch.getCollectionCount() > 0) {
-                        double time = gch.getLastColleactionTime() / 1000d;
-                        gcs += ClientStringFormatter.formatMillisShort(time) + ", ";
-                        if (time > gcMax) {
-                            gcMax = time;
-                        }
+                for (Double gch : cs.getGcHistories()) {
+                    gcs.append(ClientStringFormatter.formatMillisShort(gch)).append(", ");
+                    if (gch > gcMax) {
+                        gcMax = gch;
                     }
                 }
-                final HTML memory = new HTML(gcs);
+                if (gcs.length() > 0) {
+                    gcs.setLength(gcs.length() - 2);
+                }
+                final HTML memory = new HTML(gcs.toString());
                 memory.setTitle("Click to see GC history");
                 memory.addMouseOverHandler(handCursor);
                 memory.addClickHandler(getGCHistory);
@@ -285,16 +282,16 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
                 // ft.getRowFormatter().getElement(i).setId("memoryHigh");
                 // }
 
-                HTML cpu = new HTML(cs.getCpuUtilizationChunk().getUsage() + "%");
+                HTML cpu = new HTML(cs.getCpuUsage() + "%");
                 ft.setWidget(i, j++, cpu);
-                if (cs.getCpuUtilizationChunk().getUsage() > 90d) {
+                if (cs.getCpuUsage() > 90d) {
                     Style style = ft.getFlexCellFormatter().getElement(i, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
                     style.setColor("white");
                 }
 
-                double sla = cs.getCpuUtilizationChunk().getSystemLoadAverage();
+                double sla = cs.getSystemLoadAverage();
                 HTML sysl = new HTML(sla == -1 ? "N/A" : ClientStringFormatter.formatMillisShort(sla));
                 sysl.setTitle("System Load Average");
                 ft.setWidget(i, j++, sysl);
