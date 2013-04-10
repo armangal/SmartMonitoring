@@ -29,6 +29,7 @@ import com.google.gwt.i18n.client.HasDirection.Direction;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -85,8 +86,10 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
 
     private CS cs;
 
-    private Integer chunks = 100;
+    private Integer chunks = 30;
+    private boolean showHeap = true;
     private boolean refresh = true;
+    private LinkedList<MemoryUsage> memoryUsages;// local copy for fast refresh
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public ServerStatsPopup(MonitoringServiceAsync service, CS cs) {
@@ -118,6 +121,19 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
         memory.add(memoryChart);
 
         memoryDetailsChart.setStyleName("serverPopupChart");
+        final CheckBox heap = new CheckBox("Show Heap");
+        heap.setValue(true);
+        heap.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                showHeap = heap.getValue();
+                if (memoryUsages != null) {
+                    updateMemoryDetailsChart(memoryUsages);
+                }
+            }
+        });
+        memoryDetails.add(heap);
         memoryDetails.add(memoryDetailsChart);
 
         cpuChart.setStyleName("serverPopupChart");
@@ -129,14 +145,14 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
     }
 
     private void addRadioButtons(HorizontalPanel hp) {
-        RadioButton r30m = getRadioButton("m30", 100);
+        RadioButton r30m = getRadioButton("m30", 30);
         r30m.setValue(true);
         hp.add(r30m);
-        hp.add(getRadioButton("1h", 200));
-        hp.add(getRadioButton("2h", 400));
-        hp.add(getRadioButton("6h", 1200));
-        hp.add(getRadioButton("12h", 2400));
-        hp.add(getRadioButton("1d", 4800));
+        hp.add(getRadioButton("1h", 60));
+        hp.add(getRadioButton("2h", 120));
+        hp.add(getRadioButton("6h", 360));
+        hp.add(getRadioButton("12h", 720));
+        hp.add(getRadioButton("1d", 1440));
     }
 
     private RadioButton getRadioButton(final String name, int chunksToSet) {
@@ -287,6 +303,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
 
             @Override
             public void onSuccess(LinkedList<MemoryUsage> result) {
+                memoryUsages = result;
                 updateMemoryChart(result);
                 updateMemoryDetailsChart(result);
             }
@@ -428,7 +445,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, R extends AbstractRefr
         int i = 0;
         for (MemoryUsage mu : result) {
             for (MemoryState memoryState : mu.getMemoryState()) {
-                if (memoryState.isHeap() && !names.containsKey(memoryState.getName())) {
+                if (memoryState.isHeap() == showHeap && !names.containsKey(memoryState.getName())) {
                     names.put(memoryState.getName(), new DynamicLine(i, memoryState.getName(), colors[i], ColumnType.NUMBER));
                     i++;
                 }

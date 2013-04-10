@@ -103,10 +103,8 @@ public class ServerStartUp
 
         if (serversConfig.getMailUpdaterConfig().isEnabled()) {
             logger.info("Starting Periodicat Updater");
-            executor.scheduleAtFixedRate(periodicalUpdater,
-                                         serversConfig.getMailUpdaterConfig().getPeriod(),
-                                         serversConfig.getMailUpdaterConfig().getPeriod(),
-                                         TimeUnit.SECONDS);
+            executor.scheduleAtFixedRate(periodicalUpdater, serversConfig.getMailUpdaterConfig().getPeriod() / 2, serversConfig.getMailUpdaterConfig()
+                                                                                                                               .getPeriod(), TimeUnit.SECONDS);
         }
     }
 

@@ -171,7 +171,7 @@ public class JMXGeneralStats {
                                                                                            memoryState);
         // check the groups settings
         if (mu.getPercentage() > serverStataus.getServerGroup().getMemoryUsage()) {
-            Alert alert = alertService.createAlert("Memory Usage AlertEntity:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
+            Alert alert = alertService.createAlert("Memory Usage Alert:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
                                                    "",
                                                    serverStataus.getServerConfig().getServerCode(),
                                                    serverStataus.getServerConfig().getName(),
@@ -194,7 +194,7 @@ public class JMXGeneralStats {
 
         // check the groups settings
         if (load > serverStataus.getServerGroup().getCpuLoad()) {
-            Alert alert = alertService.createAlert("CPU AlertEntity:" + DECIMAL_FORMAT.format(load) + "%",
+            Alert alert = alertService.createAlert("CPU Alert:" + DECIMAL_FORMAT.format(load) + "%",
                                                    "",
                                                    serverStataus.getServerConfig().getServerCode(),
                                                    serverStataus.getServerConfig().getName(),

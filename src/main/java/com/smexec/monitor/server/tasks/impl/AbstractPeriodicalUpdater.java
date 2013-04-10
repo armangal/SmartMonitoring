@@ -38,7 +38,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>>
     implements Runnable {
 
-    public static Logger logger = LoggerFactory.getLogger("AbstractPeriodicalUpdater");
+    public static Logger logger = LoggerFactory.getLogger("PeriodicalUpdater");
 
     @Inject
     private IConnectedServersState<SS, CS, RR> connectedServersState;
@@ -58,15 +58,21 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
             resourceAsStream.read(bytes);
             String temp = new String(bytes);
             updateTemplate = temp;
+            logger.info("Loaded PeriodicalUpdateTemplate:{}", updateTemplate);
             resourceAsStream.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     @Override
     public void run() {
+        String oldName = Thread.currentThread().getName();
         try {
+            Thread.currentThread().setName("PERIODICAL_UPDATER");
+
+            logger.info("Starting periodical update");
             StringBuilder sb = new StringBuilder();
             List<SS> allServers = connectedServersState.getAllServers();
             String body = updateTemplate;
@@ -95,6 +101,7 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
                     sb.append("<td>").append(dnf.format(ss.getCpuUtilization().getLastPercent().getUsage()) + "%").append("</td>");
                     double sla = ss.getCpuUtilization().getLastPercent().getSystemLoadAverage();
                     sb.append("<td>").append(sla == -1 ? "N/A" : dnf.format(sla)).append("</td>");
+                    sb.append("<td>").append(getExtraServerInfo(ss)).append("</td>");
 
                     sb.append("</tr>");
 
@@ -106,11 +113,15 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
                     sb.append("<td>").append("Offline").append("</td>");
                     sb.append("<td>").append("Offline").append("</td>");
                     sb.append("<td>").append("Offline").append("</td>");
+                    sb.append("<td>").append("Offline").append("</td>");
                     sb.append("</tr>");
                 }
             }
 
-            body = body.replace("{2}", sb.toString()).replace("{extra}", getExtraInfo());
+            logger.info("Periodical update, servers:{}", sb.toString());
+            String extraInfo = getExtraInfo();
+            logger.info("Periodical update, extraInfo:{}", extraInfo);
+            body = body.replace("{2}", sb.toString()).replace("{extra}", extraInfo);
 
             MailUpdaterConfig mailUpdaterConfig = configurationService.getServersConfig().getMailUpdaterConfig();
 
@@ -123,7 +134,13 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        } finally {
+            Thread.currentThread().setName(oldName);
         }
+    }
+
+    public String getExtraServerInfo(SS ss) {
+        return "&nbsp---";
     }
 
     public abstract String getExtraInfo();

@@ -67,7 +67,7 @@ public class JMXUtils {
             date.set(Calendar.MILLISECOND, 0);
             date.add(Calendar.MINUTE, deltaMin);
 
-            return date.getTime().getTime();
+            return DateUtils.roundDate(date.getTime());
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

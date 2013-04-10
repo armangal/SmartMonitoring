@@ -102,7 +102,7 @@ public class AlertService {
                 mailSent = mailService.sendAlert(alert, ss);
             }
 
-            logger.warn("AlertEntity added:{}", alert);
+            logger.warn("Alert added:{}", alert);
             synchronized (alertsList) {
                 alertsList.add(alert);
                 if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {

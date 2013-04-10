@@ -60,10 +60,15 @@ public class CPUUtilization
         return list.isEmpty() ? new CpuUtilizationChunk() : list.getLast();
     }
 
+    /**
+     * 
+     * @param chunks - last X minutes
+     * @return
+     */
     public LinkedList<CpuUtilizationChunk> getPercentList(Integer chunks) {
         LinkedList<CpuUtilizationChunk> ret = new LinkedList<CpuUtilizationChunk>();
         // get last X chunks
-        for (int i = Math.max(0, list.size() - chunks); i < list.size(); i++) {
+        for (int i = Math.max(0, list.size() - (chunks * 3)); i < list.size(); i++) {
             ret.add(list.get(i));
         }
         return ret;

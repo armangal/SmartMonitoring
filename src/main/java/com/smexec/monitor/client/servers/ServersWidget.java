@@ -188,8 +188,15 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
             public int compare(CS o1, CS o2) {
                 double o1p = 0, o2p = 0;
                 if (o1.getStatus() && o2.getStatus()) {
-                    o1p = o1.getMemoryUsage().getPercentage();
-                    o2p = o2.getMemoryUsage().getPercentage();
+                    if (o1.getCpuUtilizationChunk().getUsage() > 80 || o2.getCpuUtilizationChunk().getUsage() > 80) {
+                        // sort by CPU
+                        o1p = o1.getCpuUtilizationChunk().getUsage();
+                        o2p = o2.getCpuUtilizationChunk().getUsage();
+                    } else {
+                        // sort by memory
+                        o1p = o1.getMemoryUsage().getPercentage();
+                        o2p = o2.getMemoryUsage().getPercentage();
+                    }
                 } else if (o1.getStatus()) {
                     o1p = o1.getMemoryUsage().getPercentage();
                     o2p = 100;

@@ -212,7 +212,7 @@ public class ServerStataus {
     public LinkedList<MemoryUsage> getMemoryUsage(int chunks) {
         LinkedList<MemoryUsage> ret = new LinkedList<MemoryUsage>();
         // get last X chunks
-        for (int i = Math.max(0, memoryUsage.size() - chunks); i < memoryUsage.size(); i++) {
+        for (int i = Math.max(0, memoryUsage.size() - (chunks * 3)); i < memoryUsage.size(); i++) {
             ret.add(memoryUsage.get(i));
         }
         return ret;

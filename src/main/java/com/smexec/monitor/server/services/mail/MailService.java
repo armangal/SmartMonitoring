@@ -142,7 +142,7 @@ public class MailService {
                 String body = createAlerMailBody(alert, ss);
                 mailQueue.offer(new MailItem(" [" + configurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] "
                                              + alert.getMessage(), body));
-                logger.info("AlertEntity:{} added to mail queue", alert.getId());
+                logger.info("Alert:{} added to mail queue", alert.getId());
                 return true;
             } else {
                 logger.info("Skipping mailing, disabled");

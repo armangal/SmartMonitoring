@@ -21,19 +21,6 @@
 	<username>admin</username>
 	<password>password</password>
 
-	<mongoConfig>
-		<enabled>false</enabled>
-		<hosts>
-			<hostAddress>
-				<hostName>localhost</hostName>
-				<port>27017</port>
-			</hostAddress>
-		</hosts>
-		<username>user</username>
-		<password>pass</password>
-		<databaseName>smartDB</databaseName>
-	</mongoConfig>
-
 	<alertsConfig>
 		<enabled>true</enabled>
 		<fromAddress>test@test.com</fromAddress>
@@ -50,34 +37,62 @@
 		<userName>user</userName>
 		<password>pass</password>
 	</alertsConfig>
-
-	<mailUpdaterConfig>
+	
+	<mongoConfig>
 		<enabled>false</enabled>
-		<period>60</period>
-		<to />
-	</mailUpdaterConfig>
+		<hosts>
+			<hostAddress>
+				<hostName>localhost</hostName>
+				<port>27017</port>
+			</hostAddress>
+		</hosts>
+		<username>user</username>
+		<password>pass</password>
+		<databaseName>smartDB</databaseName>
+	</mongoConfig>
 
 	<mailUpdaterConfig>
 		<enabled>true</enabled>
 		<period>20</period>
 		<addresses>
-			<to>arman.gal@playtech.com</to>
+			<to>test@test.com</to>
 		</addresses>
-		<fromAddress>arman.gal@playtech.com</fromAddress>
+		<fromAddress>test@test.com</fromAddress>
 		<fromName>Periodical Updater</fromName>
 	</mailUpdaterConfig>
 	
+	<serverGroups>
+		<group>
+			<name>special</name>
+			<cpuLoad>90</cpuLoad>
+			<memoryUsage>90</memoryUsage>
+		</group>
+	</serverGroups>
+		
 	<servers>
 		<server>
+			<serverCode>1</serverCode>
 			<name>Local (1)</name>
-			<serverCode>15</serverCode>
+			<serverGroup>special</serverGroup>
+			
 			<ip>127.0.0.1</ip>
 			<jmxPort>9010</jmxPort>
-			<authenticate>true</authenticate>
+			
+			<authenticate>false</authenticate>
 			<username>admin</username>
 			<password>password</password>
-			<serverGroup>special</serverGroup>
 		</server>
 
+		<server>
+			<serverCode>2</serverCode>
+			<name>Local (2)</name>
+			
+			<ip>127.0.0.1</ip>
+			<jmxPort>9020</jmxPort>
+			
+			<authenticate>false</authenticate>
+			<username>admin</username>
+			<password>password</password>
+		</server>
 	</servers>
 </ServersConfig>

@@ -4,7 +4,7 @@
 
 	<groupId>org.smexec</groupId>
 	<artifactId>smartmonitoring</artifactId>
-	<version>1.0.18</version>
+	<version>1.0.19</version>
 	<name>Smart Monitoring, open-source JMX monitoring server with HTML (GWT) UI</name>
 	<description>Smart Monitoring</description>
 
@@ -371,7 +371,7 @@
 							<includes>
 								<include>log4j.xml</include>
 								<include>version.txt</include>
-								<include>AlertTemplate.html</include>
+								<include>**/*.html</include>
 							</includes>
 							<targetPath>WEB-INF/classes</targetPath>
 						</resource>
