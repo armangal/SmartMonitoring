@@ -15,8 +15,6 @@
  */
 package com.smexec.monitor.server;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.xml.bind.JAXBContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,9 +73,8 @@ public class ServerStartUp
 
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
-        ServersConfig serversConfig = getServersConfig();
-        ConfigurationService.setServersConfig(serversConfig);
-        initGuice(serversConfig);
+        ConfigurationService.loadServersConfig();
+        initGuice(ConfigurationService.getServersConfig());
         GuiceUtils.getInjector().injectMembers(this);
 
         try {
@@ -101,10 +97,12 @@ public class ServerStartUp
         logger.info("Starting StateUpdaterThread");
         executor.scheduleAtFixedRate(stateUpdaterThread, 20, 20, TimeUnit.SECONDS);
 
-        if (serversConfig.getMailUpdaterConfig().isEnabled()) {
+        if (ConfigurationService.getServersConfig().getMailUpdaterConfig().isEnabled()) {
             logger.info("Starting Periodicat Updater");
-            executor.scheduleAtFixedRate(periodicalUpdater, serversConfig.getMailUpdaterConfig().getPeriod() / 2, serversConfig.getMailUpdaterConfig()
-                                                                                                                               .getPeriod(), TimeUnit.SECONDS);
+            executor.scheduleAtFixedRate(periodicalUpdater,
+                                         ConfigurationService.getServersConfig().getMailUpdaterConfig().getPeriod() / 2,
+                                         ConfigurationService.getServersConfig().getMailUpdaterConfig().getPeriod(),
+                                         TimeUnit.SECONDS);
         }
     }
 
@@ -113,37 +111,4 @@ public class ServerStartUp
         executor.shutdown();
     }
 
-    public ServersConfig getServersConfig() {
-        JAXBContext context;
-        try {
-            context = JAXBContext.newInstance(ServersConfig.class);
-
-            String location = System.getProperty("servers.config", "servers.xml");
-            if (location == null || location.length() < 0) {
-                location = "/opt/local/bex/conf/monitoring.xml";
-            }
-
-            logger.info("Loading configuraiotns:{}", location);
-            File file = new File(location);
-            if (!file.canRead()) {
-                logger.error("Configuration file wasn't found at:{}", location);
-            }
-            logger.info("Configuration file:{}", file);
-
-            InputStream configXML = new FileInputStream(file);
-            ServersConfig serversConfig = (ServersConfig) context.createUnmarshaller().unmarshal(configXML);
-
-            serversConfig.validate();
-
-            logger.info("Initilized:{}", serversConfig);
-
-            Version.setEnvName(serversConfig.getName());
-            return serversConfig;
-        } catch (Throwable e) {
-            logger.error("Error loading config:{}", e.getMessage());
-            logger.error(e.getMessage(), e);
-            Runtime.getRuntime().exit(1);
-            return null;
-        }
-    }
 }

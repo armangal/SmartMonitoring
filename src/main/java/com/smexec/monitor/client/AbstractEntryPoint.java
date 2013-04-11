@@ -20,6 +20,7 @@ import java.util.LinkedList;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -29,11 +30,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.smexec.monitor.client.alerts.AlertsWidget;
 import com.smexec.monitor.client.login.LoginWidget;
 import com.smexec.monitor.client.login.LoginWidget.LoggedInCallBack;
 import com.smexec.monitor.client.servers.ServersWidget;
+import com.smexec.monitor.client.settings.SettingsPopup;
 import com.smexec.monitor.client.smartpool.ThreadPoolsWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
@@ -116,7 +119,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         }
     };
 
-    public AbstractEntryPoint(MonitoringServiceAsync<CS, FR> service) {
+    public AbstractEntryPoint(final MonitoringServiceAsync<CS, FR> service) {
         this.service = service;
         this.loginWidget = new LoginWidget<CS, FR>(service);
         this.loginWidget.registerCallBack(new LoggedInCallBack() {
@@ -162,6 +165,18 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         mainPanel.setStyleName("mainPanel");
         mainHeader.setStyleName("mainHeader");
         mainHeader.add(refreshBtn);
+        Resources resources = GWT.create(Resources.class);
+        Image settings = new Image(resources.settingsSmall());
+        settings.addStyleName("settings");
+        settings.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                SettingsPopup<CS, FR> sp = new SettingsPopup<CS, FR>(service);
+                sp.center();
+            }
+        });
+        mainHeader.add(settings);
         mainPanel.add(mainHeader);
 
         registerWidgets();

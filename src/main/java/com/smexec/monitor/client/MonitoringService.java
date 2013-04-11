@@ -48,4 +48,6 @@ public interface MonitoringService<CS extends ConnectedServer, FR extends Abstra
     ClientConfigurations getClientConfigurations();
 
     RuntimeInfo getRuntimeInfo(Integer serverCode);
+    
+    String getSettingsXML();
 }

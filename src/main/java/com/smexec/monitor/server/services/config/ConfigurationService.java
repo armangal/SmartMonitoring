@@ -15,10 +15,19 @@
  */
 package com.smexec.monitor.server.services.config;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import javax.xml.bind.JAXBContext;
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.shared.config.Version;
 
 public class ConfigurationService {
 
@@ -37,11 +46,56 @@ public class ConfigurationService {
         serversConfig = sc;
     }
 
-    public ServersConfig getServersConfig() {
+    public static ServersConfig getServersConfig() {
         return serversConfig;
+    }
+
+    public String getServersConfigXML() throws FileNotFoundException, IOException {
+
+        String xml = IOUtils.toString(getFileInputStream(), "UTF-8");
+        return xml;
     }
 
     public Integer getMaxInMemoryAlerts() {
         return serversConfig.getAlertsConfig().getInMemoryAlerts();
+    }
+
+    public static void loadServersConfig() {
+        JAXBContext context;
+        try {
+            context = JAXBContext.newInstance(ServersConfig.class);
+            FileInputStream input = getFileInputStream();
+            ServersConfig serversConfig = (ServersConfig) context.createUnmarshaller().unmarshal(input);
+
+            serversConfig.validate();
+
+            logger.info("Initilized:{}", serversConfig);
+
+            Version.setEnvName(serversConfig.getName());
+            setServersConfig(serversConfig);
+        } catch (Throwable e) {
+            logger.error("Error loading config:{}", e.getMessage());
+            logger.error(e.getMessage(), e);
+            Runtime.getRuntime().exit(1);
+        }
+    }
+
+    private static FileInputStream getFileInputStream()
+        throws FileNotFoundException {
+        String location = System.getProperty("servers.config", "servers.xml");
+        if (location == null || location.length() < 0) {
+            location = "/opt/local/bex/conf/monitoring.xml";
+        }
+
+        logger.info("Loading configuraiotns:{}", location);
+        File file = new File(location);
+        if (!file.canRead()) {
+            logger.error("Configuration file wasn't found at:{}", location);
+        }
+        logger.info("Configuration file:{}", file);
+
+        FileInputStream input = new FileInputStream(file);
+        return input;
+
     }
 }

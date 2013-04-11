@@ -15,6 +15,7 @@
  */
 package com.smexec.monitor.server;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
+import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
@@ -185,5 +187,14 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public AlertService getAlertService() {
         return alertService;
+    }
+
+    public String getSettingsXML() {
+        try {
+            return configurationService.getServersConfigXML();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return e.getMessage();
+        }
     }
 }
