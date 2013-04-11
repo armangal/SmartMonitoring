@@ -17,7 +17,7 @@ package com.smexec.monitor.shared;
 
 import java.io.Serializable;
 
-import com.smexec.monitor.shared.runtime.MemoryUsage;
+import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 
 /**
  * Class represents one connected server that hold all the relevant information for client representation.
@@ -34,7 +34,7 @@ public class ConnectedServer
     private String ip;
     private Integer jmxPort;
     private Boolean status;
-    private MemoryUsage memoryUsage;
+    private MemoryUsageLight memoryUsage;
     private Double[] gcHistories;
     private long upTime;
 
@@ -48,7 +48,7 @@ public class ConnectedServer
                            String ip,
                            Integer jmxPort,
                            Boolean status,
-                           MemoryUsage memoryUsage,
+                           MemoryUsageLight memoryUsage,
                            Double[] gcHistories,
                            long upTime,
                            double cpuUsage,
@@ -86,7 +86,7 @@ public class ConnectedServer
         return status;
     }
 
-    public MemoryUsage getMemoryUsage() {
+    public MemoryUsageLight getMemoryUsage() {
         return memoryUsage;
     }
 

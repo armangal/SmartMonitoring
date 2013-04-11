@@ -48,18 +48,17 @@ import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
-import com.smexec.monitor.shared.AbstractRefreshResult;
+import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.FullRefreshResult;
 
-public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
+public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
     extends AbstractMonitoringWidget
-    implements IMonitoringWidget<CS, R, FR> {
+    implements IMonitoringWidget<CS, FR> {
 
     private static final String SERVERS_SHOW_OFF = "servers.showOff";
     private static final String SERVERS_FILTER = "servers.filter";
 
-    private final MonitoringServiceAsync<CS, R, FR> service;
+    private final MonitoringServiceAsync<CS, FR> service;
 
     private FlowPanel serversList = new FlowPanel();
     private ScrollPanel sp = new ScrollPanel();
@@ -72,7 +71,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
             String code = ((Widget) event.getSource()).getElement().getAttribute("code");
             CS cs = serversMap.get(Integer.valueOf(code));
             if (cs != null) {
-                ServerStatsPopup<CS, R, FR> ssp = new ServerStatsPopup<CS, R, FR>(service, cs);
+                ServerStatsPopup<CS, FR> ssp = new ServerStatsPopup<CS, FR>(service, cs);
                 ssp.center();
             } else {
                 Window.alert("Server couldn't be found:" + code);
@@ -118,7 +117,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
     private TextBox filter = new TextBox();
     private Label serversLabel = new Label("Servers");
 
-    public ServersWidget(MonitoringServiceAsync<CS, R, FR> service) {
+    public ServersWidget(MonitoringServiceAsync<CS, FR> service) {
         super("Servers");
         this.service = service;
 
@@ -319,9 +318,7 @@ public class ServersWidget<CS extends ConnectedServer, R extends AbstractRefresh
 
     @Override
     public void update(FR fullResult) {
-        R result = fullResult.getRefreshResult();
-
-        this.servesList = (ArrayList<CS>) result.getServers();
+        this.servesList = (ArrayList<CS>) fullResult.getServers();
         Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
 
         updateServersTable();

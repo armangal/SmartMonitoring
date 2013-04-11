@@ -23,22 +23,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
-public abstract class AbstractConnectedServersState<SS extends ServerStataus, RR extends AbstractRefreshResult<CS>, CS extends ConnectedServer> {
+public abstract class AbstractConnectedServersState<SS extends ServerStataus, CS extends ConnectedServer> {
 
     private static Logger logger = LoggerFactory.getLogger(AbstractConnectedServersState.class);
 
     private ConcurrentHashMap<Integer, SS> connectedServersMap = new ConcurrentHashMap<Integer, SS>();
 
-    /**
-     * Result ready to be used by clients
-     */
-    private RR result;
-
-    public abstract RR createNewRefreshResult(ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap);
+    private ArrayList<CS> servers;
+    private HashMap<String, PoolsFeed> poolFeedMap;
 
     public abstract void mergeExtraData(SS ss);
 
@@ -56,10 +51,6 @@ public abstract class AbstractConnectedServersState<SS extends ServerStataus, RR
 
     public SS addServer(SS serverStataus) {
         return connectedServersMap.put(serverStataus.getServerConfig().getServerCode(), serverStataus);
-    }
-
-    public synchronized RR getRefreshResult() {
-        return result;
     }
 
     /**
@@ -86,7 +77,15 @@ public abstract class AbstractConnectedServersState<SS extends ServerStataus, RR
             }
         }
 
-        result = createNewRefreshResult(servers, poolFeedMap);
+        this.servers = servers;
+        this.poolFeedMap = poolFeedMap;
     }
 
+    public ArrayList<CS> getServers() {
+        return servers;
+    }
+
+    public HashMap<String, PoolsFeed> getPoolFeedMap() {
+        return poolFeedMap;
+    }
 }

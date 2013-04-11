@@ -31,13 +31,13 @@ import org.slf4j.LoggerFactory;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.model.config.ServerGroup;
 import com.smexec.monitor.server.utils.DateUtils;
-import com.smexec.monitor.shared.StringFormatter;
 import com.smexec.monitor.shared.alert.IAlertType;
 import com.smexec.monitor.shared.runtime.CPUUtilization;
 import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
+import com.smexec.monitor.shared.utils.StringFormatter;
 
 /**
  * Class represents a current state of connected server with some historical data about memory, GC cycles and

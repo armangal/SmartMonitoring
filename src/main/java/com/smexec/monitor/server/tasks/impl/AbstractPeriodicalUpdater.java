@@ -32,16 +32,15 @@ import com.smexec.monitor.server.model.config.MailUpdaterConfig;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.server.services.mail.MailService.MailItem;
-import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 
-public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>>
+public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS extends ConnectedServer>
     implements Runnable {
 
     public static Logger logger = LoggerFactory.getLogger("PeriodicalUpdater");
 
     @Inject
-    private IConnectedServersState<SS, CS, RR> connectedServersState;
+    private IConnectedServersState<SS, CS> connectedServersState;
 
     @Inject
     private ConfigurationService configurationService;
@@ -149,7 +148,7 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
         return configurationService;
     }
 
-    public IConnectedServersState<SS, CS, RR> getConnectedServersState() {
+    public IConnectedServersState<SS, CS> getConnectedServersState() {
         return connectedServersState;
     }
 

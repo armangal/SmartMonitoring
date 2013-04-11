@@ -36,21 +36,20 @@ import com.smexec.monitor.client.login.LoginWidget.LoggedInCallBack;
 import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.smartpool.ThreadPoolsWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
-import com.smexec.monitor.shared.AbstractRefreshResult;
+import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
+public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
     implements EntryPoint {
 
     /**
      * Create a remote service proxy to talk to the server-side service.
      */
-    private final MonitoringServiceAsync<CS, R, FR> service;
-    private final LoginWidget<CS, R, FR> loginWidget;
+    private final MonitoringServiceAsync<CS, FR> service;
+    private final LoginWidget<CS, FR> loginWidget;
 
-    private LinkedList<IMonitoringWidget<CS, R, FR>> widgets = new LinkedList<IMonitoringWidget<CS, R, FR>>();
+    private LinkedList<IMonitoringWidget<CS, FR>> widgets = new LinkedList<IMonitoringWidget<CS, FR>>();
     final FlowPanel mainPanel = new FlowPanel();
 
     private ClientConfigurations clientConfigurations;
@@ -62,10 +61,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
     private HTML mainHeaderLabel = new HTML("--------------------------");
     private HTML footer = new HTML("<ul><li><img title=\"Feedback\" src=\"//1.www.s81c.com/i/v17/opinionlab/oo_icon.gif\"><span>&nbsp;&nbsp;Created by </span><a target='blank' href=\"https://twitter.com/armangal\">@armangal</a><span>, based on </span><a href='https://github.com/armangal/SmartMonitoring' target='blank'>SmartMonitoring</a><span> project.</span></span></li></ul>");
 
-    /**
-     * used to filter alerts coming from server
-     */
-    private int lastAlertId = -1;
+    private AlertsWidget<CS, FR> alertsWidget;
 
     private RepeatingCommand refreshCommand = new RepeatingCommand() {
 
@@ -87,29 +83,23 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
                 Log.debug("Received NULL response.");
                 return;
             }
-            R result = fullResult.getRefreshResult();
-            if (result == null) {
-                Log.debug("Received NULL response.");
-                return;
-            }
 
-            ArrayList<CS> servers = result.getServers();
+            ArrayList<CS> servers = fullResult.getServers();
             if (servers != null && !servers.isEmpty()) {
                 Log.debug("Received FULL refresh response.");
 
-                for (IMonitoringWidget<CS, R, FR> widget : widgets) {
+                for (IMonitoringWidget<CS, FR> widget : widgets) {
                     widget.update(fullResult);
                 }
 
             } else {
                 Log.debug("Received EMPTY response.");
-                for (IMonitoringWidget<CS, R, FR> widget : widgets) {
+                for (IMonitoringWidget<CS, FR> widget : widgets) {
                     widget.clear(fullResult);
                 }
 
             }
 
-            lastAlertId = fullResult.getLastAlertId();
             mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime()
                                     + ")</h1>");
             mainHeader.add(mainHeaderLabel);
@@ -126,9 +116,9 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
         }
     };
 
-    public AbstractEntryPoint(MonitoringServiceAsync<CS, R, FR> service) {
+    public AbstractEntryPoint(MonitoringServiceAsync<CS, FR> service) {
         this.service = service;
-        this.loginWidget = new LoginWidget<CS, R, FR>(service);
+        this.loginWidget = new LoginWidget<CS, FR>(service);
         this.loginWidget.registerCallBack(new LoggedInCallBack() {
 
             @Override
@@ -185,8 +175,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
      * @param widget
      */
     @SuppressWarnings("unchecked")
-    public void addMonitoringWidget(IMonitoringWidget<?, ?, FR> widget) {
-        widgets.add((IMonitoringWidget<CS, R, FR>) widget);
+    public void addMonitoringWidget(IMonitoringWidget<?, FR> widget) {
+        widgets.add((IMonitoringWidget<CS, FR>) widget);
     }
 
     /**
@@ -196,7 +186,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
 
         Log.debug("Send refresh request.");
 
-        service.refresh(lastAlertId, refreshCallback);
+        service.refresh(alertsWidget.getLastAlertId(), refreshCallback);
     }
 
     /**
@@ -216,23 +206,20 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, R extends A
      * should be overridden by extension project, the order is matters
      */
     public void registerWidgets() {
-        addMonitoringWidget(new ThreadPoolsWidget<CS, R, FR>());
-        addMonitoringWidget(new ServersWidget<CS, R, FR>(service));
-        addMonitoringWidget(new AlertsWidget<CS, R, FR>());
+        addMonitoringWidget(new ThreadPoolsWidget<CS, FR>());
+        addMonitoringWidget(new ServersWidget<CS, FR>(service));
+        alertsWidget = new AlertsWidget<CS, FR>();
+        addMonitoringWidget(alertsWidget);
     }
 
     private void addMainWidgets() {
-        for (IMonitoringWidget<CS, R, FR> widget : widgets) {
+        for (IMonitoringWidget<CS, FR> widget : widgets) {
             mainPanel.add(widget);
         }
     }
 
-    public MonitoringServiceAsync<CS, R, FR> getService() {
+    public MonitoringServiceAsync<CS, FR> getService() {
         return service;
-    }
-
-    public int getLastAlertId() {
-        return lastAlertId;
     }
 
     public AsyncCallback<FR> getRefreshCallback() {

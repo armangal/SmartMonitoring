@@ -36,11 +36,12 @@ import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
-import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.runtime.GCHistory;
+import com.smexec.monitor.shared.runtime.MemoryUsage;
+import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 
-public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R extends Refresher<S>, C extends ConnectedServer, RR extends AbstractRefreshResult<C>>
+public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R extends Refresher<S>, C extends ConnectedServer>
     implements IStateUpdaterThread {
 
     private static Logger logger = LoggerFactory.getLogger(StateUpdaterThread.class);
@@ -59,7 +60,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
     });
 
     @Inject
-    private IConnectedServersState<S, C, RR> connectedServersState;
+    private IConnectedServersState<S, C> connectedServersState;
 
     @Override
     public void run() {
@@ -119,6 +120,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
 
     /**
      * preparing the array for client presentation
+     * 
      * @param lastGCHistory
      * @return
      */
@@ -134,4 +136,17 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
         history.toArray(lastHistory);
         return lastHistory;
     }
+
+    /**
+     * gets the light object from client representation
+     * 
+     * @param ss
+     * @return
+     */
+    public MemoryUsageLight getMemoryLight(ServerStataus ss) {
+        MemoryUsage mu = ss.getLastMemoryUsage();
+        MemoryUsageLight mul = new MemoryUsageLight(mu.getInit(), mu.getUsed(), mu.getCommitted(), mu.getMax());
+        return mul;
+    }
+
 }

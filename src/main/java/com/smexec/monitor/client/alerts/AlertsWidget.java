@@ -25,19 +25,18 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
-import com.smexec.monitor.shared.AbstractRefreshResult;
+import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.alert.Alert;
 
-public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
+public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
     extends AbstractMonitoringWidget
-    implements IMonitoringWidget<CS, R, FR> {
+    implements IMonitoringWidget<CS, FR> {
 
     private ScrollPanel sp = new ScrollPanel();
     private FlexTable alertsTable = new FlexTable();
 
-    private Map<Integer, Alert> map = new HashMap<Integer, Alert>();
+    private int lastAlertId = -1;
 
     public AlertsWidget() {
         super("Alerts");
@@ -63,7 +62,7 @@ public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshR
         try {
             LinkedList<Alert> alerts = fullRefreshResult.getAlerts();
             for (Alert a : alerts) {
-                if (!map.containsKey(a.getId())) {
+                if (a.getId() > lastAlertId) {
                     int insertRow = alertsTable.insertRow(1);
                     alertsTable.setText(insertRow, 0, "" + a.getId());
                     HTML msg = new HTML(a.getMessage() + " [" + a.getServerName() + "]");
@@ -73,7 +72,8 @@ public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshR
                     alertsTable.setText(insertRow, 3, a.getAlertTimeStr());
                     alertsTable.getRowFormatter().getElement(insertRow).setAttribute("id", "" + a.getId());
 
-                    map.put(a.getId(), a);
+                    lastAlertId = a.getId();
+
                 }
             }
 
@@ -82,7 +82,6 @@ public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshR
                 for (int i = alertsTable.getRowCount() - 1; i > 1000; i--) {
                     int id = Integer.valueOf(alertsTable.getRowFormatter().getElement(i).getAttribute("id"));
                     alertsTable.removeRow(i);
-                    map.remove(id);
                 }
             }
         } catch (Exception e) {
@@ -94,5 +93,9 @@ public class AlertsWidget<CS extends ConnectedServer, R extends AbstractRefreshR
     @Override
     public void clear(FR result) {
 
+    }
+
+    public int getLastAlertId() {
+        return lastAlertId;
     }
 }

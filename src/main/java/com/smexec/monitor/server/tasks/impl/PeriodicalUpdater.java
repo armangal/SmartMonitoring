@@ -17,11 +17,10 @@ package com.smexec.monitor.server.tasks.impl;
 
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
-import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 
 public class PeriodicalUpdater
-    extends AbstractPeriodicalUpdater<ServerStataus, ConnectedServer, AbstractRefreshResult<ConnectedServer>>
+    extends AbstractPeriodicalUpdater<ServerStataus, ConnectedServer>
     implements IPeriodicalUpdater {
 
     @Override

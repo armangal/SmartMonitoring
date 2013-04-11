@@ -17,14 +17,21 @@ package com.smexec.monitor.shared;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 
+import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
-public class AbstractRefreshResult<C extends ConnectedServer>
+public abstract class AbstractFullRefreshResult<CS extends ConnectedServer>
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private LinkedList<Alert> alerts;
+
+    private String serverTime;
 
     /**
      * a map of aggregated thread pools statistic, ready to be presented by client
@@ -34,32 +41,43 @@ public class AbstractRefreshResult<C extends ConnectedServer>
     /**
      * list of connected servers with internal stats
      */
-    private ArrayList<C> servers = new ArrayList<C>(0);
+    private ArrayList<CS> servers = new ArrayList<CS>(0);
 
-    public AbstractRefreshResult() {}
+    public AbstractFullRefreshResult() {
+        this.alerts = new LinkedList<Alert>();
+        this.poolFeedMap = new HashMap<String, PoolsFeed>();
+        this.servers = new ArrayList<CS>(0);
+    }
 
-    public AbstractRefreshResult(ArrayList<C> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+    public AbstractFullRefreshResult(LinkedList<Alert> alerts, ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap) {
         super();
-        this.poolFeedMap = poolFeedMap;
+        this.alerts = alerts;
+        this.serverTime = new Date().toString();
         this.servers = servers;
+        this.poolFeedMap = poolFeedMap;
+    }
+
+    public LinkedList<Alert> getAlerts() {
+        return alerts;
+    }
+
+    public String getServerTime() {
+        return serverTime;
     }
 
     public HashMap<String, PoolsFeed> getPoolFeedMap() {
         return poolFeedMap;
     }
 
-    public ArrayList<C> getServers() {
+    public ArrayList<CS> getServers() {
         return servers;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ARR [pfm=");
-        builder.append(poolFeedMap.size());
-        builder.append(", ser=");
-        builder.append(servers);
-        builder.append("]");
+        builder.append("FullRefreshResult [ARR [pfm=");
+        builder.append(poolFeedMap.size()).append(", alerts=").append(alerts).append(", server:").append(servers).append("]");
         return builder.toString();
     }
 

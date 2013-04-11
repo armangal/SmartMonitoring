@@ -20,10 +20,10 @@ import java.util.Date;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.RefreshResult;
+import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 
 public class StateUpdaterThread
-    extends AbstractStateUpdaterThread<ServerStataus, Refresher<ServerStataus>, ConnectedServer, RefreshResult> {
+    extends AbstractStateUpdaterThread<ServerStataus, Refresher<ServerStataus>, ConnectedServer> {
 
     @Override
     public Refresher<ServerStataus> getRefresher(ServerStataus ss, Date executionDate, int excutionNumber) {
@@ -34,12 +34,14 @@ public class StateUpdaterThread
     public ConnectedServer getConnectedServer(ServerStataus ss) {
         ServerConfig sc = ss.getServerConfig();
 
+        MemoryUsageLight mul = getMemoryLight(ss);
+        
         return new ConnectedServer(sc.getName(),
                                    sc.getServerCode(),
                                    sc.getIp(),
                                    sc.getJmxPort(),
                                    ss.isConnected(),
-                                   ss.getLastMemoryUsage(),
+                                   mul,
                                    getLastHistory(ss.getLastGCHistory()),
                                    ss.getUpTime(),
                                    ss.getCpuUtilization().getLastPercent().getUsage(),

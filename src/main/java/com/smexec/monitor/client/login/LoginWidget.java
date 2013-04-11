@@ -32,12 +32,11 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.smexec.monitor.client.MonitoringServiceAsync;
-import com.smexec.monitor.shared.AbstractRefreshResult;
+import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
+public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
     extends Composite {
 
     public interface LoggedInCallBack {
@@ -45,7 +44,7 @@ public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshRe
         void loggedIn(ClientConfigurations cc);
     }
 
-    private final MonitoringServiceAsync<CS, R, FR> service;
+    private final MonitoringServiceAsync<CS, FR> service;
     private ClientConfigurations cc;
 
     private LoggedInCallBack callBack;
@@ -66,7 +65,7 @@ public class LoginWidget<CS extends ConnectedServer, R extends AbstractRefreshRe
         }
     };
 
-    public LoginWidget(MonitoringServiceAsync<CS, R, FR> service) {
+    public LoginWidget(MonitoringServiceAsync<CS, FR> service) {
         this.service = service;
 
         if (!GWT.isScript()) {

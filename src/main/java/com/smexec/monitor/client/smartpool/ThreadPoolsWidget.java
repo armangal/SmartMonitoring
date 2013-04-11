@@ -32,14 +32,13 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
-import com.smexec.monitor.shared.AbstractRefreshResult;
+import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
-public class ThreadPoolsWidget<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
+public class ThreadPoolsWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
     extends AbstractMonitoringWidget
-    implements IMonitoringWidget<CS, R, FR> {
+    implements IMonitoringWidget<CS, FR> {
 
     private PoolWidget poolWidget = new PoolWidget();
 
@@ -92,9 +91,7 @@ public class ThreadPoolsWidget<CS extends ConnectedServer, R extends AbstractRef
 
     @Override
     public void update(FR fullResult) {
-        R result = fullResult.getRefreshResult();
-
-        HashMap<String, PoolsFeed> map = result.getPoolFeedMap();
+        HashMap<String, PoolsFeed> map = fullResult.getPoolFeedMap();
         this.lastUpdate = map;
         fp.remove(poolsTable);
 

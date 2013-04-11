@@ -16,6 +16,8 @@
 package com.smexec.monitor.server;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.servlet.http.HttpSession;
@@ -33,9 +35,9 @@ import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.utils.JMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
-import com.smexec.monitor.shared.AbstractRefreshResult;
+import com.smexec.monitor.server.utils.ListUtils;
+import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.config.Version;
@@ -43,12 +45,13 @@ import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
+import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 /**
  * The server side implementation of the monitoring RPC service.
  */
 @SuppressWarnings("serial")
-public abstract class AbstractMonitoringService<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<RR, CS>>
+public abstract class AbstractMonitoringService<SS extends ServerStataus, CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
     extends RemoteServiceServlet {
 
     private static Logger logger = LoggerFactory.getLogger("MonitoringService");
@@ -56,7 +59,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
     private static final String AUTHENTICATED = "authenticated";
 
     @Inject
-    private IConnectedServersState<SS, CS, RR> connectedServersState;
+    private IConnectedServersState<SS, CS> connectedServersState;
 
     @Inject
     private JMXThreadDumpUtils jmxThreadDumpUtils;
@@ -76,13 +79,12 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public FR refresh(int lastAlertId) {
         checkAuthenticated();
-        RR refreshResult = connectedServersState.getRefreshResult();
         LinkedList<Alert> alertsAfter = alertService.getAlertsAfter(lastAlertId);
 
-        return createFullRefreshResult(refreshResult, alertsAfter);
+        return createFullRefreshResult(alertsAfter, connectedServersState.getServers(), connectedServersState.getPoolFeedMap());
     }
 
-    public abstract FR createFullRefreshResult(RR refreshResult, LinkedList<Alert> alerts);
+    public abstract FR createFullRefreshResult(LinkedList<Alert> alerts, ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap);
 
     public ThreadDump getThreadDump(Integer serverCode) {
         checkAuthenticated();
@@ -138,7 +140,9 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         checkAuthenticated();
         ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
-            return serverStataus.getMemoryUsage(chunks);
+            LinkedList<MemoryUsage> memoryUsage = serverStataus.getMemoryUsage(chunks);
+            return ListUtils.blur(memoryUsage, 200, new LinkedList<MemoryUsage>());
+
         }
         logger.warn("can't find server with code:{} for memory stats", serverCode);
         return null;
@@ -148,7 +152,8 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         checkAuthenticated();
         ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
-            return serverStataus.getCpuUtilization().getPercentList(chunks);
+            LinkedList<CpuUtilizationChunk> percentList = serverStataus.getCpuUtilization().getPercentList(chunks);
+            return ListUtils.blur(percentList, 200, new LinkedList<CpuUtilizationChunk>());
         }
         logger.warn("can't find server with code:{} for cpu stats", serverCode);
         return null;
@@ -169,7 +174,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         return null;
     }
 
-    public IConnectedServersState<SS, CS, RR> getConnectedServersState() {
+    public IConnectedServersState<SS, CS> getConnectedServersState() {
         return connectedServersState;
     }
 

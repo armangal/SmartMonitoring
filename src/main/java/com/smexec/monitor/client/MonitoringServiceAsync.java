@@ -18,16 +18,15 @@ package com.smexec.monitor.client;
 import java.util.LinkedList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smexec.monitor.shared.AbstractRefreshResult;
+import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
 
-public interface MonitoringServiceAsync<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>> {
+public interface MonitoringServiceAsync<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>> {
 
     void refresh(int lastAlertId, AsyncCallback<FR> callback);
 

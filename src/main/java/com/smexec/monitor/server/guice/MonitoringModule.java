@@ -33,7 +33,6 @@ import com.smexec.monitor.server.tasks.impl.PeriodicalUpdater;
 import com.smexec.monitor.server.tasks.impl.StateUpdaterThread;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.RefreshResult;
 
 public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServer>
     extends AbstractModule {
@@ -49,7 +48,7 @@ public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServ
         bind(ConfigurationService.class).asEagerSingleton();
         install(new MongoDbModule(serversConfig));
 
-        bind(new TypeLiteral<IConnectedServersState<ServerStataus, ConnectedServer, RefreshResult>>() {}).to(ConnectedServersState.class).in(Singleton.class);
+        bind(new TypeLiteral<IConnectedServersState<ServerStataus, ConnectedServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
 
         bind(IJMXConnectorThread.class).to(JMXConnectorThread.class).in(Singleton.class);
         bind(IStateUpdaterThread.class).to(StateUpdaterThread.class).in(Singleton.class);

@@ -16,63 +16,25 @@
 package com.smexec.monitor.shared;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import com.smexec.monitor.shared.alert.Alert;
+import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
-public class FullRefreshResult<RR extends AbstractRefreshResult<CS>, CS extends ConnectedServer>
+public class FullRefreshResult
+    extends AbstractFullRefreshResult<ConnectedServer>
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private RR refreshResult;
-
-    private LinkedList<Alert> alerts;
-    
-    private String serverTime;
-
     public FullRefreshResult() {
-        this.alerts = new LinkedList<Alert>();
+
     }
 
-    public FullRefreshResult(RR refreshResult, LinkedList<Alert> alerts) {
-        super();
-        this.refreshResult = refreshResult;
-        this.alerts = alerts;
-        this.serverTime = new Date().toString();
-    }
-
-    public LinkedList<Alert> getAlerts() {
-        return alerts;
-    }
-
-    public RR getRefreshResult() {
-        return refreshResult;
-    }
-    
-    
-    public String getServerTime() {
-        return serverTime;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("FullRefreshResult [rr=").append(refreshResult).append(", alerts=").append(alerts).append("]");
-        return builder.toString();
-    }
-
-    public Integer getLastAlertId() {
-        int id = -1;
-        if (alerts != null && !alerts.isEmpty()) {
-            for (Alert alert : alerts) {
-                if (alert.getId() > id) {
-                    id = alert.getId();
-                }
-            }
-        }
-        return id;
+    public FullRefreshResult(LinkedList<Alert> alerts, ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+        super(alerts, servers, poolFeedMap);
     }
 
 }

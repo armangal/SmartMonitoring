@@ -18,9 +18,8 @@ package com.smexec.monitor.client;
 import java.util.LinkedList;
 
 import com.google.gwt.user.client.rpc.RemoteService;
-import com.smexec.monitor.shared.AbstractRefreshResult;
+import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
@@ -31,7 +30,7 @@ import com.smexec.monitor.shared.runtime.ThreadDump;
  * The client side stub for the RPC service.
  */
 
-public interface MonitoringService<CS extends ConnectedServer, R extends AbstractRefreshResult<CS>, FR extends FullRefreshResult<R, CS>>
+public interface MonitoringService<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
     extends RemoteService {
 
     FR refresh(int lastAlertId);

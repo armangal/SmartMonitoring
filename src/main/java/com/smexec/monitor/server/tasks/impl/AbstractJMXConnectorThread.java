@@ -42,12 +42,11 @@ import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
-import com.smexec.monitor.shared.AbstractRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
 
-public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS extends ConnectedServer, RR extends AbstractRefreshResult<CS>>
+public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS extends ConnectedServer>
     implements IJMXConnectorThread {
 
     public static Logger logger = LoggerFactory.getLogger(AbstractJMXConnectorThread.class);
@@ -64,7 +63,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
     });
 
     @Inject
-    private IConnectedServersState<SS, CS, RR> connectedServersState;
+    private IConnectedServersState<SS, CS> connectedServersState;
 
     @Inject
     private ConfigurationService configurationService;
@@ -157,11 +156,11 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
             if (sendAlert) {
                 Alert alert = alertService.createAlert("(-: Server RE-STARTED :-)",
-                                                "",
-                                                sc.getServerCode(),
-                                                sc.getName(),
-                                                new Date().getTime(),
-                                                AlertType.SERVER_CONNECTED);
+                                                       "",
+                                                       sc.getServerCode(),
+                                                       sc.getName(),
+                                                       new Date().getTime(),
+                                                       AlertType.SERVER_CONNECTED);
                 alertService.addAlert(alert, ss);
             }
             /**
@@ -178,27 +177,29 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                     SS serverStataus = connectedServersState.getServerStataus(sc.getServerCode());
                     if (notification.getType().contains("closed")) {
                         Alert alert = alertService.createAlert("!!! Server went DOWN !!!",
-                                                        "",
-                                                        sc.getServerCode(),
-                                                        sc.getName(),
-                                                        new Date().getTime(),
-                                                        AlertType.SERVER_DISCONNECTED);
+                                                               "",
+                                                               sc.getServerCode(),
+                                                               sc.getName(),
+                                                               new Date().getTime(),
+                                                               AlertType.SERVER_DISCONNECTED);
                         alertService.addAlert(alert, serverStataus);
 
                         serverStataus.resetOnDisconnect();
                     }
                     if (notification.getType().contains("failed")) {
                         Alert alert = alertService.createAlert("Failed to make JMX comm. with server!",
-                                                        "",
-                                                        sc.getServerCode(),
-                                                        sc.getName(),
-                                                        new Date().getTime(),
-                                                        AlertType.SERVER_COMM_FAILED);
+                                                               "",
+                                                               sc.getServerCode(),
+                                                               sc.getName(),
+                                                               new Date().getTime(),
+                                                               AlertType.SERVER_COMM_FAILED);
                         alertService.addAlert(alert, serverStataus);
 
                     }
                 }
-            }, null, sc);
+            },
+                                                           null,
+                                                           sc);
 
             ss.setConnector(jmxConnector);
 
