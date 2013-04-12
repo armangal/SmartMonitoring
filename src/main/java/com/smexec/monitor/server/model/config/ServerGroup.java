@@ -28,6 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "group")
 public class ServerGroup {
 
+    public final static ServerGroup DEFAULT_GROUP = new ServerGroup();
+    
     public final static String DEFAULT_GROUP_NAME = "DEFAULT";
 
     /**

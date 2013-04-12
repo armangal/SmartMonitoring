@@ -86,6 +86,13 @@ body {
 	padding: 0px;
 }
 
+.settings{
+	float: left;
+	cursor: pointer;
+	margin-left: 6px;
+}
+
+
 .fullSize {
 	width: 100% !important;
 	height: 100% !important;

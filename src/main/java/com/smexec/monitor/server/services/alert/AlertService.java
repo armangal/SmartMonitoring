@@ -59,13 +59,13 @@ public class AlertService {
      * @param alertId
      * @return
      */
-    public LinkedList<Alert> getAlertsAfter(int alertId) {
+    public LinkedList<Alert> getAlertsAfter(int alertId, int max) {
         if (alertId == -1) {
-            // first time, take the last 1000
-            alertId = alertCounter.get() > 1000 ? alertCounter.get() - 1000 : 0;
-        } else if (alertCounter.get() - alertId > 1000) {
+            // first time, take the last max
+            alertId = alertCounter.get() > max ? alertCounter.get() - max : -1 ;
+        } else if (alertCounter.get() - alertId > max) {
             // if we have more than 1000 to return, cut it
-            alertId = alertCounter.get() - 1000;
+            alertId = alertCounter.get() - max;
         }
 
         LinkedList<Alert> alerts = new LinkedList<Alert>();
@@ -73,8 +73,12 @@ public class AlertService {
         synchronized (alertsList) {
 
             Iterator<Alert> it = alertsList.descendingIterator();
-            for (int i = alertId + 1; i < alertCounter.get(); i++) {
-                alerts.add(it.next());
+            for (int i = alertId; i < alertCounter.get() && it.hasNext(); i++) {
+
+                Alert a = it.next();
+                if (a != null && a.getId() > alertId) {
+                    alerts.add(a);
+                }
             }
             Collections.sort(alerts, new Comparator<Alert>() {
 

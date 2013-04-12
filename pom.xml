@@ -4,7 +4,7 @@
 
 	<groupId>org.smexec</groupId>
 	<artifactId>smartmonitoring</artifactId>
-	<version>1.0.19</version>
+	<version>1.0.20</version>
 	<name>Smart Monitoring, open-source JMX monitoring server with HTML (GWT) UI</name>
 	<description>Smart Monitoring</description>
 
@@ -26,7 +26,7 @@
 
 	<developers>
 		<developer>
-			<id>armangal</id> 
+			<id>armangal</id>
 			<name>Arman Gal</name>
 			<email>arman@armangal.com</email>
 		</developer>
@@ -53,6 +53,7 @@
 		<scannotation.version>1.0.2</scannotation.version>
 		<junit.version>4.11</junit.version>
 		<javax.mail.version>1.4</javax.mail.version>
+		<commons-io.version>2.4</commons-io.version>
 
 		<gwt.version>2.5.0</gwt.version>
 		<gin.version>2.0.0</gin.version>
@@ -102,13 +103,19 @@
 				<version>${gin.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+				<scope>compile</scope>
+			</dependency>
 			<!-- server -->
 
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
-				<scope>test</scope>
+				<scope>compile</scope>
 			</dependency>
 			<!-- SLF4J Dependencies -->
 			<dependency>
@@ -168,7 +175,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<!-- SLF4J Dependencies -->
 		<dependency>
@@ -242,7 +249,11 @@
 			<artifactId>morphia</artifactId>
 			<scope>compile</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -433,20 +444,20 @@
 				</executions>
 			</plugin>
 			<plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <configuration>
-                    <message>Creating site for ${project.version}</message>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>site</phase>
-                    </execution>
-                </executions>
-            </plugin>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<configuration>
+					<message>Creating site for ${project.version}</message>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>site</phase>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

@@ -73,7 +73,7 @@ public class ServerStartUp
 
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
-        ConfigurationService.loadServersConfig();
+        ConfigurationService.loadServersConfig(true);
         initGuice(ConfigurationService.getServersConfig());
         GuiceUtils.getInjector().injectMembers(this);
 

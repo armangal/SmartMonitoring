@@ -222,6 +222,13 @@ public class ServerStataus {
         return serverConfig;
     }
 
+    public void setServerConfig(ServerConfig serverConfig) {
+        if (this.serverConfig == null || !this.serverConfig.equals(serverConfig)) {
+            logger.info("Changing ServerConfig from:{}, to:{}", this.serverConfig, serverConfig);
+            this.serverConfig = serverConfig;
+        }
+    }
+
     public ServerGroup getServerGroup() {
         return serverGroup;
     }

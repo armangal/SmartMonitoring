@@ -56,7 +56,11 @@ public class ServersConfig {
 
     private MailUpdaterConfig mailUpdaterConfig = new MailUpdaterConfig();
 
-    public ServersConfig() {}
+    public ServersConfig() {
+        this.serverGroups = new ArrayList<ServerGroup>(0);
+        this.serverGroups.add(ServerGroup.DEFAULT_GROUP);
+
+    }
 
     public List<ServerConfig> getServers() {
         return servers;
@@ -195,14 +199,14 @@ public class ServersConfig {
             List<HostAddress> hosts = new ArrayList<MongoConfig.HostAddress>(0);
             hosts.add(new HostAddress("localhost", 27017));
             mc.setHosts(hosts);
-            
+
             MailUpdaterConfig muc = new MailUpdaterConfig();
             muc.setEnabled(true);
             muc.setPeriod(20);
             List<String> to = new ArrayList<String>();
             to.add("arman.gal@playtech.com");
             muc.setTo(to);
-                          
+
             sc.setMailUpdaterConfig(muc);
 
             context.createMarshaller().marshal(sc, System.out);

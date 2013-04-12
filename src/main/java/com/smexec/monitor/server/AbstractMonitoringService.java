@@ -15,7 +15,6 @@
  */
 package com.smexec.monitor.server;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
-import com.smexec.monitor.client.MonitoringService;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
@@ -81,7 +79,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public FR refresh(int lastAlertId) {
         checkAuthenticated();
-        LinkedList<Alert> alertsAfter = alertService.getAlertsAfter(lastAlertId);
+        LinkedList<Alert> alertsAfter = alertService.getAlertsAfter(lastAlertId, 1000);
 
         return createFullRefreshResult(alertsAfter, connectedServersState.getServers(), connectedServersState.getPoolFeedMap());
     }
@@ -116,7 +114,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         HttpSession session = getThreadLocalRequest().getSession();
         userName = userName.trim();
         password = password.trim();
-        ServersConfig sc = configurationService.getServersConfig();
+        ServersConfig sc = ConfigurationService.getServersConfig();
         if (sc.getUsername().equalsIgnoreCase(userName) && sc.getPassword().equals(password)) {
             session.setAttribute(AUTHENTICATED, Boolean.TRUE);
             logger.info("Authnticated user:{}, pass:{}", userName, password);
@@ -191,10 +189,22 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public String getSettingsXML() {
         try {
+            logger.info("About to load configuration xml");
             return configurationService.getServersConfigXML();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return e.getMessage();
+        }
+    }
+
+    public Boolean saveSettingsXML(String xml) {
+        try {
+            logger.info("About to save xml:{}", xml);
+            configurationService.saveServersConfigXML(xml);
+            return true;
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            return false;
         }
     }
 }

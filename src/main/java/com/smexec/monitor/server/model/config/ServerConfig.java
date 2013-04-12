@@ -93,10 +93,72 @@ public class ServerConfig {
                .append(password)
                .append(", serverGroup=")
                .append(serverGroup)
-               .append("]\n");
+               .append("]");
         return builder.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (authenticate ? 1231 : 1237);
+        result = prime * result + ((ip == null) ? 0 : ip.hashCode());
+        result = prime * result + ((jmxPort == null) ? 0 : jmxPort.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((password == null) ? 0 : password.hashCode());
+        result = prime * result + ((serverCode == null) ? 0 : serverCode.hashCode());
+        result = prime * result + ((serverGroup == null) ? 0 : serverGroup.hashCode());
+        result = prime * result + ((username == null) ? 0 : username.hashCode());
+        return result;
+    }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ServerConfig other = (ServerConfig) obj;
+        if (authenticate != other.authenticate)
+            return false;
+        if (ip == null) {
+            if (other.ip != null)
+                return false;
+        } else if (!ip.equals(other.ip))
+            return false;
+        if (jmxPort == null) {
+            if (other.jmxPort != null)
+                return false;
+        } else if (!jmxPort.equals(other.jmxPort))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (password == null) {
+            if (other.password != null)
+                return false;
+        } else if (!password.equals(other.password))
+            return false;
+        if (serverCode == null) {
+            if (other.serverCode != null)
+                return false;
+        } else if (!serverCode.equals(other.serverCode))
+            return false;
+        if (serverGroup == null) {
+            if (other.serverGroup != null)
+                return false;
+        } else if (!serverGroup.equals(other.serverGroup))
+            return false;
+        if (username == null) {
+            if (other.username != null)
+                return false;
+        } else if (!username.equals(other.username))
+            return false;
+        return true;
+    }
 
 }

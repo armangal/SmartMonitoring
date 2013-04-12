@@ -45,4 +45,6 @@ public interface MonitoringServiceAsync<CS extends ConnectedServer, FR extends A
     void getRuntimeInfo(Integer serverCode, AsyncCallback<RuntimeInfo> callback);
 
     void getSettingsXML(AsyncCallback<String> callback);
+
+    void saveSettingsXML(String xml, AsyncCallback<Boolean> callback);
 }

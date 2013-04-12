@@ -144,6 +144,9 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
      * @return
      */
     public MemoryUsageLight getMemoryLight(ServerStataus ss) {
+        if (!ss.isConnected()) {
+            return new MemoryUsageLight();
+        }
         MemoryUsage mu = ss.getLastMemoryUsage();
         MemoryUsageLight mul = new MemoryUsageLight(mu.getInit(), mu.getUsed(), mu.getCommitted(), mu.getMax());
         return mul;

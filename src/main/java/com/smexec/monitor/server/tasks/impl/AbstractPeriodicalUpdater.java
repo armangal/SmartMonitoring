@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -29,10 +30,12 @@ import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStataus;
 import com.smexec.monitor.server.model.config.MailUpdaterConfig;
+import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.server.services.mail.MailService.MailItem;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.alert.Alert;
 
 public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS extends ConnectedServer>
     implements Runnable {
@@ -47,6 +50,11 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
 
     @Inject
     private MailService mailService;
+
+    @Inject
+    private AlertService alertService;
+
+    private int lastAlertMailed = -1;
 
     private String updateTemplate;
 
@@ -120,11 +128,11 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
             logger.info("Periodical update, servers:{}", sb.toString());
             String extraInfo = getExtraInfo();
             logger.info("Periodical update, extraInfo:{}", extraInfo);
-            body = body.replace("{2}", sb.toString()).replace("{extra}", extraInfo);
+            body = body.replace("{2}", sb.toString()).replace("{extra}", extraInfo).replace("{3}", getAlerts());
 
-            MailUpdaterConfig mailUpdaterConfig = configurationService.getServersConfig().getMailUpdaterConfig();
+            MailUpdaterConfig mailUpdaterConfig = ConfigurationService.getServersConfig().getMailUpdaterConfig();
 
-            MailItem mailItem = new MailItem("Network Update: " + configurationService.getServersConfig().getName(),
+            MailItem mailItem = new MailItem("Network Update: " + ConfigurationService.getServersConfig().getName(),
                                              body,
                                              mailUpdaterConfig.getFromAddress(),
                                              mailUpdaterConfig.getFromName(),
@@ -154,5 +162,42 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
 
     public MailService getMailService() {
         return mailService;
+    }
+
+    private String getAlerts() {
+        try {
+            LinkedList<Alert> alertsAfter = alertService.getAlertsAfter(lastAlertMailed, 500);
+            StringBuilder sb = new StringBuilder();
+            for (Alert a : alertsAfter) {
+                sb.append("<tr>");
+
+                sb.append("<td>");
+                sb.append(a.getId());
+                sb.append("</td>");
+
+                sb.append("<td>");
+                sb.append(a.getMessage() + " [" + a.getServerName() + "]");
+                sb.append("</td>");
+
+                sb.append("<td>");
+                sb.append(a.getServerCode());
+                sb.append("</td>");
+
+                sb.append("<td>");
+                sb.append(a.getAlertTimeStr());
+                sb.append("</td>");
+
+                sb.append("</tr>");
+
+                if (a.getId() > lastAlertMailed) {
+                    lastAlertMailed = a.getId();
+                }
+            }
+
+            return sb.toString();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return "<tr><td colspan=4>" + e.getMessage() + "</td></tr>";
+        }
     }
 }

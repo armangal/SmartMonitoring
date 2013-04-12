@@ -49,7 +49,7 @@ import com.smexec.monitor.shared.alert.AlertType;
 public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS extends ConnectedServer>
     implements IJMXConnectorThread {
 
-    public static Logger logger = LoggerFactory.getLogger(AbstractJMXConnectorThread.class);
+    public static Logger logger = LoggerFactory.getLogger("JMXConnectorThread");
 
     private static ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
 
@@ -94,7 +94,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
     public void run() {
         try {
-            ServersConfig serversConfig = configurationService.getServersConfig();
+            ServersConfig serversConfig = ConfigurationService.getServersConfig();
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {
                     if (connectedServersState.getServerStataus(sc.getServerCode()) != null) {
@@ -127,7 +127,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
         boolean sendAlert = false;
         if (ss == null) {
             // new server, first time
-            ServerGroup serverGroup = configurationService.getServersConfig().getServerGroup(sc.getServerGroup());
+            ServerGroup serverGroup = ConfigurationService.getServersConfig().getServerGroup(sc.getServerGroup());
             ss = getServerStatus(sc, serverGroup);
             try {
                 ConnectionSynch.connectionLock.lock();
@@ -202,6 +202,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
                                                            sc);
 
             ss.setConnector(jmxConnector);
+            ss.setServerConfig(sc);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

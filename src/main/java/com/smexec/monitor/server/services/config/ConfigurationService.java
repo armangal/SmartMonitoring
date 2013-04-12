@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBContext;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,13 @@ import com.smexec.monitor.shared.config.Version;
 
 public class ConfigurationService {
 
+    private static final String UTF_8 = "UTF-8";
+
     private static final Logger logger = LoggerFactory.getLogger("ConfigurationService");
+
+    static JAXBContext context;
+    static String location;
+
     /**
      * current most up-to-date configurations
      */
@@ -50,18 +57,26 @@ public class ConfigurationService {
         return serversConfig;
     }
 
-    public String getServersConfigXML() throws FileNotFoundException, IOException {
+    public String getServersConfigXML()
+        throws FileNotFoundException, IOException {
 
-        String xml = IOUtils.toString(getFileInputStream(), "UTF-8");
+        String xml = IOUtils.toString(getFileInputStream(), UTF_8);
         return xml;
+    }
+
+    public void saveServersConfigXML(final String xml)
+        throws IOException {
+        File file = new File(location);
+        FileUtils.writeStringToFile(file, xml, UTF_8);
+        loadServersConfig(false);
+        // TODO update some features that are already defendant on previous configurations.
     }
 
     public Integer getMaxInMemoryAlerts() {
         return serversConfig.getAlertsConfig().getInMemoryAlerts();
     }
 
-    public static void loadServersConfig() {
-        JAXBContext context;
+    public static void loadServersConfig(boolean toStopServer) {
         try {
             context = JAXBContext.newInstance(ServersConfig.class);
             FileInputStream input = getFileInputStream();
@@ -76,13 +91,15 @@ public class ConfigurationService {
         } catch (Throwable e) {
             logger.error("Error loading config:{}", e.getMessage());
             logger.error(e.getMessage(), e);
-            Runtime.getRuntime().exit(1);
+            if (toStopServer) {
+                Runtime.getRuntime().exit(1);
+            }
         }
     }
 
     private static FileInputStream getFileInputStream()
         throws FileNotFoundException {
-        String location = System.getProperty("servers.config", "servers.xml");
+        location = System.getProperty("servers.config", "servers.xml");
         if (location == null || location.length() < 0) {
             location = "/opt/local/bex/conf/monitoring.xml";
         }
