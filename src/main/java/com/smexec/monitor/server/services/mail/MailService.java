@@ -98,7 +98,7 @@ public class MailService {
             msg.setSubject(mailItem.getSubject(), MAIL_ENCODING);
 
             for (String to : mailItem.getToAddressList()) {
-                msg.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
+                msg.addRecipient(javax.mail.Message.RecipientType.BCC, new InternetAddress(to));
             }
             logger.debug("sending mail with subject:{}.", (mailItem.getSubject()));
             Transport.send(msg);
@@ -122,7 +122,7 @@ public class MailService {
             msg.setSubject(ac.getSubjectPrefix() + mailItem.getSubject(), MAIL_ENCODING);
 
             for (String to : ac.getToAddressList()) {
-                msg.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
+                msg.addRecipient(javax.mail.Message.RecipientType.BCC, new InternetAddress(to));
             }
             logger.debug("sending alert mail with subject:{}.", (ac.getSubjectPrefix() + " " + mailItem.getSubject()));
             Transport.send(msg);

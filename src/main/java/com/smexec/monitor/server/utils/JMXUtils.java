@@ -59,20 +59,23 @@ public class JMXUtils {
         try {
             long time = Long.valueOf(cd.get(name).toString());
 
-            Calendar date = new GregorianCalendar();
-            date.setTime(new Date(time));
-            int deltaMin = date.get(Calendar.SECOND) / 30;
-
-            date.set(Calendar.SECOND, 0);
-            date.set(Calendar.MILLISECOND, 0);
-            date.add(Calendar.MINUTE, deltaMin);
-
-            return DateUtils.roundDate(date.getTime());
+            return DateUtils.roundDate(roundDate(time));
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return -1L;
         }
+    }
+
+    private static Date roundDate(long time) {
+        Calendar date = new GregorianCalendar();
+        date.setTime(new Date(time));
+        int deltaMin = date.get(Calendar.SECOND) / 30;
+
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        date.add(Calendar.MINUTE, deltaMin);
+        return date.getTime();
     }
 
     public static String getStringAtributeFromComposite(CompositeData cd, String name) {
@@ -93,5 +96,12 @@ public class JMXUtils {
             return -1L;
 
         }
+    }
+    
+    public static void main(String[] args) {
+        long currentTimeMillis =1365773690127L; System.currentTimeMillis();
+        System.out.println(currentTimeMillis);
+        System.out.println(new Date(currentTimeMillis));
+        System.out.println(roundDate(currentTimeMillis));
     }
 }
