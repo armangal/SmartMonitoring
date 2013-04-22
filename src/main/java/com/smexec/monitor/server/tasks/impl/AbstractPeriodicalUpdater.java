@@ -177,6 +177,8 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
 
                 sb.append("<td>");
                 sb.append(a.getMessage() + " [" + a.getServerName() + "]");
+                sb.append("\n");
+                sb.append(a.getDetails() == null ? "No Details" : a.getDetails());
                 sb.append("</td>");
 
                 sb.append("<td>");

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -64,11 +65,14 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
 
     @Override
     public void run() {
+        String name = Thread.currentThread().getName();
         try {
+            Thread.currentThread().setName("FULL_REFRESH");
             // During threads scheduling, do not allow updates to servers
             ConnectionSynch.connectionLock.lock();
 
-            logger.info("Refreshing stats for all servers");
+            long start = System.currentTimeMillis();
+            logger.info("Refreshing stats for all servers.");
             ArrayList<C> serversList = new ArrayList<C>(0);
 
             CompletionService<S> compService = new ExecutorCompletionService<S>(threadPool);
@@ -98,14 +102,25 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
             } while (i < values.size());
 
             // finished querying all connected servers, now merging the results.
+            logger.info("Staring merge stats");
             connectedServersState.mergeStats(serversList);
+            logger.info("Finished merge stats");
 
-        } catch (Exception e) {
+            finishedRefresh();
+
+            logger.info("Refreshing finished for all servers, took:{}.", (System.currentTimeMillis() - start));
+
+        } catch (Throwable e) {
             logger.error(e.getMessage(), e);
 
         } finally {
             ConnectionSynch.connectionLock.unlock();
+            Thread.currentThread().setName(name);
         }
+    }
+
+    public void finishedRefresh() {
+        // Nothing for now
     }
 
     public abstract R getRefresher(S ss, Date executionDate, int excutionNumber);
@@ -152,4 +167,38 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
         return mul;
     }
 
+    public IConnectedServersState<S, C> getConnectedServersState() {
+        return connectedServersState;
+    }
+
+    public static class Test {
+
+        @org.junit.Test
+        public void test() {
+            System.out.println("start");
+            CompletionService<Boolean> compService = new ExecutorCompletionService<Boolean>(threadPool);
+
+            for (int i = 0; i < 10; i++) {
+                compService.submit(new Callable<Boolean>() {
+
+                    @Override
+                    public Boolean call()
+                        throws Exception {
+                        Thread.sleep(10000);
+                        return true;
+                    }
+                });
+            }
+            for (int i = 0; i < 10; i++) {
+                try {
+                    Future<Boolean> take = compService.take();
+
+                    System.out.println(take.get(10, TimeUnit.MILLISECONDS));
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

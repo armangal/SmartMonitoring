@@ -46,6 +46,10 @@ public class ServerConfig {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Integer getServerCode() {
         return serverCode;
     }
@@ -72,6 +76,10 @@ public class ServerConfig {
 
     public String getServerGroup() {
         return serverGroup;
+    }
+
+    public void setServerGroup(String serverGroup) {
+        this.serverGroup = serverGroup;
     }
 
     @Override

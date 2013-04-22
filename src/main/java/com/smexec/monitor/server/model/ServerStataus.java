@@ -229,8 +229,17 @@ public class ServerStataus {
         }
     }
 
+    public void updateSomeServerConfigs(ServerConfig serverConfig) {
+        this.serverConfig.setName(serverConfig.getName());
+        this.serverConfig.setServerGroup(serverConfig.getServerGroup());
+    }
+
     public ServerGroup getServerGroup() {
         return serverGroup;
+    }
+
+    public void setServerGroup(ServerGroup serverGroup) {
+        this.serverGroup = serverGroup;
     }
 
     public JMXConnector getConnector() {

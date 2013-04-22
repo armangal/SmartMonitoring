@@ -88,12 +88,20 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
         @Override
         public void run() {
             // new in mappings or try to connect to offline server reconnection
-            connect(sc);
+            String oldName = Thread.currentThread().getName();
+            try {
+                Thread.currentThread().setName("CONN_"+sc.getName());
+                connect(sc);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                Thread.currentThread().setName(oldName);
+            }
         }
     };
 
     public void run() {
         try {
+            logger.info("Connection loop staeted");
             ServersConfig serversConfig = ConfigurationService.getServersConfig();
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {
@@ -103,6 +111,9 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
 
                         if (serverStataus.isConnected()) {
                             // no need to reconnect
+                            ServerGroup serverGroup = ConfigurationService.getServersConfig().getServerGroup(sc.getServerGroup());
+                            serverStataus.updateSomeServerConfigs(sc);
+                            serverStataus.setServerGroup(serverGroup);
                             continue;
                         }
                     }
@@ -125,9 +136,9 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
         JMXConnector jmxConnector;
         SS ss = connectedServersState.getServerStataus(sc.getServerCode());
         boolean sendAlert = false;
+        ServerGroup serverGroup = ConfigurationService.getServersConfig().getServerGroup(sc.getServerGroup());
         if (ss == null) {
             // new server, first time
-            ServerGroup serverGroup = ConfigurationService.getServersConfig().getServerGroup(sc.getServerGroup());
             ss = getServerStatus(sc, serverGroup);
             try {
                 ConnectionSynch.connectionLock.lock();
@@ -137,6 +148,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
             }
         } else {
             sendAlert = true;// we send alerts is case the server is reconnected, to keep posted updated
+            ss.setServerGroup(serverGroup);
         }
 
         try {

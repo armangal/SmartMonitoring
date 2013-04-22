@@ -109,7 +109,7 @@ public class MailService {
 
     private void sendAlertMail(MailItem mailItem) {
         try {
-            AlertsConfig ac = configurationService.getServersConfig().getAlertsConfig();
+            AlertsConfig ac = ConfigurationService.getServersConfig().getAlertsConfig();
 
             String mailType = MAIL_TYPE_HTML;
 
@@ -138,9 +138,9 @@ public class MailService {
      */
     public <SS extends ServerStataus> boolean sendAlert(Alert alert, SS ss) {
         try {
-            if (configurationService.getServersConfig().getAlertsConfig().isEnabled()) {
+            if (ConfigurationService.getServersConfig().getAlertsConfig().isEnabled()) {
                 String body = createAlerMailBody(alert, ss);
-                mailQueue.offer(new MailItem(" [" + configurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] "
+                mailQueue.offer(new MailItem(" [" + ConfigurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] "
                                              + alert.getMessage(), body));
                 logger.info("Alert:{} added to mail queue", alert.getId());
                 return true;
@@ -186,7 +186,7 @@ public class MailService {
 
         @Override
         protected PasswordAuthentication getPasswordAuthentication() {
-            AlertsConfig ac = configurationService.getServersConfig().getAlertsConfig();
+            AlertsConfig ac = ConfigurationService.getServersConfig().getAlertsConfig();
             // sun.misc.BASE64Encoder enc = new sun.misc.BASE64Encoder();
             return new PasswordAuthentication(ac.getUserName(), ac.getPassword());
         }
@@ -237,7 +237,7 @@ public class MailService {
     }
 
     private Session getSession() {
-        AlertsConfig ac = configurationService.getServersConfig().getAlertsConfig();
+        AlertsConfig ac = ConfigurationService.getServersConfig().getAlertsConfig();
 
         Properties props = new Properties();
         props.put("mail.smtp.host", ac.getMailServerAddress());

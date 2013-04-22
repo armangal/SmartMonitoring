@@ -92,7 +92,7 @@ public class ServerStartUp
         logger.info("Version:{}", Version.getVersion());
 
         logger.info("Starting AbstractJMXConnectorThread");
-        executor.scheduleAtFixedRate(jmxConnectorThread, 5, 30, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(jmxConnectorThread, 5, 60, TimeUnit.SECONDS);
 
         logger.info("Starting StateUpdaterThread");
         executor.scheduleAtFixedRate(stateUpdaterThread, 20, 20, TimeUnit.SECONDS);
@@ -104,6 +104,8 @@ public class ServerStartUp
                                          ConfigurationService.getServersConfig().getMailUpdaterConfig().getPeriod(),
                                          TimeUnit.SECONDS);
         }
+        
+
     }
 
     @Override
