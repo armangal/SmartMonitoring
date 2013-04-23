@@ -80,8 +80,12 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
     private AsyncCallback<FR> refreshCallback = new AsyncCallback<FR>() {
 
+        int errorCount = 0;
+
         @Override
         public void onSuccess(FR fullResult) {
+            errorCount = 0;
+
             if (fullResult == null) {
                 Log.debug("Received NULL response.");
                 return;
@@ -111,11 +115,14 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
         @Override
         public void onFailure(Throwable caught) {
-            Log.error("Received refresh response error:" + caught.getMessage());
-            Window.setTitle("Error:" + caught.getMessage());
-            refresh = false;
-            RootPanel.get().clear();
-            RootPanel.get().add(loginWidget);
+            Log.error("Received refresh response error:" + caught.getMessage() + ",\n errorCount:" + errorCount);
+            errorCount++;
+            if (errorCount > 3) {
+                // Window.setTitle("Error:" + caught.getMessage());
+                refresh = false;
+                RootPanel.get().clear();
+                RootPanel.get().add(loginWidget);
+            }
         }
     };
 
@@ -136,7 +143,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
                 refresh = true;
                 refresh();
-                Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
+                Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isScript() ? 60000 : 20000);
                 mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
 
             }
@@ -155,7 +162,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                     refreshBtn.getElement().setAttribute("state", "1");
                     refresh = true;
                     refresh();
-                    Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
+                    Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isScript() ? 60000 : 20000);
                     refreshBtn.setText("Stop Refresh");
                 }
 
