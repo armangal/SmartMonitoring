@@ -46,6 +46,10 @@ public class Version
 
     @Override
     public String toString() {
+        return version();
+    }
+
+    public static String version() {
         StringBuilder builder = new StringBuilder();
         builder.append("Version [");
         builder.append(version);

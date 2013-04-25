@@ -24,7 +24,9 @@ public enum AlertType implements IAlertType {
     CPU("cpu", 2, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
     SERVER_COMM_FAILED("srvComFailed", 3, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
     SERVER_DISCONNECTED("srvDisc", 4, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
-    SERVER_CONNECTED("srvCon", 5, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1));
+    SERVER_CONNECTED("srvCon", 5, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
+    GC("gc", 6, AlertGroup.SYSTEM, true, AlertThreshold.ALWAYS)//
+    ;
 
     private String name;
     private Integer id;

@@ -36,6 +36,7 @@ import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.server.services.mail.MailService.MailItem;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
+import com.smexec.monitor.shared.config.Version;
 
 public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS extends ConnectedServer>
     implements Runnable {
@@ -128,7 +129,7 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
             logger.info("Periodical update, servers:{}", sb.toString());
             String extraInfo = getExtraInfo();
             logger.info("Periodical update, extraInfo:{}", extraInfo);
-            body = body.replace("{2}", sb.toString()).replace("{extra}", extraInfo).replace("{3}", getAlerts());
+            body = body.replace("{2}", sb.toString()).replace("{extra}", extraInfo).replace("{3}", getAlerts()).replace("{version}", Version.version());
 
             MailUpdaterConfig mailUpdaterConfig = ConfigurationService.getServersConfig().getMailUpdaterConfig();
 

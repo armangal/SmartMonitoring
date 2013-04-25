@@ -182,7 +182,16 @@ public class JMXGeneralStats {
 
         List<GCHistory> gcHistoryList = getGcHistory(gcmbeans);
         for (GCHistory gch : gcHistoryList) {
-            serverStataus.updateGCHistory(gch);
+            long lastColleactionTime = serverStataus.updateGCHistory(gch);
+            if (lastColleactionTime > 1000) {
+                Alert alert = alertService.createAlert("GC took tool long: " + lastColleactionTime + "ms",
+                                                       "",
+                                                       serverStataus.getServerConfig().getServerCode(),
+                                                       serverStataus.getServerConfig().getName(),
+                                                       new Date().getTime(),
+                                                       AlertType.GC);
+                alertService.addAlert(alert, serverStataus);
+            }
         }
 
         OperatingSystemMXBean operatingSystemMXBean = newPlatformMXBeanProxy(mbsc, ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);

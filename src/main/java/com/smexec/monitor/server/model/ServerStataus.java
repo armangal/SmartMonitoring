@@ -109,10 +109,12 @@ public class ServerStataus {
     }
 
     @SuppressWarnings("serial")
-    public void updateGCHistory(GCHistory gcHistory) {
+    public long updateGCHistory(GCHistory gcHistory) {
+        LinkedHashMap<Long, GCHistory> cycles;
+        long lastColleactionTime = 0;
         if (!gcHistoryMap.containsKey(gcHistory.getCollectorName())) {
             // adding new collector
-            LinkedHashMap<Long, GCHistory> cycles = new LinkedHashMap<Long, GCHistory>() {
+            cycles = new LinkedHashMap<Long, GCHistory>() {
 
                 @Override
                 protected boolean removeEldestEntry(java.util.Map.Entry<Long, GCHistory> eldest) {
@@ -120,24 +122,25 @@ public class ServerStataus {
                 }
             };
 
-            cycles.put(gcHistory.getCollectionCount(), gcHistory);
             gcHistoryMap.put(gcHistory.getCollectorName(), cycles);
 
         } else {
 
-            LinkedHashMap<Long, GCHistory> cycles = gcHistoryMap.get(gcHistory.getCollectorName());
+            cycles = gcHistoryMap.get(gcHistory.getCollectorName());
             if (!cycles.containsKey(gcHistory.getCollectionCount())) {
                 if (cycles.size() > 0) {
                     LinkedList<Long> list = new LinkedList<Long>(cycles.keySet());
-                    Collections.sort(list);
+                    Collections.sort(list); // the actual calculation
                     GCHistory gcH = cycles.get(list.getLast());
-                    long lastColleactionTime = (gcHistory.getCollectionTime() - gcH.getCollectionTime())
-                                               / (gcHistory.getCollectionCount() - gcH.getCollectionCount());
+                    lastColleactionTime = (gcHistory.getCollectionTime() - gcH.getCollectionTime())
+                                          / (gcHistory.getCollectionCount() - gcH.getCollectionCount());
                     gcHistory.setLastColleactionTime(lastColleactionTime);
                 }
-                cycles.put(gcHistory.getCollectionCount(), gcHistory);
             }
         }
+        cycles.put(gcHistory.getCollectionCount(), gcHistory);
+
+        return lastColleactionTime;
 
     }
 
