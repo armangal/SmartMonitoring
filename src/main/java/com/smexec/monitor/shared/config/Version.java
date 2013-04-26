@@ -53,7 +53,7 @@ public class Version
         StringBuilder builder = new StringBuilder();
         builder.append("Version [");
         builder.append(version);
-        builder.append(", envName");
+        builder.append(", EnvName: ");
         builder.append(envName);
         builder.append("]");
         return builder.toString();

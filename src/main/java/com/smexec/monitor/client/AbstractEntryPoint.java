@@ -143,7 +143,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
                 refresh = true;
                 refresh();
-                Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isScript() ? 60000 : 20000);
+                Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isProdMode() ? 60000 : 20000);
                 mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
 
             }
@@ -162,7 +162,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                     refreshBtn.getElement().setAttribute("state", "1");
                     refresh = true;
                     refresh();
-                    Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isScript() ? 60000 : 20000);
+                    Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isProdMode() ? 60000 : 20000);
                     refreshBtn.setText("Stop Refresh");
                 }
 
