@@ -17,7 +17,6 @@ package com.smexec.monitor.client;
 
 import java.util.LinkedList;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
@@ -53,4 +52,6 @@ public interface MonitoringService<CS extends ConnectedServer, FR extends Abstra
     String getSettingsXML();
     
     Boolean saveSettingsXML(String xml);
+    
+    Boolean stopAlerts(boolean enable);
 }

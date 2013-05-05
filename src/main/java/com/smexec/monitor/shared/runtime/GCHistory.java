@@ -31,7 +31,7 @@ public class GCHistory
      */
     private long collectionTime;
 
-    private long lastColleactionTime;
+    private long lastColleactionTime =-1l; 
 
     private String time;
 

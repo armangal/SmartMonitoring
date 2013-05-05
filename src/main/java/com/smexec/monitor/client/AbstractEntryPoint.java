@@ -23,6 +23,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -58,11 +60,12 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
     private ClientConfigurations clientConfigurations;
 
     final Button refreshBtn = new Button("Stop Refresh");
+    final Button alertBtn = new Button("Stop Alerts");
     boolean refresh = true;
 
     private FlowPanel mainHeader = new FlowPanel();
     private HTML mainHeaderLabel = new HTML("--------------------------");
-    private HTML footer = new HTML("<ul><li><img title=\"Feedback\" src=\"//1.www.s81c.com/i/v17/opinionlab/oo_icon.gif\"><span>&nbsp;&nbsp;Created by </span><a target='blank' href=\"https://twitter.com/armangal\">@armangal</a><span>, based on </span><a href='https://github.com/armangal/SmartMonitoring' target='blank'>SmartMonitoring</a><span> project.</span></span></li></ul>");
+    private HTML footer = new HTML("<ul><li><img title=\"Feedback\" src=\"img/oo_icon.gif\"><span>&nbsp;&nbsp;Created by </span><a target='blank' href=\"https://twitter.com/armangal\">@armangal</a><span>, based on </span><a href='https://github.com/armangal/SmartMonitoring' target='blank'>SmartMonitoring</a><span> project.</span></span></li></ul>");
 
     private AlertsWidget<CS, FR> alertsWidget;
 
@@ -75,6 +78,20 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
             }
             Log.debug("Reschedule refresh?:" + refresh);
             return refresh;
+        }
+    };
+
+    private RepeatingCommand alertBlick = new RepeatingCommand() {
+
+        @Override
+        public boolean execute() {
+            if ("2".equals(alertBtn.getElement().getAttribute("state"))) {
+                Style style = alertBtn.getElement().getStyle();
+                style.setColor(style.getColor().equals("red") ? "blue" : "red");
+                return true;
+            } else {
+                return false;
+            }
         }
     };
 
@@ -146,6 +163,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                 Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isProdMode() ? 60000 : 20000);
                 mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
 
+                alertBtn.getElement().setAttribute("state", cc.isAlertsEnabled() ? "2" : "1");
+                alertButtonClicked(cc.isAlertsEnabled() ? "2" : "1");
             }
         });
 
@@ -169,9 +188,30 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
             }
         });
 
+        alertBtn.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                String attribute = alertBtn.getElement().getAttribute("state");
+                alertButtonClicked(attribute);
+                service.stopAlerts("2".equals(attribute), new AsyncCallback<Boolean>() {
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
         mainPanel.setStyleName("mainPanel");
         mainHeader.setStyleName("mainHeader");
         mainHeader.add(refreshBtn);
+        mainHeader.add(alertBtn);
         Resources resources = GWT.create(Resources.class);
         Image settings = new Image(resources.settingsSmall());
         settings.addStyleName("settings");
@@ -222,6 +262,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         RootPanel.get().add(loginWidget);
 
         refreshBtn.getElement().setAttribute("state", "1");
+        alertBtn.getElement().setAttribute("state", "1");
     }
 
     /**
@@ -246,5 +287,22 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
     public AsyncCallback<FR> getRefreshCallback() {
         return refreshCallback;
+    }
+
+    private void alertButtonClicked(String attribute) {
+        Style style = alertBtn.getElement().getStyle();
+        if ("1".equals(attribute)) {
+            alertBtn.getElement().setAttribute("state", "2");
+            style.setColor("red");
+            style.setFontWeight(FontWeight.BOLDER);
+            alertBtn.setText("Continue Alerts");
+            Scheduler.get().scheduleFixedDelay(alertBlick, 1500);
+        } else {
+            alertBtn.getElement().setAttribute("state", "1");
+            style.setColor("black");
+            style.setFontWeight(FontWeight.NORMAL);
+            alertBtn.setText("Stop Alerts");
+
+        }
     }
 }

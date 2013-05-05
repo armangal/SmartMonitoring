@@ -45,7 +45,7 @@ import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R extends Refresher<S>, C extends ConnectedServer>
     implements IStateUpdaterThread {
 
-    private static Logger logger = LoggerFactory.getLogger(StateUpdaterThread.class);
+    private static Logger logger = LoggerFactory.getLogger("StateUpdaterThread");
 
     private AtomicInteger executionNumber = new AtomicInteger(0);
 

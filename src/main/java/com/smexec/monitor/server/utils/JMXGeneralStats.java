@@ -183,8 +183,8 @@ public class JMXGeneralStats {
         List<GCHistory> gcHistoryList = getGcHistory(gcmbeans);
         for (GCHistory gch : gcHistoryList) {
             long lastColleactionTime = serverStataus.updateGCHistory(gch);
-            if (lastColleactionTime > 1000) {
-                Alert alert = alertService.createAlert("GC took tool long: " + lastColleactionTime + "ms",
+            if (lastColleactionTime > serverStataus.getServerGroup().getGcTime()) {
+                Alert alert = alertService.createAlert("GC took tool long: " + lastColleactionTime + " ms",
                                                        "",
                                                        serverStataus.getServerConfig().getServerCode(),
                                                        serverStataus.getServerConfig().getName(),

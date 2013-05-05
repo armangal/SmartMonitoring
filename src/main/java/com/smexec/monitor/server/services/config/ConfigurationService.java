@@ -115,4 +115,10 @@ public class ConfigurationService {
         return input;
 
     }
+
+    public Boolean stopAlerts(boolean enable) {
+        serversConfig.getAlertsConfig().setEnabled(enable);
+        return serversConfig.getAlertsConfig().isEnabled();
+    }
+
 }

@@ -66,6 +66,7 @@
 			<name>special</name>
 			<cpuLoad>90</cpuLoad>
 			<memoryUsage>90</memoryUsage>
+			<gcTime>2000</gcTime>
 		</group>
 	</serverGroups>
 		

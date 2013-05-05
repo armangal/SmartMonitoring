@@ -185,7 +185,7 @@ public class ServersConfig {
             AlertsConfig ac = new AlertsConfig(true, "fromAd", "FromN", "sub", "mailServerAddress", "mailServerport", 10000, toAddressList);
             sc.setAlertsConfig(ac);
 
-            ServerGroup sg = new ServerGroup("test", 55d, 66d);
+            ServerGroup sg = new ServerGroup("test", 55d, 66d, 500l);
             List<ServerGroup> sgList = new ArrayList<ServerGroup>();
             sgList.add(sg);
             sc.setServerGroups(sgList);

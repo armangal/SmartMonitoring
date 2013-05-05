@@ -47,4 +47,6 @@ public interface MonitoringServiceAsync<CS extends ConnectedServer, FR extends A
     void getSettingsXML(AsyncCallback<String> callback);
 
     void saveSettingsXML(String xml, AsyncCallback<Boolean> callback);
+
+    void stopAlerts(boolean enable, AsyncCallback<Boolean> callback);
 }

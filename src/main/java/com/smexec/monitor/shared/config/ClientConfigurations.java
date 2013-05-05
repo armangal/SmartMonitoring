@@ -26,12 +26,15 @@ public class ClientConfigurations
 
     private String version;
 
+    private Boolean alertsEnabled;
+
     public ClientConfigurations() {}
 
-    public ClientConfigurations(String title, String version) {
+    public ClientConfigurations(String title, String version, Boolean alertsEnabled) {
         super();
         this.title = title;
         this.version = version;
+        this.alertsEnabled = alertsEnabled;
     }
 
     public String getVersion() {
@@ -40,6 +43,10 @@ public class ClientConfigurations
 
     public String getTitle() {
         return title;
+    }
+
+    public Boolean isAlertsEnabled() {
+        return alertsEnabled;
     }
 
     @Override

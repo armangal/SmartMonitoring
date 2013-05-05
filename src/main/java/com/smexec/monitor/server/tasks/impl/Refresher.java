@@ -36,7 +36,7 @@ import com.smexec.monitor.server.utils.JMXSmartExecutorStats;
 public class Refresher<S extends ServerStataus>
     implements Callable<S> {
 
-    private static Logger logger = LoggerFactory.getLogger(Refresher.class);
+    private static Logger logger = LoggerFactory.getLogger("Refresher");
 
     @Inject
     private JMXGeneralStats jmxGeneralStats;

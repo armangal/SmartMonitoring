@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import javax.management.remote.JMXConnector;
 
@@ -123,6 +124,7 @@ public class ServerStataus {
             };
 
             gcHistoryMap.put(gcHistory.getCollectorName(), cycles);
+            cycles.put(gcHistory.getCollectionCount(), gcHistory);
 
         } else {
 
@@ -136,9 +138,9 @@ public class ServerStataus {
                                           / (gcHistory.getCollectionCount() - gcH.getCollectionCount());
                     gcHistory.setLastColleactionTime(lastColleactionTime);
                 }
+                cycles.put(gcHistory.getCollectionCount(), gcHistory);
             }
         }
-        cycles.put(gcHistory.getCollectionCount(), gcHistory);
 
         return lastColleactionTime;
 
@@ -169,9 +171,9 @@ public class ServerStataus {
     public ArrayList<GCHistory> getLastGCHistory() {
         ArrayList<GCHistory> list = new ArrayList<GCHistory>(0);
         for (LinkedHashMap<Long, GCHistory> poolGcStats : gcHistoryMap.values()) {
-            int size = poolGcStats.keySet().size();
-            Object[] array = poolGcStats.keySet().toArray();
-            list.add(poolGcStats.get(array[size - 1]));
+            LinkedList<Long> keySet = new LinkedList<Long>(poolGcStats.keySet());
+            Collections.sort(keySet);
+            list.add(poolGcStats.get(keySet.getLast()));
         }
         return list;
     }

@@ -69,6 +69,10 @@ public class AlertsConfig {
         return enabled;
     }
 
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public String getFromAddress() {
         return fromAddress;
     }

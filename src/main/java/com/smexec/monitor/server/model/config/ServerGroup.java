@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ServerGroup {
 
     public final static ServerGroup DEFAULT_GROUP = new ServerGroup();
-    
+
     public final static String DEFAULT_GROUP_NAME = "DEFAULT";
 
     /**
@@ -45,13 +45,16 @@ public class ServerGroup {
      */
     private Double memoryUsage = 90d;
 
+    private Long gcTime = 1000l;
+
     public ServerGroup() {}
 
-    ServerGroup(String name, Double cpuLoad, Double memoryUsage) {
+    ServerGroup(String name, Double cpuLoad, Double memoryUsage, Long gcTime) {
         super();
         this.name = name;
         this.cpuLoad = cpuLoad;
         this.memoryUsage = memoryUsage;
+        this.gcTime = gcTime;
     }
 
     public String getName() {
@@ -66,10 +69,22 @@ public class ServerGroup {
         return memoryUsage;
     }
 
+    public Long getGcTime() {
+        return gcTime;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ServerGroup [name=").append(name).append(", cpuLoad=").append(cpuLoad).append(", memoryUsage=").append(memoryUsage).append("]\n");
+        builder.append("ServerGroup [name=")
+               .append(name)
+               .append(", cpuLoad=")
+               .append(cpuLoad)
+               .append(", memoryUsage=")
+               .append(memoryUsage)
+               .append(", gcTime=")
+               .append(gcTime)
+               .append("]\n");
         return builder.toString();
     }
 
