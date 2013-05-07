@@ -96,7 +96,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
                     serversList.add(cs);
                 } catch (Exception e) {
                     take.cancel(true);
-                    logger.warn(e.getMessage(), e);
+                    logger.error(e.getMessage(), e);
                 }
 
             } while (i < values.size());

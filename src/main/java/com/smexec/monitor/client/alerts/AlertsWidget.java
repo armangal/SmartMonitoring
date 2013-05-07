@@ -15,9 +15,7 @@
  */
 package com.smexec.monitor.client.alerts;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -44,6 +42,12 @@ public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRef
         sp.setStyleName("alertsWidgetData");
         getDataPanel().add(sp);
         sp.add(alertsTable);
+
+        initAlertTable();
+    }
+
+    private void initAlertTable() {
+        alertsTable.removeAllRows();
         alertsTable.getElement().setId("infoTable");
 
         int i = 0;
@@ -92,7 +96,8 @@ public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRef
 
     @Override
     public void clear(FR result) {
-
+        lastAlertId = -1;
+        initAlertTable();
     }
 
     public int getLastAlertId() {

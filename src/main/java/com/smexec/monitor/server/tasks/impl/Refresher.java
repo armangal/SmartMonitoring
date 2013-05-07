@@ -68,7 +68,7 @@ public class Refresher<S extends ServerStataus>
 
                 ss.setFirstTimeAccess(false);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error(e.getMessage(), e);
         } finally {
             Thread.currentThread().setName(old);

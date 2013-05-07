@@ -169,10 +169,24 @@ public class JMXGeneralStats {
                                                                                            heapMemoryUsage.getCommitted(),
                                                                                            heapMemoryUsage.getMax(),
                                                                                            memoryState);
+        for (MemoryState ms : memoryState) {
+            double usage = (double) ms.getUsed() * 100d / (double) ms.getMax();
+            if ((usage > serverStataus.getServerGroup().getNotHeapMemorySpaceUsage() && !ms.isHeap())
+                || (usage > serverStataus.getServerGroup().getHeapMemorySpaceUsage() && ms.isHeap())) {
+
+                Alert alert = alertService.createAlert("MemorySpace " + ms.getName() + " usage:" + usage + "%",
+                                                       ms.toString(),
+                                                       serverStataus.getServerConfig().getServerCode(),
+                                                       serverStataus.getServerConfig().getName(),
+                                                       new Date().getTime(),
+                                                       AlertType.MEMORY_SPACE);
+                alertService.addAlert(alert, serverStataus);
+            }
+        }
         // check the groups settings
         if (mu.getPercentage() > serverStataus.getServerGroup().getMemoryUsage()) {
             Alert alert = alertService.createAlert("Memory Usage Alert:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
-                                                   "",
+                                                   mu.toString(),
                                                    serverStataus.getServerConfig().getServerCode(),
                                                    serverStataus.getServerConfig().getName(),
                                                    new Date().getTime(),

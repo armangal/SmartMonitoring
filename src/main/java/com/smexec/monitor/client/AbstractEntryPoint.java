@@ -139,9 +139,16 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                 refresh = false;
                 RootPanel.get().clear();
                 RootPanel.get().add(loginWidget);
+                
+                //reset last IDs
+                resetLastIDs();
             }
         }
     };
+    
+    public void resetLastIDs() {
+        alertsWidget.clear(null);
+    }
 
     public AbstractEntryPoint(final MonitoringServiceAsync<CS, FR> service) {
         this.service = service;

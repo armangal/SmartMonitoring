@@ -44,6 +44,8 @@ public class ServerGroup {
      * above this value alert will be sent
      */
     private Double memoryUsage = 90d;
+    private Double notHeapMemorySpaceUsage = 90d;
+    private Double heapMemorySpaceUsage = 101d;
 
     private Long gcTime = 1000l;
 
@@ -69,6 +71,14 @@ public class ServerGroup {
         return memoryUsage;
     }
 
+    public Double getHeapMemorySpaceUsage() {
+        return heapMemorySpaceUsage;
+    }
+
+    public Double getNotHeapMemorySpaceUsage() {
+        return notHeapMemorySpaceUsage;
+    }
+
     public Long getGcTime() {
         return gcTime;
     }
@@ -82,6 +92,10 @@ public class ServerGroup {
                .append(cpuLoad)
                .append(", memoryUsage=")
                .append(memoryUsage)
+               .append(", notHeapMemorySpaceUsage=")
+               .append(notHeapMemorySpaceUsage)
+               .append(", HeapMemorySpaceUsage=")
+               .append(heapMemorySpaceUsage)
                .append(", gcTime=")
                .append(gcTime)
                .append("]\n");
