@@ -174,7 +174,7 @@ public class JMXGeneralStats {
             if ((usage > serverStataus.getServerGroup().getNotHeapMemorySpaceUsage() && !ms.isHeap())
                 || (usage > serverStataus.getServerGroup().getHeapMemorySpaceUsage() && ms.isHeap())) {
 
-                Alert alert = alertService.createAlert("MemorySpace " + ms.getName() + " usage:" + usage + "%",
+                Alert alert = alertService.createAlert("MemorySpace: " + ms.getName() + " usage:" + DECIMAL_FORMAT.format(usage) + "%",
                                                        ms.toString(),
                                                        serverStataus.getServerConfig().getServerCode(),
                                                        serverStataus.getServerConfig().getName(),
@@ -185,7 +185,7 @@ public class JMXGeneralStats {
         }
         // check the groups settings
         if (mu.getPercentage() > serverStataus.getServerGroup().getMemoryUsage()) {
-            Alert alert = alertService.createAlert("Memory Usage Alert:" + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
+            Alert alert = alertService.createAlert("Memory Usage: " + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
                                                    mu.toString(),
                                                    serverStataus.getServerConfig().getServerCode(),
                                                    serverStataus.getServerConfig().getName(),

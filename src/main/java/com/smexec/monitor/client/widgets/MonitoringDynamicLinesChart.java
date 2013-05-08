@@ -176,5 +176,10 @@ public class MonitoringDynamicLinesChart<V extends Number, X extends Number>
         }
 
     }
+    
+    @Override
+    public void setTitle(String title) {
+        this.title=title;
+    }
 
 }

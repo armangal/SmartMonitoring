@@ -107,6 +107,7 @@ body {
 .monitoringWidget {
 	background-color:#FFFFF3;
 	width: 49%;
+	background-image: url("/img/60degree_gray.png");
 }
 
 .monitoringWidget .header {
