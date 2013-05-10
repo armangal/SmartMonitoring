@@ -21,8 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.management.remote.JMXConnector;
 
@@ -176,6 +176,30 @@ public class ServerStataus {
             list.add(poolGcStats.get(keySet.getLast()));
         }
         return list;
+    }
+
+    /**
+     * returns the highes values of GC ever recorder by system to be shown in the UI
+     * @param lastGCHistory
+     * @return
+     */
+    public Double[] getHighHistory() {
+        List<Double> history = new ArrayList<Double>(0);
+        for (LinkedHashMap<Long, GCHistory> poolGcStats : gcHistoryMap.values()) {
+            double max = Double.MIN_VALUE;
+            for (GCHistory gch : poolGcStats.values()) {
+                if (gch.getLastColleactionTime() > 0 && gch.getCollectionCount() > 0 && gch.getLastColleactionTime() > max) {
+                    max = gch.getLastColleactionTime();
+                }
+            }
+            if (max != Double.MIN_VALUE) {
+                history.add(max/1000d);
+            }
+
+        }
+        Double[] lastHistory = new Double[history.size()];
+        history.toArray(lastHistory);
+        return lastHistory;
     }
 
     /**

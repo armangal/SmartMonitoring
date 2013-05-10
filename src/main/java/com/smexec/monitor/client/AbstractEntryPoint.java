@@ -24,7 +24,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -41,6 +43,7 @@ import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.settings.SettingsPopup;
 import com.smexec.monitor.client.smartpool.ThreadPoolsWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
+import com.smexec.monitor.client.widgets.ProgressLabel;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
@@ -65,6 +68,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
     private FlowPanel mainHeader = new FlowPanel();
     private HTML mainHeaderLabel = new HTML("--------------------------");
+    private ProgressLabel refProg = new ProgressLabel();
     private HTML footer = new HTML("<ul><li><img title=\"Feedback\" src=\"img/oo_icon.gif\"><span>&nbsp;&nbsp;Created by </span><a target='blank' href=\"https://twitter.com/armangal\">@armangal</a><span>, based on </span><a href='https://github.com/armangal/SmartMonitoring' target='blank'>SmartMonitoring</a><span> project.</span></span></li></ul>");
 
     private AlertsWidget<CS, FR> alertsWidget;
@@ -102,11 +106,14 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         @Override
         public void onSuccess(FR fullResult) {
             errorCount = 0;
-
+            refProg.progress();
+            
             if (fullResult == null) {
                 Log.debug("Received NULL response.");
                 return;
             }
+
+            Log.debug("Full Result:" + fullResult.toString());
 
             ArrayList<CS> servers = fullResult.getServers();
             if (servers != null && !servers.isEmpty()) {
@@ -126,7 +133,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
             mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime()
                                     + ")</h1>");
-            mainHeader.add(mainHeaderLabel);
+//            mainHeader.add(mainHeaderLabel);
+            
 
         }
 
@@ -134,18 +142,23 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         public void onFailure(Throwable caught) {
             Log.error("Received refresh response error:" + caught.getMessage() + ",\n errorCount:" + errorCount);
             errorCount++;
+            refProg.progress();
             if (errorCount > 3) {
                 // Window.setTitle("Error:" + caught.getMessage());
                 refresh = false;
                 RootPanel.get().clear();
                 RootPanel.get().add(loginWidget);
-                
-                //reset last IDs
+
+                // reset last IDs
                 resetLastIDs();
+                for (IMonitoringWidget<CS, FR> widget : widgets) {
+                    widget.clear(null);
+                    widget.stopRefresh();
+                }
             }
         }
     };
-    
+
     public void resetLastIDs() {
         alertsWidget.clear(null);
     }
@@ -184,6 +197,10 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                     refreshBtn.getElement().setAttribute("state", "2");
                     refresh = false;
                     refreshBtn.setText("Start Refresh");
+                    for (IMonitoringWidget<CS, FR> widget : widgets) {
+                        widget.stopRefresh();
+                    }
+
                 } else {
                     refreshBtn.getElement().setAttribute("state", "1");
                     refresh = true;
@@ -202,9 +219,10 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                 String attribute = alertBtn.getElement().getAttribute("state");
                 alertButtonClicked(attribute);
                 service.stopAlerts("2".equals(attribute), new AsyncCallback<Boolean>() {
+
                     @Override
                     public void onSuccess(Boolean result) {
-                        
+
                     }
 
                     @Override
@@ -217,6 +235,10 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
         mainPanel.setStyleName("mainPanel");
         mainHeader.setStyleName("mainHeader");
+        Style style = refProg.getElement().getStyle();
+        style.setWidth(20, Unit.PX);
+        style.setFloat(Float.LEFT);
+        mainHeader.add(refProg);
         mainHeader.add(refreshBtn);
         mainHeader.add(alertBtn);
         Resources resources = GWT.create(Resources.class);
@@ -231,6 +253,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
             }
         });
         mainHeader.add(settings);
+        mainHeader.add(mainHeaderLabel);
         mainPanel.add(mainHeader);
 
         registerWidgets();
@@ -254,7 +277,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
     public void refresh() {
 
         Log.debug("Send refresh request.");
-
+        refProg.progress();
+        
         service.refresh(alertsWidget.getLastAlertId(), refreshCallback);
     }
 

@@ -64,7 +64,7 @@ public class MemoryUsageLight
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("MemoryUsage [cm=");
+        builder.append("MemoryUsageLight [cm=");
         builder.append((committed));
         builder.append(", in=");
         builder.append((init));
@@ -74,7 +74,7 @@ public class MemoryUsageLight
         builder.append((used));
         builder.append(", pr=");
         builder.append((getPercentage()));
-        builder.append("%, ").append(super.toString()).append("]");
+        builder.append("%]");
         return builder.toString();
     }
 

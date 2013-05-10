@@ -16,6 +16,7 @@
 package com.smexec.monitor.shared;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 
@@ -119,10 +120,10 @@ public class ConnectedServer
                .append(jmxPort)
                .append(", st=")
                .append(status)
-               .append(", mu=")
+               .append(", mul=")
                .append(memoryUsage)
                .append(", gc=")
-               .append(gcHistories)
+               .append(Arrays.toString(gcHistories))
                .append(", ut=")
                .append(upTime)
                .append(", cp=")

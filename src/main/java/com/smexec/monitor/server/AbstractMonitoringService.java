@@ -180,7 +180,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public ClientConfigurations getClientConfigurations() {
 
-        return new ClientConfigurations(Version.getEnvName(), Version.getVersion(), configurationService.getServersConfig().getAlertsConfig().isEnabled());
+        return new ClientConfigurations(Version.getEnvName(), Version.getVersion(), ConfigurationService.getServersConfig().getAlertsConfig().isEnabled());
     }
 
     public AlertService getAlertService() {

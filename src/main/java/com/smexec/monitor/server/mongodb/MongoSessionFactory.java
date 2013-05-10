@@ -40,7 +40,7 @@ public class MongoSessionFactory {
 
     @Inject
     public MongoSessionFactory(ConfigurationService confService) {
-        mongoConfig = confService.getServersConfig().getMongoConfig();
+        mongoConfig = ConfigurationService.getServersConfig().getMongoConfig();
 
         if (!mongoConfig.getEnabled()) {
             logger.info("Mongo DB is disabled.Skipping initialization");

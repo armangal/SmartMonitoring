@@ -42,7 +42,7 @@ public class StateUpdaterThread
                                    sc.getJmxPort(),
                                    ss.isConnected(),
                                    mul,
-                                   getLastHistory(ss.getLastGCHistory()),
+                                   ss.getHighHistory(),
                                    ss.getUpTime(),
                                    ss.getCpuUtilization().getLastPercent().getUsage(),
                                    ss.getCpuUtilization().getLastPercent().getSystemLoadAverage());

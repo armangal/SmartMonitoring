@@ -19,7 +19,6 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.FullRefreshResult;
 
 public class Smartmonitoring
     extends AbstractEntryPoint<ConnectedServer, AbstractFullRefreshResult<ConnectedServer>> {

@@ -134,25 +134,6 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
     public abstract C getConnectedServer(S ss);
 
     /**
-     * preparing the array for client presentation
-     * 
-     * @param lastGCHistory
-     * @return
-     */
-    public Double[] getLastHistory(ArrayList<GCHistory> lastGCHistory) {
-        List<Double> history = new ArrayList<Double>(0);
-        for (GCHistory gch : lastGCHistory) {
-            if (gch.getLastColleactionTime() > 0 && gch.getCollectionCount() > 0) {
-                double time = gch.getLastColleactionTime() / 1000d;
-                history.add(time);
-            }
-        }
-        Double[] lastHistory = new Double[history.size()];
-        history.toArray(lastHistory);
-        return lastHistory;
-    }
-
-    /**
      * gets the light object from client representation
      * 
      * @param ss

@@ -19,10 +19,16 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 
-public interface IMonitoringWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult< CS>>
+public interface IMonitoringWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
     extends IsWidget {
 
     void update(FR result);
 
     void clear(FR result);
+
+    /**
+     * notifying widgets that are self-refreshing to stop the refresh<br/>
+     * Starting the refresh should be triggered when update is called.
+     */
+    void stopRefresh();
 }

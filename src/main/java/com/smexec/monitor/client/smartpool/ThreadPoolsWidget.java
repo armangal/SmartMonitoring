@@ -165,4 +165,9 @@ public class ThreadPoolsWidget<CS extends ConnectedServer, FR extends AbstractFu
             i++;
         }
     }
+
+    @Override
+    public void stopRefresh() {
+
+    }
 }

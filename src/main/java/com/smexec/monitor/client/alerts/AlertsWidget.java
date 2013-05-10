@@ -85,12 +85,18 @@ public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRef
                 // clean
                 for (int i = alertsTable.getRowCount() - 1; i > 1000; i--) {
                     int id = Integer.valueOf(alertsTable.getRowFormatter().getElement(i).getAttribute("id"));
+                    Log.debug("Alert widget, removing id:" + id);
                     alertsTable.removeRow(i);
                 }
             }
         } catch (Exception e) {
             Log.error(e.getMessage(), e);
         }
+
+    }
+
+    @Override
+    public void stopRefresh() {
 
     }
 

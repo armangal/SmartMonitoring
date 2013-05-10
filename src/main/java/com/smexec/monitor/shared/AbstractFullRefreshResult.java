@@ -76,8 +76,15 @@ public abstract class AbstractFullRefreshResult<CS extends ConnectedServer>
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("FullRefreshResult [ARR [pfm=");
-        builder.append(poolFeedMap.size()).append(", alerts=").append(alerts).append(", server:").append(servers).append("]");
+        builder.append("[ARR [pfm=");
+        builder.append(poolFeedMap.size())
+               .append(", alerts=")
+               .append(alerts)
+               .append(", server:")
+               .append(servers)
+               .append(", serverTime:")
+               .append(serverTime)
+               .append("]");
         return builder.toString();
     }
 

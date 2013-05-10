@@ -207,13 +207,26 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
         });
 
         int i = 0, j = 0;
+        HTML t;
         ft.setText(i, j++, "Code, Name");
         ft.setText(i, j++, "Up Time");
-        ft.setText(i, j++, "Memory");
-        ft.setText(i, j++, "Usage %");
-        ft.setText(i, j++, "GC Avg Time");
-        ft.setText(i, j++, "CPU%");
-        ft.setText(i, j++, "SYSL");
+
+        t = new HTML("Memory");
+        t.setTitle("Latest memory status.");
+        ft.setWidget(i, j++, t);
+        
+        t = new HTML("Max GC");
+        t.setTitle("Max GC time in the last 24 hours.");
+        ft.setWidget(i, j++, t);
+        
+        t = new HTML("Cpu");
+        t.setTitle("Latest CPU load.");
+        ft.setWidget(i, j++, t);
+        
+        t = new HTML("SYSL");
+        t.setTitle("Linux system load.");
+        ft.setWidget(i, j++, t);
+        
         ft.getRowFormatter().getElement(i++).setId("th");
 
         int offline = 0;
@@ -239,13 +252,10 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
                 ft.setWidget(i, j++, name);
                 ft.setText(i, j++, ClientStringFormatter.formatMilisecondsToHours(cs.getUpTime()));
 
-                HTML usage = new HTML(ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + " of "
-                                      + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB");
-                usage.addMouseOverHandler(handCursor);
+                HTML usage = new HTML(ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + "/"
+                                      + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB, "
+                                      + ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%");
                 ft.setWidget(i, j++, usage);
-
-                HTML percent = new HTML(ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%");
-                ft.setWidget(i, j++, percent);
 
                 StringBuilder gcs = new StringBuilder();
                 double gcMax = Double.MIN_VALUE;
@@ -267,7 +277,7 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
                 memory.getElement().setAttribute("code", "" + cs.getServerCode());
 
                 ft.setWidget(i, j++, memory);
-                if (gcMax > 10) {
+                if (gcMax > 3) {
                     Style style = ft.getFlexCellFormatter().getElement(i, j - 1).getStyle();
                     style.setBackgroundColor("#C00000");
                     style.setFontWeight(FontWeight.BOLDER);
@@ -347,5 +357,10 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
 
             return true;
         }
+    }
+
+    @Override
+    public void stopRefresh() {
+
     }
 }
