@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.utils.JMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXSmartExecutorStats;
 
@@ -33,7 +33,7 @@ import com.smexec.monitor.server.utils.JMXSmartExecutorStats;
  * 
  * @author armang
  */
-public class Refresher<S extends ServerStataus>
+public class Refresher<S extends ServerStatus>
     implements Callable<S> {
 
     private static Logger logger = LoggerFactory.getLogger("Refresher");
@@ -93,4 +93,7 @@ public class Refresher<S extends ServerStataus>
         return executionDate;
     }
 
+    public S getServerStataus() {
+        return ss;
+    }
 }

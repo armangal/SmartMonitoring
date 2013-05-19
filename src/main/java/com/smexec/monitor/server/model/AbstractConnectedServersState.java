@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
-public abstract class AbstractConnectedServersState<SS extends ServerStataus, CS extends ConnectedServer> {
+public abstract class AbstractConnectedServersState<SS extends ServerStatus, CS extends ConnectedServer> {
 
     private static Logger logger = LoggerFactory.getLogger(AbstractConnectedServersState.class);
 

@@ -29,10 +29,10 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.IConnectedServersState;
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
-import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.utils.JMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.server.utils.ListUtils;
@@ -51,7 +51,7 @@ import com.smexec.monitor.shared.smartpool.PoolsFeed;
  * The server side implementation of the monitoring RPC service.
  */
 @SuppressWarnings("serial")
-public abstract class AbstractMonitoringService<SS extends ServerStataus, CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public abstract class AbstractMonitoringService<SS extends ServerStatus, CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
     extends RemoteServiceServlet {
 
     private static Logger logger = LoggerFactory.getLogger("MonitoringService");
@@ -68,7 +68,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
     private AlertService alertService;
 
     @Inject
-    private ConfigurationService configurationService;
+    private IConfigurationService<ServersConfig> configurationService;
 
     @Inject
     private JMXGeneralStats jmxGeneralStats;
@@ -100,7 +100,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public String getGCHistory(Integer serverCode) {
         checkAuthenticated();
-        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
+        ServerStatus serverStataus = (ServerStatus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             return serverStataus.getGCHistory();
         } else {
@@ -114,7 +114,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
         HttpSession session = getThreadLocalRequest().getSession();
         userName = userName.trim();
         password = password.trim();
-        ServersConfig sc = ConfigurationService.getServersConfig();
+        ServersConfig sc = configurationService.getServersConfig();
         if (sc.getUsername().equalsIgnoreCase(userName) && sc.getPassword().equals(password)) {
             session.setAttribute(AUTHENTICATED, Boolean.TRUE);
             logger.info("Authnticated user:{}, pass:{}", userName, password);
@@ -138,7 +138,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks) {
         checkAuthenticated();
-        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
+        ServerStatus serverStataus = (ServerStatus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             LinkedList<MemoryUsage> memoryUsage = serverStataus.getMemoryUsage(chunks);
             return ListUtils.blur(memoryUsage, 200, new LinkedList<MemoryUsage>());
@@ -150,7 +150,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks) {
         checkAuthenticated();
-        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
+        ServerStatus serverStataus = (ServerStatus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             LinkedList<CpuUtilizationChunk> percentList = serverStataus.getCpuUtilization().getPercentList(chunks);
             return ListUtils.blur(percentList, 200, new LinkedList<CpuUtilizationChunk>());
@@ -161,7 +161,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public RuntimeInfo getRuntimeInfo(Integer serverCode) {
         checkAuthenticated();
-        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(serverCode);
+        ServerStatus serverStataus = (ServerStatus) connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null && serverStataus.isConnected()) {
             try {
                 return jmxGeneralStats.getRuntimeInfo(serverStataus);
@@ -180,7 +180,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStataus, CS ext
 
     public ClientConfigurations getClientConfigurations() {
 
-        return new ClientConfigurations(Version.getEnvName(), Version.getVersion(), ConfigurationService.getServersConfig().getAlertsConfig().isEnabled());
+        return new ClientConfigurations(Version.getEnvName(), Version.getVersion(), configurationService.getServersConfig().getAlertsConfig().isEnabled());
     }
 
     public AlertService getAlertService() {

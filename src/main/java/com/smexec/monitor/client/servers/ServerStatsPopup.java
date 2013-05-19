@@ -111,6 +111,9 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
                              + ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%, GC Time:" + gcs + "</h2>");
 
         fp.add(tech);
+        
+        HTML info = new HTML("<h2>" + cs.getMoreInfo() + "</h2");
+        fp.add(info);
 
         fp.getElement().setId("xxx");
         setWidget(fp);

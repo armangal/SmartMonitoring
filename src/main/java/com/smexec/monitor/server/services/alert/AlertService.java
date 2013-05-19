@@ -27,8 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
+import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.server.services.persistence.IPersistenceService;
 import com.smexec.monitor.shared.alert.Alert;
@@ -43,7 +45,7 @@ public class AlertService {
     private static AtomicInteger alertCounter = new AtomicInteger();
 
     @Inject
-    private ConfigurationService configurationService;
+    private IConfigurationService<ServersConfig> configurationService;
 
     @Inject
     private MailService mailService;
@@ -98,7 +100,7 @@ public class AlertService {
      * 
      * @param alert
      */
-    public <SS extends ServerStataus> void addAlert(Alert alert, SS ss) {
+    public <SS extends ServerStatus> void addAlert(Alert alert, SS ss) {
         try {
             alert.setId(alertCounter.getAndIncrement());
             boolean mailSent = false;

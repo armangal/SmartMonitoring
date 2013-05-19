@@ -29,14 +29,14 @@ import javax.management.MBeanServerConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.shared.runtime.ThreadDump;
 
 public class JMXThreadDumpUtils {
 
     private static Logger logger = LoggerFactory.getLogger(JMXThreadDumpUtils.class);
 
-    public <SS extends ServerStataus> ThreadDump getThreadDump(SS ss) {
+    public <SS extends ServerStatus> ThreadDump getThreadDump(SS ss) {
         StringBuilder response = new StringBuilder();
 
         LinkedList<com.smexec.monitor.shared.runtime.ThreadInfo> threads = new LinkedList<com.smexec.monitor.shared.runtime.ThreadInfo>();

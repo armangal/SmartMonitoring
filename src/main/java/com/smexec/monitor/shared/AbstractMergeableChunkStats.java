@@ -13,29 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server.model;
+package com.smexec.monitor.shared;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+public abstract class AbstractMergeableChunkStats
 
-import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.smartpool.PoolsFeed;
+    extends AbstractChunkStats {
 
-public interface IConnectedServersState<SS extends ServerStatus, CS extends ConnectedServer> {
+    private static final long serialVersionUID = 1L;
 
-    SS getServerStataus(final Integer serevrCode);
+    public AbstractMergeableChunkStats() {}
 
-    List<SS> getAllServers();
+    public AbstractMergeableChunkStats(long fullEndTime, long endTime) {
+        super(fullEndTime, endTime);
+    }
 
-    SS removeServer(final Integer serevrCode);
+    public abstract AbstractMergeableChunkStats copyMe();
 
-    SS addServer(SS serverStataus);
+    public abstract void aggregate(AbstractMergeableChunkStats value);
 
-    void mergeStats(ArrayList<CS> servers);
-
-    ArrayList<CS> getServers();
-
-    HashMap<String, PoolsFeed> getPoolFeedMap();
+    public abstract void divide(int elements);
 
 }

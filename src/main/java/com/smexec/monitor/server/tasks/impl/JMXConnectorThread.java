@@ -17,13 +17,14 @@ package com.smexec.monitor.server.tasks.impl;
 
 import javax.xml.bind.JAXBException;
 
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.model.config.ServerGroup;
+import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.shared.ConnectedServer;
 
 public class JMXConnectorThread
-    extends AbstractJMXConnectorThread<ServerStataus, ConnectedServer> {
+    extends AbstractJMXConnectorThread<ServerStatus, ConnectedServer, ServersConfig> {
 
     public JMXConnectorThread()
         throws JAXBException {
@@ -31,8 +32,8 @@ public class JMXConnectorThread
     }
 
     @Override
-    public ServerStataus getServerStatus(ServerConfig sc, final ServerGroup serverGroup) {
+    public ServerStatus getServerStatus(ServerConfig sc, final ServerGroup serverGroup) {
         // keeping history stats for 24 hours
-        return new ServerStataus(sc, serverGroup, (24 * 60 * 3), (24 * 60 * 3));
+        return new ServerStatus(sc, serverGroup, (24 * 60 * 3), (24 * 60 * 3));
     }
 }

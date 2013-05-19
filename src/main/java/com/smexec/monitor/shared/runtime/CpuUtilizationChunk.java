@@ -17,7 +17,7 @@ package com.smexec.monitor.shared.runtime;
 
 import java.io.Serializable;
 
-import com.smexec.monitor.shared.AbstractChunkStats;
+import com.smexec.monitor.shared.AbstractMergeableChunkStats;
 
 /**
  * data holder for CPU usage stats
@@ -25,7 +25,7 @@ import com.smexec.monitor.shared.AbstractChunkStats;
  * @author armang
  */
 public class CpuUtilizationChunk
-    extends AbstractChunkStats
+    extends AbstractMergeableChunkStats
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,6 +39,23 @@ public class CpuUtilizationChunk
         super(time, time);
         this.usage = usage;
         this.systemLoadAverage = systemLoadAverage;
+    }
+
+    @Override
+    public AbstractMergeableChunkStats copyMe() {
+        return new CpuUtilizationChunk(usage, systemLoadAverage, getFullEndTime());
+    }
+
+    public void aggregate(AbstractMergeableChunkStats v) {
+        CpuUtilizationChunk value = (CpuUtilizationChunk) v;
+        this.usage = Math.max(usage, value.usage);
+        this.systemLoadAverage = Math.max(systemLoadAverage, value.systemLoadAverage);
+    }
+
+    @Override
+    public void divide(int elements) {
+        // nothing
+
     }
 
     public double getUsage() {
@@ -87,7 +104,5 @@ public class CpuUtilizationChunk
             return false;
         return true;
     }
-    
-    
 
 }

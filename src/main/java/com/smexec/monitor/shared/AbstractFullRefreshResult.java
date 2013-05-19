@@ -77,7 +77,7 @@ public abstract class AbstractFullRefreshResult<CS extends ConnectedServer>
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("[ARR [pfm=");
-        builder.append(poolFeedMap.size())
+        builder.append(poolFeedMap!= null ? poolFeedMap.size() : "0")
                .append(", alerts=")
                .append(alerts)
                .append(", server:")

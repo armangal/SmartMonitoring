@@ -34,19 +34,19 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.model.IConnectedServersState;
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.model.config.ServerGroup;
 import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
-import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
 
-public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS extends ConnectedServer>
+public abstract class AbstractJMXConnectorThread<SS extends ServerStatus, CS extends ConnectedServer, SC extends ServersConfig>
     implements IJMXConnectorThread {
 
     public static Logger logger = LoggerFactory.getLogger("JMXConnectorThread");
@@ -66,7 +66,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
     private IConnectedServersState<SS, CS> connectedServersState;
 
     @Inject
-    private ConfigurationService configurationService;
+    private IConfigurationService<SC> configurationService;
 
     @Inject
     private AlertService alertService;
@@ -90,7 +90,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
             // new in mappings or try to connect to offline server reconnection
             String oldName = Thread.currentThread().getName();
             try {
-                Thread.currentThread().setName("CONN_"+sc.getName());
+                Thread.currentThread().setName("CONN_" + sc.getName());
                 connect(sc);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -102,16 +102,16 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
     public void run() {
         try {
             logger.info("Connection loop staeted");
-            ServersConfig serversConfig = ConfigurationService.getServersConfig();
+            ServersConfig serversConfig = configurationService.getServersConfig();
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {
                     if (connectedServersState.getServerStataus(sc.getServerCode()) != null) {
                         // server found in memory
-                        ServerStataus serverStataus = (ServerStataus) connectedServersState.getServerStataus(sc.getServerCode());
+                        ServerStatus serverStataus = (ServerStatus) connectedServersState.getServerStataus(sc.getServerCode());
 
                         if (serverStataus.isConnected()) {
                             // no need to reconnect
-                            ServerGroup serverGroup = ConfigurationService.getServersConfig().getServerGroup(sc.getServerGroup());
+                            ServerGroup serverGroup = configurationService.getServersConfig().getServerGroup(sc.getServerGroup());
                             serverStataus.updateSomeServerConfigs(sc);
                             serverStataus.setServerGroup(serverGroup);
                             continue;
@@ -136,7 +136,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStataus, CS ex
         JMXConnector jmxConnector;
         SS ss = connectedServersState.getServerStataus(sc.getServerCode());
         boolean sendAlert = false;
-        ServerGroup serverGroup = ConfigurationService.getServersConfig().getServerGroup(sc.getServerGroup());
+        ServerGroup serverGroup = configurationService.getServersConfig().getServerGroup(sc.getServerGroup());
         if (ss == null) {
             // new server, first time
             ss = getServerStatus(sc, serverGroup);

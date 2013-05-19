@@ -15,12 +15,14 @@
  */
 package com.smexec.monitor.server.utils;
 
-import static org.junit.Assert.assertEquals;
-
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.Test;
+
+import com.smexec.monitor.shared.AbstractMergeableChunkStats;
 
 public class ListUtils {
 
@@ -31,35 +33,110 @@ public class ListUtils {
      * @param maxItems - max items to have in the returned collection
      * @return
      */
-    public static <L extends List<T>, T> L blur(final L list, final int maxItems, final L resultList) {
+    public static <T extends AbstractMergeableChunkStats, L extends List<T>> L blur(final L list, final int maxItems, final L resultList) {
         if (list == null || list.size() <= maxItems) {
             return list;
         }
         final double step = list.size() / (double) maxItems;
-        double index = 0;
-        int added = 0;
-        while (added < maxItems && index < list.size()) {
-            resultList.add(list.get((int) index));
-            added++;
-            index += step;
+        double index = step;
+
+        int divider = 0;
+        AbstractMergeableChunkStats aggItem = null;
+        for (int i = 0; i < list.size(); i++) {
+            if (i == (int) index) {
+                // cut
+                aggItem.divide(divider);
+                resultList.add((T) aggItem);
+                aggItem = null;
+                divider = 0;
+                index += step;
+            }
+
+            // aggregate
+            if (aggItem == null) {
+                aggItem = list.get(i).copyMe();
+            } else {
+                aggItem.aggregate(list.get(i));
+            }
+            divider++;
+        }
+        if (resultList.size() < maxItems && divider > 0 && aggItem != null) {
+            aggItem.divide(divider);
+            resultList.add((T) aggItem);
+
         }
         return resultList;
     }
 
+    private static class A
+        extends AbstractMergeableChunkStats {
+
+        private static final long serialVersionUID = 1L;
+        int a;
+        long b;
+        int[] x;
+
+        public A(int a, long b, int[] x) {
+            super();
+            this.a = a;
+            this.b = b;
+            this.x = x;
+        }
+
+        @Override
+        public AbstractMergeableChunkStats copyMe() {
+            return new A(a, b, x);
+        }
+
+        @Override
+        public void divide(int elements) {
+
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append("\nA [a=").append(a).append(", b=").append(b).append(", x=").append(Arrays.toString(x)).append("]");
+            return builder.toString();
+        }
+
+        @Override
+        public void aggregate(AbstractMergeableChunkStats value) {
+            A from = (A) value;
+            this.a = Math.max(a, from.a);
+            this.b = Math.max(b, from.b);
+            this.x = copyArray(x, from.x);
+        }
+
+        private int[] copyArray(int[] local, int[] merged) {
+            if (local == null || local.length == 0) {
+                local = new int[merged.length];
+            } else {
+                local = Arrays.copyOf(local, local.length);
+            }
+            for (int i = 0; i < merged.length; i++) {
+                local[i] = Math.max(local[i], merged[i]);
+            }
+            return local;
+        }
+
+    }
     public static class UnitTest {
 
         @Test
         public void test() {
-            for (int j = 1; j < 100; j++) {
-                List<Integer> list = new LinkedList<Integer>();
-                for (int i = 0; i < 17 * j; i++) {
-                    list.add(i);
-                }
+            List<A> list = new LinkedList<A>();
 
-                List<Integer> blur = blur(list, 100, new LinkedList<Integer>());
-                assertEquals(blur.size(), Math.min(list.size(), 100));
-                // System.out.println("Size:" + blur.size() + ", " + blur);
-            }
+            Random r = new Random();
+            list.add(new A(r.nextInt(1000), r.nextInt(1000), new int[] {r.nextInt(1000), r.nextInt(1000)}));
+            list.add(new A(r.nextInt(1000), r.nextInt(1000), new int[] {r.nextInt(1000), r.nextInt(1000)}));
+            list.add(new A(r.nextInt(1000), r.nextInt(1000), new int[] {r.nextInt(1000), r.nextInt(1000)}));
+            list.add(new A(r.nextInt(1000), r.nextInt(1000), new int[] {r.nextInt(1000), r.nextInt(1000)}));
+            list.add(new A(r.nextInt(1000), r.nextInt(1000), new int[] {r.nextInt(1000), r.nextInt(1000)}));
+
+            System.out.println(list);
+            List<A> blur = blur(list, 2, new LinkedList<A>());
+            System.out.println("Size:" + blur.size() + ", " + blur);
         }
     }
 }

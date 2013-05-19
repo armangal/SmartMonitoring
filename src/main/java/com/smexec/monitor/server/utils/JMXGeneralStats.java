@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.dao.entities.ServerStatsEntity;
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.persistence.IPersistenceService;
 import com.smexec.monitor.shared.alert.Alert;
@@ -116,7 +116,7 @@ public class JMXGeneralStats {
      * @throws IOException
      * @throws MalformedObjectNameException
      */
-    public void getMemoryStats(ServerStataus serverStataus, Date executionDate)
+    public void getMemoryStats(ServerStatus serverStataus, Date executionDate)
         throws MBeanException, AttributeNotFoundException, InstanceNotFoundException, ReflectionException, IOException, MalformedObjectNameException {
 
         final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##");
@@ -240,7 +240,7 @@ public class JMXGeneralStats {
                                                                 serverStataus.isConnected()));
     }
 
-    public RuntimeInfo getRuntimeInfo(ServerStataus serverStataus)
+    public RuntimeInfo getRuntimeInfo(ServerStatus serverStataus)
         throws IOException {
         MBeanServerConnection mbsc = serverStataus.getConnector().getMBeanServerConnection();
         RuntimeMXBean rmbean = newPlatformMXBeanProxy(mbsc, RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);

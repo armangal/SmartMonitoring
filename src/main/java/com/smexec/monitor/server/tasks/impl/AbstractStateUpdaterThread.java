@@ -18,7 +18,8 @@ package com.smexec.monitor.server.tasks.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
@@ -34,15 +35,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.model.IConnectedServersState;
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
 import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 
-public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R extends Refresher<S>, C extends ConnectedServer>
+public abstract class AbstractStateUpdaterThread<S extends ServerStatus, R extends Refresher<S>, C extends ConnectedServer>
     implements IStateUpdaterThread {
 
     private static Logger logger = LoggerFactory.getLogger("StateUpdaterThread");
@@ -80,26 +80,48 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
             Collection<S> values = connectedServersState.getAllServers();
 
             // scheduling update threads
+            Map<Future<S>, R> futuresMap = new HashMap<Future<S>, R>();
             for (S ss : values) {
-                compService.submit(getRefresher(ss, new Date(), executionNumber.getAndIncrement()));
+                R refresher = getRefresher(ss, new Date(), executionNumber.getAndIncrement());
+                Future<S> future = compService.submit(refresher);
+                futuresMap.put(future, refresher);
             }
 
             // Waiting for all threads to finish
             int i = 0;
             do {
-                Future<S> take = compService.take();
+                Future<S> take = compService.poll(15, TimeUnit.SECONDS);
                 i++;
-                try {
-                    S ss = take.get(10, TimeUnit.SECONDS);
-                    logger.info("Finished updating:{}, {} from {}", new Object[] {ss.getServerConfig().getName(), i, values.size()});
-                    C cs = getConnectedServer(ss);
-                    serversList.add(cs);
-                } catch (Exception e) {
-                    take.cancel(true);
-                    logger.error(e.getMessage(), e);
+                if (take != null) {
+                    futuresMap.remove(take);
+                    try {
+                        S ss = take.get(10, TimeUnit.SECONDS);
+                        logger.info("Finished updating:{}, {} from {}", new Object[] {ss.getServerConfig().getName(), i, values.size()});
+                        C cs = getConnectedServer(ss);
+                        serversList.add(cs);
+                    } catch (Exception e) {
+                        take.cancel(true);
+                        logger.error(e.getMessage(), e);
+                    }
+                } else {
+                    logger.warn("take was null!!!!");
                 }
 
             } while (i < values.size());
+
+            if (futuresMap.size() > 0) {
+                // not good, for some server we couldn't collect stats
+                logger.error("Can't collect stats from all servers, skipped servers are below.");
+                for (Future<S> f : futuresMap.keySet()) {
+                    R r = futuresMap.get(f);
+                    S serverStataus = r.getServerStataus();
+                    logger.error("Skipped:{}", serverStataus);
+                    f.cancel(true);
+                    C cs = getConnectedServer(serverStataus);
+                    serversList.add(cs);
+                }
+
+            }
 
             // finished querying all connected servers, now merging the results.
             logger.info("Staring merge stats");
@@ -139,7 +161,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStataus, R exte
      * @param ss
      * @return
      */
-    public MemoryUsageLight getMemoryLight(ServerStataus ss) {
+    public MemoryUsageLight getMemoryLight(ServerStatus ss) {
         if (!ss.isConnected()) {
             return new MemoryUsageLight();
         }

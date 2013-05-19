@@ -28,17 +28,18 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.server.model.IConnectedServersState;
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.MailUpdaterConfig;
+import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
-import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.server.services.mail.MailService.MailItem;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.config.Version;
 
-public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS extends ConnectedServer>
+public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS extends ConnectedServer, SC extends ServersConfig>
     implements Runnable {
 
     public static Logger logger = LoggerFactory.getLogger("PeriodicalUpdater");
@@ -47,7 +48,7 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
     private IConnectedServersState<SS, CS> connectedServersState;
 
     @Inject
-    private ConfigurationService configurationService;
+    private IConfigurationService<SC> configurationService;
 
     @Inject
     private MailService mailService;
@@ -131,9 +132,9 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
             logger.info("Periodical update, extraInfo:{}", extraInfo);
             body = body.replace("{2}", sb.toString()).replace("{extra}", extraInfo).replace("{3}", getAlerts()).replace("{version}", Version.version());
 
-            MailUpdaterConfig mailUpdaterConfig = ConfigurationService.getServersConfig().getMailUpdaterConfig();
+            MailUpdaterConfig mailUpdaterConfig = configurationService.getServersConfig().getMailUpdaterConfig();
 
-            MailItem mailItem = new MailItem("Network Update: " + ConfigurationService.getServersConfig().getName(),
+            MailItem mailItem = new MailItem("Network Update: " + configurationService.getServersConfig().getName(),
                                              body,
                                              mailUpdaterConfig.getFromAddress(),
                                              mailUpdaterConfig.getFromName(),
@@ -152,10 +153,6 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStataus, CS ext
     }
 
     public abstract String getExtraInfo();
-
-    public ConfigurationService getConfigurationService() {
-        return configurationService;
-    }
 
     public IConnectedServersState<SS, CS> getConnectedServersState() {
         return connectedServersState;

@@ -18,11 +18,11 @@ package com.smexec.monitor.server.model;
 import com.smexec.monitor.shared.ConnectedServer;
 
 public class ConnectedServersState
-    extends AbstractConnectedServersState<ServerStataus, ConnectedServer>
-    implements IConnectedServersState<ServerStataus, ConnectedServer> {
+    extends AbstractConnectedServersState<ServerStatus, ConnectedServer>
+    implements IConnectedServersState<ServerStatus, ConnectedServer> {
 
     @Override
-    public void mergeExtraData(ServerStataus ss) {
+    public void mergeExtraData(ServerStatus ss) {
         // nothing
     }
 

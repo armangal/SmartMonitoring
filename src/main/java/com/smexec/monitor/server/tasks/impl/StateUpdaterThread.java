@@ -17,21 +17,21 @@ package com.smexec.monitor.server.tasks.impl;
 
 import java.util.Date;
 
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 
 public class StateUpdaterThread
-    extends AbstractStateUpdaterThread<ServerStataus, Refresher<ServerStataus>, ConnectedServer> {
+    extends AbstractStateUpdaterThread<ServerStatus, Refresher<ServerStatus>, ConnectedServer> {
 
     @Override
-    public Refresher<ServerStataus> getRefresher(ServerStataus ss, Date executionDate, int excutionNumber) {
-        return new Refresher<ServerStataus>(ss, executionDate, excutionNumber);
+    public Refresher<ServerStatus> getRefresher(ServerStatus ss, Date executionDate, int excutionNumber) {
+        return new Refresher<ServerStatus>(ss, executionDate, excutionNumber);
     }
 
     @Override
-    public ConnectedServer getConnectedServer(ServerStataus ss) {
+    public ConnectedServer getConnectedServer(ServerStatus ss) {
         ServerConfig sc = ss.getServerConfig();
 
         MemoryUsageLight mul = getMemoryLight(ss);

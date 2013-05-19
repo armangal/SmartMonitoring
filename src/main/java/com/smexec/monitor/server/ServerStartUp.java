@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.guice.MonitoringModule;
-import com.smexec.monitor.server.model.ServerStataus;
-import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.model.ServerStatus;
+import com.smexec.monitor.server.model.config.MailUpdaterConfig;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
@@ -67,14 +67,18 @@ public class ServerStartUp
     /**
      * for extensions to override and initilize other module
      */
-    public void initGuice(ServersConfig serversConfig) {
-        GuiceUtils.init(new MonitoringModule<ServerStataus, ConnectedServer>(serversConfig));
+    public void initGuice() {
+        GuiceUtils.init(new MonitoringModule<ServerStatus, ConnectedServer>(ConfigurationService.getInstance().getServersConfig()));
+    }
+
+    public void loadServerConfig() {
+        ConfigurationService.getInstance().loadServersConfig(true);
     }
 
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
-        ConfigurationService.loadServersConfig(true);
-        initGuice(ConfigurationService.getServersConfig());
+        loadServerConfig();
+        initGuice();
         GuiceUtils.getInjector().injectMembers(this);
 
         try {
@@ -97,20 +101,20 @@ public class ServerStartUp
         logger.info("Starting StateUpdaterThread");
         executor.scheduleAtFixedRate(stateUpdaterThread, 20, 20, TimeUnit.SECONDS);
 
-        if (ConfigurationService.getServersConfig().getMailUpdaterConfig().isEnabled()) {
+        if (getMailUpdaterConfig().isEnabled()) {
             logger.info("Starting Periodicat Updater");
-            executor.scheduleAtFixedRate(periodicalUpdater,
-                                         ConfigurationService.getServersConfig().getMailUpdaterConfig().getPeriod() / 2,
-                                         ConfigurationService.getServersConfig().getMailUpdaterConfig().getPeriod(),
-                                         TimeUnit.SECONDS);
+            executor.scheduleAtFixedRate(periodicalUpdater, getMailUpdaterConfig().getPeriod() / 2, getMailUpdaterConfig().getPeriod(), TimeUnit.SECONDS);
         }
-        
 
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
         executor.shutdown();
+    }
+
+    public MailUpdaterConfig getMailUpdaterConfig() {
+        return ConfigurationService.getInstance().getServersConfig().getMailUpdaterConfig();
     }
 
 }

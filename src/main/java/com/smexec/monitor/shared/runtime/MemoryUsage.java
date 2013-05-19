@@ -18,7 +18,7 @@ package com.smexec.monitor.shared.runtime;
 import java.io.Serializable;
 import java.util.LinkedList;
 
-import com.smexec.monitor.shared.AbstractChunkStats;
+import com.smexec.monitor.shared.AbstractMergeableChunkStats;
 
 /**
  * represents one memory measurement
@@ -26,7 +26,7 @@ import com.smexec.monitor.shared.AbstractChunkStats;
  * @author armang
  */
 public class MemoryUsage
-    extends AbstractChunkStats
+    extends AbstractMergeableChunkStats
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -46,6 +46,43 @@ public class MemoryUsage
         this.max = max;
         this.used = used;
         this.memoryState = memoryState;
+    }
+
+    @Override
+    public AbstractMergeableChunkStats copyMe() {
+        return new MemoryUsage(init, used, committed, max, getFullEndTime(), memoryState);
+    }
+
+    public void aggregate(AbstractMergeableChunkStats v) {
+        MemoryUsage value = (MemoryUsage) v;
+        this.committed = Math.max(committed, value.committed);
+        this.init = Math.max(init, value.init);
+        this.max = Math.max(max, value.max);
+        this.used = Math.max(used, value.used);
+        this.memoryState = aggMemState(memoryState, value.memoryState);
+    }
+
+    private LinkedList<MemoryState> aggMemState(LinkedList<MemoryState> to, LinkedList<MemoryState> from) {
+        LinkedList<MemoryState> ret = new LinkedList<MemoryState>();
+        for (MemoryState toMs : to) {
+            for (MemoryState fromMS : from) {
+                if (toMs.getName().equals(fromMS.getName())) {
+                    ret.add(new MemoryState(toMs.getName(),
+                                            Math.max(toMs.getUsed(), fromMS.getUsed()),
+                                            Math.max(toMs.getCommited(), fromMS.getCommited()),
+                                            Math.max(toMs.getMax(), fromMS.getMax()),
+                                            toMs.isHeap()));
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public void divide(int elements) {
+        // TODO Auto-generated method stub
+
     }
 
     public long getCommitted() {

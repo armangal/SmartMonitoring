@@ -244,7 +244,7 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
             if (cs.getStatus()) {
                 final HTML name = new HTML("<a href=#>" + cs.getServerCode() + "," + cs.getName() + "</a>");
                 name.getElement().setAttribute("code", "" + cs.getServerCode());
-                name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort() + "\nClick for more info");
+                name.setTitle(cs.getToolTip());
                 name.addMouseOverHandler(handCursor);
 
                 name.addClickHandler(getThreadDump);
@@ -252,8 +252,8 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
                 ft.setWidget(i, j++, name);
                 ft.setText(i, j++, ClientStringFormatter.formatMilisecondsToHours(cs.getUpTime()));
 
-                HTML usage = new HTML(ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + "/"
-                                      + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB, "
+                HTML usage = new HTML(ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + " / "
+                                      + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB,  "
                                       + ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%");
                 ft.setWidget(i, j++, usage);
 
@@ -311,7 +311,6 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
                     final HTML name = new HTML("<a href=#>" + cs.getServerCode() + ", " + cs.getName() + "</a>");
                     name.setTitle("JMX >> " + cs.getIp() + ":" + cs.getJmxPort());
                     ft.setWidget(i, j++, name);
-                    ft.setText(i, j++, "Offline");
                     ft.setText(i, j++, "Offline");
                     ft.setText(i, j++, "Offline");
                     ft.setText(i, j++, "Offline");

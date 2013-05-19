@@ -31,13 +31,13 @@ import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 public class JMXSmartExecutorStats {
 
-    public void getSmartThreadPoolStats(ServerStataus ss)
+    public void getSmartThreadPoolStats(ServerStatus ss)
         throws AttributeNotFoundException, InstanceNotFoundException, MBeanException, ReflectionException, IOException, MalformedObjectNameException {
 
         final Map<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>(0);

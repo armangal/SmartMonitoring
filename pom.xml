@@ -4,7 +4,7 @@
 
 	<groupId>org.smexec</groupId>
 	<artifactId>smartmonitoring</artifactId>
-	<version>1.0.28</version>
+	<version>1.0.29</version>
 	<name>Smart Monitoring, open-source JMX monitoring server with HTML (GWT) UI</name>
 	<description>Smart Monitoring</description>
 

@@ -33,9 +33,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.AlertsConfig;
-import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.shared.alert.Alert;
 
 public class MailService {
@@ -47,7 +48,7 @@ public class MailService {
     private static final String MAIL_TYPE_HTML = "text/html; charset=";
 
     @Inject
-    private ConfigurationService configurationService;
+    private IConfigurationService<ServersConfig> configurationService;
 
     private String alerTemplate = "{1}, {2}";
 
@@ -109,7 +110,7 @@ public class MailService {
 
     private void sendAlertMail(MailItem mailItem) {
         try {
-            AlertsConfig ac = ConfigurationService.getServersConfig().getAlertsConfig();
+            AlertsConfig ac = configurationService.getServersConfig().getAlertsConfig();
 
             String mailType = MAIL_TYPE_HTML;
 
@@ -136,11 +137,11 @@ public class MailService {
      * @param ss
      * @return - true if the alert was sent
      */
-    public <SS extends ServerStataus> boolean sendAlert(Alert alert, SS ss) {
+    public <SS extends ServerStatus> boolean sendAlert(Alert alert, SS ss) {
         try {
-            if (ConfigurationService.getServersConfig().getAlertsConfig().isEnabled()) {
+            if (configurationService.getServersConfig().getAlertsConfig().isEnabled()) {
                 String body = createAlerMailBody(alert, ss);
-                mailQueue.offer(new MailItem(" [" + ConfigurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] "
+                mailQueue.offer(new MailItem(" [" + configurationService.getServersConfig().getName() + "] [" + alert.getServerName() + "] "
                                              + alert.getMessage(), body));
                 logger.info("Alert:{} added to mail queue", alert.getId());
                 return true;
@@ -154,7 +155,7 @@ public class MailService {
         }
     }
 
-    private <SS extends ServerStataus> String createAlerMailBody(Alert alert, SS ss) {
+    private <SS extends ServerStatus> String createAlerMailBody(Alert alert, SS ss) {
         try {
             StringBuilder sb = new StringBuilder();
             if (ss.isConnected() && !ss.isFirstTimeAccess()) {
@@ -186,7 +187,7 @@ public class MailService {
 
         @Override
         protected PasswordAuthentication getPasswordAuthentication() {
-            AlertsConfig ac = ConfigurationService.getServersConfig().getAlertsConfig();
+            AlertsConfig ac = configurationService.getServersConfig().getAlertsConfig();
             // sun.misc.BASE64Encoder enc = new sun.misc.BASE64Encoder();
             return new PasswordAuthentication(ac.getUserName(), ac.getPassword());
         }
@@ -237,7 +238,7 @@ public class MailService {
     }
 
     private Session getSession() {
-        AlertsConfig ac = ConfigurationService.getServersConfig().getAlertsConfig();
+        AlertsConfig ac = configurationService.getServersConfig().getAlertsConfig();
 
         Properties props = new Properties();
         props.put("mail.smtp.host", ac.getMailServerAddress());

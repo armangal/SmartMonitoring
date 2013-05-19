@@ -79,9 +79,10 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         public boolean execute() {
             if (refresh) {
                 refresh();
+            } else {
+                Log.debug("skipping refresh");
             }
-            Log.debug("Reschedule refresh?:" + refresh);
-            return refresh;
+            return true;
         }
     };
 
@@ -205,7 +206,6 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                     refreshBtn.getElement().setAttribute("state", "1");
                     refresh = true;
                     refresh();
-                    Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isProdMode() ? 60000 : 20000);
                     refreshBtn.setText("Stop Refresh");
                 }
 

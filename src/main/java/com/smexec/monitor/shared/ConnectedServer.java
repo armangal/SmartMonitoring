@@ -134,4 +134,11 @@ public class ConnectedServer
         return builder.toString();
     }
 
+    public String getToolTip() {
+        return "JMX >> " + getIp() + ":" + getJmxPort() + "\nClick for more info";
+    }
+
+    public String getMoreInfo() {
+        return "IP: " + getIp() + ", jmxPort:" + getJmxPort() + ", cpu usage:" + cpuUsage + "%, SLA:" + systemLoadAverage + "%";
+    }
 }

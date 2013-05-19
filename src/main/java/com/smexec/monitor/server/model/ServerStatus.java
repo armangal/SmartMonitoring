@@ -47,7 +47,7 @@ import com.smexec.monitor.shared.utils.StringFormatter;
  * 
  * @author armang
  */
-public class ServerStataus {
+public class ServerStatus {
 
     private final static Logger logger = LoggerFactory.getLogger("ServerStataus");
 
@@ -94,7 +94,7 @@ public class ServerStataus {
      * @param gcHistoryToKeep - how much chunks to keep in memory (aggregated each 20 sec)
      * @param systemHistoryToKeep - how much chunks to keep in memory (aggregated each 20 sec) (CPU & Memory)
      */
-    public ServerStataus(final ServerConfig serverConfig, final ServerGroup serverGroup, final int gcHistoryToKeep, final int systemHistoryToKeep) {
+    public ServerStatus(final ServerConfig serverConfig, final ServerGroup serverGroup, final int gcHistoryToKeep, final int systemHistoryToKeep) {
         this.serverConfig = serverConfig;
         this.serverGroup = serverGroup;
         this.systemHistoryToKeep = systemHistoryToKeep;
@@ -392,7 +392,7 @@ public class ServerStataus {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ServerStataus other = (ServerStataus) obj;
+        ServerStatus other = (ServerStatus) obj;
         if (connected != other.connected)
             return false;
         if (connector == null) {

@@ -28,7 +28,8 @@ import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
 import com.smexec.monitor.server.model.config.MongoConfig;
 import com.smexec.monitor.server.model.config.MongoConfig.HostAddress;
-import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.services.config.IConfigurationService;
 
 public class MongoSessionFactory {
 
@@ -39,8 +40,8 @@ public class MongoSessionFactory {
     private static Morphia morphia;
 
     @Inject
-    public MongoSessionFactory(ConfigurationService confService) {
-        mongoConfig = ConfigurationService.getServersConfig().getMongoConfig();
+    public MongoSessionFactory(IConfigurationService<ServersConfig> confService) {
+        mongoConfig = confService.getServersConfig().getMongoConfig();
 
         if (!mongoConfig.getEnabled()) {
             logger.info("Mongo DB is disabled.Skipping initialization");

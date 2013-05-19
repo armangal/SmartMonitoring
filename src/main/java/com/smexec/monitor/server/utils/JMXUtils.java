@@ -97,9 +97,32 @@ public class JMXUtils {
 
         }
     }
-    
+
+    public static int getInt(MBeanServerConnection mbsc, ObjectName on, String name) {
+        try {
+            Object property = mbsc.getAttribute(on, name);
+            return Integer.valueOf(property.toString());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return -1;
+
+        }
+    }
+
+    public static String getString(MBeanServerConnection mbsc, ObjectName on, String name) {
+        try {
+            Object property = mbsc.getAttribute(on, name);
+            return property.toString();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return "none";
+
+        }
+    }
+
     public static void main(String[] args) {
-        long currentTimeMillis =1365773690127L; System.currentTimeMillis();
+        long currentTimeMillis = 1365773690127L;
+        System.currentTimeMillis();
         System.out.println(currentTimeMillis);
         System.out.println(new Date(currentTimeMillis));
         System.out.println(roundDate(currentTimeMillis));

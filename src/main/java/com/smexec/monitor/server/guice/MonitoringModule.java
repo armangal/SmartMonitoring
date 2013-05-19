@@ -20,10 +20,11 @@ import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.smexec.monitor.server.model.ConnectedServersState;
 import com.smexec.monitor.server.model.IConnectedServersState;
-import com.smexec.monitor.server.model.ServerStataus;
+import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
@@ -34,7 +35,7 @@ import com.smexec.monitor.server.tasks.impl.StateUpdaterThread;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.ConnectedServer;
 
-public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServer>
+public class MonitoringModule<SS extends ServerStatus, CS extends ConnectedServer>
     extends AbstractModule {
 
     private ServersConfig serversConfig;
@@ -45,10 +46,11 @@ public class MonitoringModule<SS extends ServerStataus, CS extends ConnectedServ
 
     @Override
     protected void configure() {
-        bind(ConfigurationService.class).asEagerSingleton();
+        bind(new TypeLiteral<IConfigurationService<ServersConfig>>() {}).toInstance(ConfigurationService.getInstance());
+
         install(new MongoDbModule(serversConfig));
 
-        bind(new TypeLiteral<IConnectedServersState<ServerStataus, ConnectedServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
+        bind(new TypeLiteral<IConnectedServersState<ServerStatus, ConnectedServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
 
         bind(IJMXConnectorThread.class).to(JMXConnectorThread.class).in(Singleton.class);
         bind(IStateUpdaterThread.class).to(StateUpdaterThread.class).in(Singleton.class);
