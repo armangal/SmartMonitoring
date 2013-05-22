@@ -28,10 +28,11 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.model.config.AbstractServersConfig;
+import com.smexec.monitor.server.model.config.MongoConfig;
 import com.smexec.monitor.shared.config.Version;
 
-public abstract class AbstractConfigurationService<SC extends ServersConfig>
+public abstract class AbstractConfigurationService<SC extends AbstractServersConfig>
     implements IConfigurationService<SC> {
 
     private static final String UTF_8 = "UTF-8";
@@ -42,9 +43,9 @@ public abstract class AbstractConfigurationService<SC extends ServersConfig>
     static String location;
 
     /**
-     * current most up-to-date configurations
+     * reference to current most up-to-date configurations
      */
-    private static ServersConfig serversConfig;
+    private static AbstractServersConfig serversConfig;
 
     public AbstractConfigurationService() {
 
@@ -60,20 +61,16 @@ public abstract class AbstractConfigurationService<SC extends ServersConfig>
         serversConfig = sc;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.smexec.monitor.server.services.config.IConfigurationService#getServersConfig()
-     */
     @SuppressWarnings("unchecked")
     @Override
     public SC getServersConfig() {
         return (SC) serversConfig;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.smexec.monitor.server.services.config.IConfigurationService#getServersConfigXML()
-     */
+    public MongoConfig getMongoConfig() {
+        return serversConfig.getMongoConfig();
+    }
+
     @Override
     public String getServersConfigXML()
         throws FileNotFoundException, IOException {

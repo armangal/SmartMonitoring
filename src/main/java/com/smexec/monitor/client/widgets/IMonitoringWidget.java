@@ -27,8 +27,9 @@ public interface IMonitoringWidget<CS extends ConnectedServer, FR extends Abstra
     void clear(FR result);
 
     /**
-     * notifying widgets that are self-refreshing to stop the refresh<br/>
-     * Starting the refresh should be triggered when update is called.
+     * to be used to stop/start/continue widget refresh
+     * 
+     * @param refersh
      */
-    void stopRefresh();
+    void setRefresh(final boolean refersh);
 }

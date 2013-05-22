@@ -32,6 +32,16 @@
 		<url-pattern>/mainService</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>alertsExporter</servlet-name>
+		<servlet-class>com.smexec.monitor.server.servlets.AlertsExporter</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>alertsExporter</servlet-name>
+		<url-pattern>/exp_alerts</url-pattern>
+	</servlet-mapping>
+
 	<welcome-file-list>
 		<welcome-file>Smartmonitoring.html</welcome-file>
 	</welcome-file-list>

@@ -46,6 +46,7 @@ import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.client.widgets.ProgressLabel;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.alert.AlertType;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
 public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
@@ -154,7 +155,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                 resetLastIDs();
                 for (IMonitoringWidget<CS, FR> widget : widgets) {
                     widget.clear(null);
-                    widget.stopRefresh();
+                    widget.setRefresh(false);
                 }
             }
         }
@@ -199,7 +200,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                     refresh = false;
                     refreshBtn.setText("Start Refresh");
                     for (IMonitoringWidget<CS, FR> widget : widgets) {
-                        widget.stopRefresh();
+                        widget.setRefresh(false);
                     }
 
                 } else {
@@ -302,7 +303,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
     public void registerWidgets() {
         addMonitoringWidget(new ThreadPoolsWidget<CS, FR>());
         addMonitoringWidget(new ServersWidget<CS, FR>(service));
-        alertsWidget = new AlertsWidget<CS, FR>();
+        alertsWidget = new AlertsWidget<CS, FR>(AlertType.values());
         addMonitoringWidget(alertsWidget);
     }
 

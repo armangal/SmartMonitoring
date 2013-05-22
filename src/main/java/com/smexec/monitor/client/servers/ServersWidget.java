@@ -214,19 +214,19 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
         t = new HTML("Memory");
         t.setTitle("Latest memory status.");
         ft.setWidget(i, j++, t);
-        
+
         t = new HTML("Max GC");
         t.setTitle("Max GC time in the last 24 hours.");
         ft.setWidget(i, j++, t);
-        
+
         t = new HTML("Cpu");
         t.setTitle("Latest CPU load.");
         ft.setWidget(i, j++, t);
-        
+
         t = new HTML("SYSL");
         t.setTitle("Linux system load.");
         ft.setWidget(i, j++, t);
-        
+
         ft.getRowFormatter().getElement(i++).setId("th");
 
         int offline = 0;
@@ -359,7 +359,9 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
     }
 
     @Override
-    public void stopRefresh() {
-
+    public void refresh() {
+        // TODO Auto-generated method stub
+        
     }
+
 }

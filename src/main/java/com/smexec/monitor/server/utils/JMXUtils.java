@@ -112,7 +112,7 @@ public class JMXUtils {
     public static String getString(MBeanServerConnection mbsc, ObjectName on, String name) {
         try {
             Object property = mbsc.getAttribute(on, name);
-            return property.toString();
+            return property != null ? property.toString() : "";
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return "none";

@@ -68,7 +68,7 @@ public class ServerStartUp
      * for extensions to override and initilize other module
      */
     public void initGuice() {
-        GuiceUtils.init(new MonitoringModule<ServerStatus, ConnectedServer>(ConfigurationService.getInstance().getServersConfig()));
+        GuiceUtils.init(new MonitoringModule<ServerStatus, ConnectedServer>());
     }
 
     public void loadServerConfig() {

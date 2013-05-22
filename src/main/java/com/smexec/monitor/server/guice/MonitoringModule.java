@@ -38,17 +38,11 @@ import com.smexec.monitor.shared.ConnectedServer;
 public class MonitoringModule<SS extends ServerStatus, CS extends ConnectedServer>
     extends AbstractModule {
 
-    private ServersConfig serversConfig;
-
-    public MonitoringModule(ServersConfig serversConfig) {
-        this.serversConfig = serversConfig;
-    }
-
     @Override
     protected void configure() {
         bind(new TypeLiteral<IConfigurationService<ServersConfig>>() {}).toInstance(ConfigurationService.getInstance());
 
-        install(new MongoDbModule(serversConfig));
+        install(new MongoDbModule());
 
         bind(new TypeLiteral<IConnectedServersState<ServerStatus, ConnectedServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
 

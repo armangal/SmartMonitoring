@@ -30,7 +30,7 @@ import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
-import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.utils.JMXGeneralStats;
@@ -51,7 +51,7 @@ import com.smexec.monitor.shared.smartpool.PoolsFeed;
  * The server side implementation of the monitoring RPC service.
  */
 @SuppressWarnings("serial")
-public abstract class AbstractMonitoringService<SS extends ServerStatus, CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public abstract class AbstractMonitoringService<SS extends ServerStatus, CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, SC extends AbstractServersConfig>
     extends RemoteServiceServlet {
 
     private static Logger logger = LoggerFactory.getLogger("MonitoringService");
@@ -68,7 +68,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
     private AlertService alertService;
 
     @Inject
-    private IConfigurationService<ServersConfig> configurationService;
+    private IConfigurationService<SC> configurationService;
 
     @Inject
     private JMXGeneralStats jmxGeneralStats;
@@ -114,7 +114,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
         HttpSession session = getThreadLocalRequest().getSession();
         userName = userName.trim();
         password = password.trim();
-        ServersConfig sc = configurationService.getServersConfig();
+        SC sc = configurationService.getServersConfig();
         if (sc.getUsername().equalsIgnoreCase(userName) && sc.getPassword().equals(password)) {
             session.setAttribute(AUTHENTICATED, Boolean.TRUE);
             logger.info("Authnticated user:{}, pass:{}", userName, password);

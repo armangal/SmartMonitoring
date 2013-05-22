@@ -21,6 +21,7 @@ import java.util.LinkedList;
 
 import com.smexec.monitor.client.MonitoringServiceStd;
 import com.smexec.monitor.server.model.ServerStatus;
+import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.alert.Alert;
@@ -31,7 +32,7 @@ import com.smexec.monitor.shared.smartpool.PoolsFeed;
  */
 @SuppressWarnings("serial")
 public class MonitoringServiceImpl
-    extends AbstractMonitoringService<ServerStatus, ConnectedServer, FullRefreshResult>
+    extends AbstractMonitoringService<ServerStatus, ConnectedServer, FullRefreshResult, ServersConfig>
     implements MonitoringServiceStd {
 
     public MonitoringServiceImpl() {}

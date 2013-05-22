@@ -15,6 +15,9 @@
  */
 package com.smexec.monitor.client.widgets;
 
+import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -30,19 +33,38 @@ public abstract class AbstractMonitoringWidget
     extends Composite {
 
     private FlowPanel mainPanel = new FlowPanel();
-    FlowPanel header = new FlowPanel();
-
+    private FlowPanel header = new FlowPanel();
     private FlowPanel dataPanel = new FlowPanel();
-
     /**
      * default title widget
      */
     private HTML lable = new HTML();
-
     /**
      * the custom title widget
      */
     private Widget title;
+
+    /**
+     * widget name
+     */
+    private String name;
+    /**
+     * indicates if to send refresh command.
+     */
+    private boolean refresh = false;
+
+    private RepeatingCommand refreshCommand = new RepeatingCommand() {
+
+        @Override
+        public boolean execute() {
+            if (isRefresh()) {
+                refresh();
+            }
+            Log.debug("Reschedule container refresh?:" + isRefresh());
+            return true;
+        }
+
+    };
 
     private ClickHandler zoom = new ClickHandler() {
 
@@ -66,7 +88,11 @@ public abstract class AbstractMonitoringWidget
     };
 
     public AbstractMonitoringWidget(String name) {
+        this(name, 0);
+    }
 
+    public AbstractMonitoringWidget(final String name, final int refreshDelay) {
+        this.name = name;
         header.setStyleName("header");
         Image img = new Image();
         img.setUrl("img/header-icon.png");
@@ -84,7 +110,14 @@ public abstract class AbstractMonitoringWidget
 
         initWidget(mainPanel);
         setStyleName("monitoringWidget");
+
+        if (refreshDelay > 0) {
+            Scheduler.get().scheduleFixedDelay(refreshCommand, refreshDelay);
+        }
+
     }
+
+    public abstract void refresh();
 
     public FlowPanel getDataPanel() {
         return dataPanel;
@@ -102,6 +135,15 @@ public abstract class AbstractMonitoringWidget
 
     public Widget getTitleWidget() {
         return this.title;
+    }
+
+    public boolean isRefresh() {
+        return refresh;
+    }
+
+    public void setRefresh(boolean refresh) {
+        Log.debug(refresh ? "Enabling " : "Disabling " + name + " widget refresh mechinism.");
+        this.refresh = refresh;
     }
 
 }

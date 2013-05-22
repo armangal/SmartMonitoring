@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServersConfig;
-import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
 import com.smexec.monitor.server.services.persistence.IPersistenceService;
@@ -64,7 +63,7 @@ public class AlertService {
     public LinkedList<Alert> getAlertsAfter(int alertId, int max) {
         if (alertId == -1) {
             // first time, take the last max
-            alertId = alertCounter.get() > max ? alertCounter.get() - max : -1 ;
+            alertId = alertCounter.get() > max ? alertCounter.get() - max : -1;
         } else if (alertCounter.get() - alertId > max) {
             // if we have more than 1000 to return, cut it
             alertId = alertCounter.get() - max;
@@ -125,5 +124,9 @@ public class AlertService {
         SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return new Alert(message, details, serverCode, serverName, alertTime, DATE_FORMAT.format(new Date(alertTime)), alertType);
 
+    }
+
+    public LinkedList<Alert> getAlertsList() {
+        return alertsList;
     }
 }

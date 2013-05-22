@@ -37,7 +37,7 @@ import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.model.config.ServerGroup;
-import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
@@ -46,7 +46,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
 
-public abstract class AbstractJMXConnectorThread<SS extends ServerStatus, CS extends ConnectedServer, SC extends ServersConfig>
+public abstract class AbstractJMXConnectorThread<SS extends ServerStatus, CS extends ConnectedServer, SC extends AbstractServersConfig>
     implements IJMXConnectorThread {
 
     public static Logger logger = LoggerFactory.getLogger("JMXConnectorThread");
@@ -102,7 +102,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStatus, CS ext
     public void run() {
         try {
             logger.info("Connection loop staeted");
-            ServersConfig serversConfig = configurationService.getServersConfig();
+            SC serversConfig = configurationService.getServersConfig();
             if (serversConfig.getServers().size() > 0) {
                 for (ServerConfig sc : serversConfig.getServers()) {
                     if (connectedServersState.getServerStataus(sc.getServerCode()) != null) {

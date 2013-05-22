@@ -167,7 +167,8 @@ public class ThreadPoolsWidget<CS extends ConnectedServer, FR extends AbstractFu
     }
 
     @Override
-    public void stopRefresh() {
-
+    public void refresh() {
+        // TODO Auto-generated method stub
+        
     }
 }

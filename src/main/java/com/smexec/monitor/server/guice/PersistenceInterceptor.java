@@ -20,24 +20,24 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.model.config.MongoConfig;
 
 public class PersistenceInterceptor
     implements MethodInterceptor {
 
     private static Logger logger = LoggerFactory.getLogger("PersistenceInterceptor");
 
-    private ServersConfig serversConfig;
+    private MongoConfig mongoConfig;
 
-    public PersistenceInterceptor(ServersConfig serversConfig) {
-        this.serversConfig = serversConfig;
+    public PersistenceInterceptor(MongoConfig mongoConfig) {
+        this.mongoConfig = mongoConfig;
     }
 
     @Override
     public Object invoke(MethodInvocation invocation)
         throws Throwable {
-       
-        if (serversConfig.getMongoConfig().getEnabled()) {
+
+        if (mongoConfig.getEnabled()) {
             invocation.proceed();
         } else {
             logger.debug("Skipping call to DB service:{}, method:{}", invocation.getThis().getClass().getSimpleName(), invocation.getMethod().getName());

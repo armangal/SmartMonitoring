@@ -30,7 +30,7 @@ import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.MailUpdaterConfig;
-import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.server.services.alert.AlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.services.mail.MailService;
@@ -39,7 +39,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.config.Version;
 
-public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS extends ConnectedServer, SC extends ServersConfig>
+public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS extends ConnectedServer, SC extends AbstractServersConfig>
     implements Runnable {
 
     public static Logger logger = LoggerFactory.getLogger("PeriodicalUpdater");

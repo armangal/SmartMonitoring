@@ -20,13 +20,13 @@ import java.util.Map;
 
 public enum AlertType implements IAlertType {
 
-    MEMORY("mem", 1, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
-    CPU("cpu", 2, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
-    SERVER_COMM_FAILED("srvComFailed", 3, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
-    SERVER_DISCONNECTED("srvDisc", 4, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
-    SERVER_CONNECTED("srvCon", 5, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
-    GC("gc", 6, AlertGroup.SYSTEM, true, AlertThreshold.ALWAYS),//
-    MEMORY_SPACE("memSpace", 7, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5))//
+    MEMORY("Memory", 1, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
+    CPU("Cpu", 2, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
+    SERVER_COMM_FAILED("Connection Failed", 3, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
+    SERVER_DISCONNECTED("Disconnection", 4, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
+    SERVER_CONNECTED("Re-Connectoin", 5, AlertGroup.SYSTEM, true, new AlertThreshold(Long.MAX_VALUE, -1)), //
+    GC("GC", 6, AlertGroup.SYSTEM, true, AlertThreshold.ALWAYS),//
+    MEMORY_SPACE("Memory Space", 7, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5))//
     ;
 
     private String name;

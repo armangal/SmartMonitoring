@@ -18,29 +18,30 @@ package com.smexec.monitor.server.guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.matcher.Matchers;
-import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.model.config.MongoConfig;
 import com.smexec.monitor.server.mongodb.MongoSessionFactory;
+import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.persistence.IPersistenceService;
 import com.smexec.monitor.server.services.persistence.MongoDbPersitenceService;
 
 public class MongoDbModule
     extends AbstractModule {
 
-    private ServersConfig serversConfig;
+    private MongoConfig mongoConfig;
 
-    public MongoDbModule(ServersConfig serversConfig) {
-        this.serversConfig = serversConfig;
+    public MongoDbModule() {
+        mongoConfig = ConfigurationService.getInstance().getMongoConfig();
     }
 
     @Override
     protected void configure() {
 
-        bindInterceptor(Matchers.subclassesOf(IPersistenceService.class), Matchers.any(), new PersistenceInterceptor(serversConfig));
+        bindInterceptor(Matchers.subclassesOf(IPersistenceService.class), Matchers.any(), new PersistenceInterceptor(mongoConfig));
 
         bind(IPersistenceService.class).to(MongoDbPersitenceService.class).in(Singleton.class);
 
         // bind session and install DAOs
-        if (serversConfig.getMongoConfig().getEnabled()) {
+        if (mongoConfig.getEnabled()) {
             bind(MongoSessionFactory.class).asEagerSingleton();
 
             install(new MongoDbDaoModule());
