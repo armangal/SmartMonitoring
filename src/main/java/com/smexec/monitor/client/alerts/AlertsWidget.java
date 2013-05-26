@@ -102,7 +102,8 @@ public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRef
 
             @Override
             public void onClick(ClickEvent event) {
-                Window.open(GWT.getHostPageBaseURL() + "/exp_alerts", "Alerts", "");
+                Log.debug("Exporting alerts:" + (GWT.getHostPageBaseURL() + "exp_alerts"));
+                Window.open(GWT.getHostPageBaseURL() + "exp_alerts", "Alerts", "");
             }
         });
         export.getElement().getStyle().setPadding(0d, Unit.PX);

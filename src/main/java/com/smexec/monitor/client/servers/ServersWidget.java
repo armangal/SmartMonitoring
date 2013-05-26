@@ -50,15 +50,16 @@ import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
     extends AbstractMonitoringWidget
     implements IMonitoringWidget<CS, FR> {
 
     private static final String SERVERS_SHOW_OFF = "servers.showOff";
     private static final String SERVERS_FILTER = "servers.filter";
 
-    private final MonitoringServiceAsync<CS, FR> service;
+    private final MonitoringServiceAsync<CS, FR, CC> service;
 
     private FlowPanel serversList = new FlowPanel();
     private ScrollPanel sp = new ScrollPanel();
@@ -71,7 +72,7 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
             String code = ((Widget) event.getSource()).getElement().getAttribute("code");
             CS cs = serversMap.get(Integer.valueOf(code));
             if (cs != null) {
-                ServerStatsPopup<CS, FR> ssp = new ServerStatsPopup<CS, FR>(service, cs);
+                ServerStatsPopup<CS, FR, CC> ssp = new ServerStatsPopup<CS, FR, CC>(service, cs);
                 ssp.center();
             } else {
                 Window.alert("Server couldn't be found:" + code);
@@ -117,7 +118,7 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
     private TextBox filter = new TextBox();
     private Label serversLabel = new Label("Servers");
 
-    public ServersWidget(MonitoringServiceAsync<CS, FR> service) {
+    public ServersWidget(MonitoringServiceAsync<CS, FR, CC> service) {
         super("Servers");
         this.service = service;
 

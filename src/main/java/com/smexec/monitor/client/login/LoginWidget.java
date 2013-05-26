@@ -36,18 +36,18 @@ import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
     extends Composite {
 
-    public interface LoggedInCallBack {
+    public interface LoggedInCallBack<CC extends ClientConfigurations> {
 
-        void loggedIn(ClientConfigurations cc);
+        void loggedIn(CC cc);
     }
 
-    private final MonitoringServiceAsync<CS, FR> service;
-    private ClientConfigurations cc;
+    private final MonitoringServiceAsync<CS, FR, CC> service;
+    private CC cc;
 
-    private LoggedInCallBack callBack;
+    private LoggedInCallBack<CC> callBack;
 
     private FlowPanel fp = new FlowPanel();
     private TextBox userName = new TextBox();
@@ -65,7 +65,7 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
         }
     };
 
-    public LoginWidget(MonitoringServiceAsync<CS, FR> service) {
+    public LoginWidget(MonitoringServiceAsync<CS, FR, CC> service) {
         this.service = service;
 
         if (!GWT.isScript()) {
@@ -103,10 +103,10 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
         final HTML version = new HTML();
         version.getElement().setId("version");
         fp.add(version);
-        service.getClientConfigurations(new AsyncCallback<ClientConfigurations>() {
+        service.getClientConfigurations(new AsyncCallback<CC>() {
 
             @Override
-            public void onSuccess(ClientConfigurations result) {
+            public void onSuccess(CC result) {
                 version.setText("Env:" + result.getTitle() + ", Version:" + result.getVersion());
                 Window.setTitle(result.getTitle() + ", v:" + result.getVersion());
                 cc = result;

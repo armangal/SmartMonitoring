@@ -34,12 +34,13 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.server.model.ServerStatus;
+import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.server.model.config.AlertsConfig;
-import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.shared.alert.Alert;
 
-public class MailService {
+public abstract class MailService<SC extends AbstractServersConfig, SS extends ServerStatus>
+    implements IMailService<SS> {
 
     private static Logger logger = LoggerFactory.getLogger("MailService");
 
@@ -48,7 +49,7 @@ public class MailService {
     private static final String MAIL_TYPE_HTML = "text/html; charset=";
 
     @Inject
-    private IConfigurationService<ServersConfig> configurationService;
+    private IConfigurationService<SC> configurationService;
 
     private String alerTemplate = "{1}, {2}";
 
@@ -86,6 +87,13 @@ public class MailService {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.smexec.monitor.server.services.mail.IMailService#sendMail(com.smexec.monitor.server.services.mail
+     * .MailService.MailItem)
+     */
+    @Override
     public void sendMail(MailItem mailItem) {
         try {
             String mailType = MAIL_TYPE_HTML;
@@ -132,12 +140,14 @@ public class MailService {
         }
     }
 
-    /**
-     * @param alert
-     * @param ss
-     * @return - true if the alert was sent
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.smexec.monitor.server.services.mail.IMailService#sendAlert(com.smexec.monitor.shared.alert.Alert,
+     * SS)
      */
-    public <SS extends ServerStatus> boolean sendAlert(Alert alert, SS ss) {
+    @Override
+    public boolean sendAlert(Alert alert, SS ss) {
         try {
             if (configurationService.getServersConfig().getAlertsConfig().isEnabled()) {
                 String body = createAlerMailBody(alert, ss);
@@ -155,7 +165,7 @@ public class MailService {
         }
     }
 
-    private <SS extends ServerStatus> String createAlerMailBody(Alert alert, SS ss) {
+    private String createAlerMailBody(Alert alert, SS ss) {
         try {
             StringBuilder sb = new StringBuilder();
             if (ss.isConnected() && !ss.isFirstTimeAccess()) {

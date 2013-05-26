@@ -49,16 +49,17 @@ import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
 
-public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
     extends DialogBox {
 
-    private final MonitoringServiceAsync<CS, FR> service;
+    private final MonitoringServiceAsync<CS, FR, CC> service;
 
     private MonitoringLineChart<Double, Long> cpuChart = new MonitoringLineChart<Double, Long>(new ILineType[] {ServersLineType.CPU},
                                                                                                "CPU%",

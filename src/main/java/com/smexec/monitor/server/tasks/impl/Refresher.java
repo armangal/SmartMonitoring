@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.ServerStatus;
-import com.smexec.monitor.server.utils.JMXGeneralStats;
+import com.smexec.monitor.server.utils.IJMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXSmartExecutorStats;
 
 /**
@@ -33,21 +33,21 @@ import com.smexec.monitor.server.utils.JMXSmartExecutorStats;
  * 
  * @author armang
  */
-public class Refresher<S extends ServerStatus>
-    implements Callable<S> {
+public class Refresher<SS extends ServerStatus>
+    implements Callable<SS> {
 
     private static Logger logger = LoggerFactory.getLogger("Refresher");
 
     @Inject
-    private JMXGeneralStats jmxGeneralStats;
+    private IJMXGeneralStats<SS> jmxGeneralStats;
     @Inject
     private JMXSmartExecutorStats jmxSmartExecutorStats;
 
-    private S ss;
+    private SS ss;
     private Date executionDate;
     private int excutionNumber;
 
-    public Refresher(S ss, Date executionDate, int excutionNumber) {
+    public Refresher(SS ss, Date executionDate, int excutionNumber) {
         this.ss = ss;
         this.excutionNumber = excutionNumber;
         this.executionDate = executionDate;
@@ -55,7 +55,7 @@ public class Refresher<S extends ServerStatus>
     }
 
     @Override
-    public S call()
+    public SS call()
         throws Exception {
         String old = Thread.currentThread().getName();
         try {
@@ -81,7 +81,7 @@ public class Refresher<S extends ServerStatus>
      * 
      * @param ss
      */
-    public void fillExtraData(S ss) {
+    public void fillExtraData(SS ss) {
         // Nothing
     }
 
@@ -93,7 +93,7 @@ public class Refresher<S extends ServerStatus>
         return executionDate;
     }
 
-    public S getServerStataus() {
+    public SS getServerStataus() {
         return ss;
     }
 }

@@ -49,19 +49,19 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.AlertType;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
     implements EntryPoint {
 
     /**
      * Create a remote service proxy to talk to the server-side service.
      */
-    private final MonitoringServiceAsync<CS, FR> service;
-    private final LoginWidget<CS, FR> loginWidget;
+    private final MonitoringServiceAsync<CS, FR, CC> service;
+    private final LoginWidget<CS, FR, CC> loginWidget;
 
     private LinkedList<IMonitoringWidget<CS, FR>> widgets = new LinkedList<IMonitoringWidget<CS, FR>>();
     final FlowPanel mainPanel = new FlowPanel();
 
-    private ClientConfigurations clientConfigurations;
+    private CC clientConfigurations;
 
     final Button refreshBtn = new Button("Stop Refresh");
     final Button alertBtn = new Button("Stop Alerts");
@@ -109,7 +109,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         public void onSuccess(FR fullResult) {
             errorCount = 0;
             refProg.progress();
-            
+
             if (fullResult == null) {
                 Log.debug("Received NULL response.");
                 return;
@@ -135,8 +135,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
             mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime()
                                     + ")</h1>");
-//            mainHeader.add(mainHeaderLabel);
-            
+            // mainHeader.add(mainHeaderLabel);
 
         }
 
@@ -165,14 +164,17 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         alertsWidget.clear(null);
     }
 
-    public AbstractEntryPoint(final MonitoringServiceAsync<CS, FR> service) {
+    public AbstractEntryPoint(final MonitoringServiceAsync<CS, FR, CC> service) {
         this.service = service;
-        this.loginWidget = new LoginWidget<CS, FR>(service);
-        this.loginWidget.registerCallBack(new LoggedInCallBack() {
+        this.loginWidget = new LoginWidget<CS, FR, CC>(service);
+        this.loginWidget.registerCallBack(new LoggedInCallBack<CC>() {
 
             @Override
-            public void loggedIn(ClientConfigurations cc) {
+            public void loggedIn(CC cc) {
                 clientConfigurations = cc;
+
+                registerWidgets();
+                
                 Log.debug("Authenticated");
                 RootPanel.get().clear();
                 addMainWidgets();
@@ -249,7 +251,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
             @Override
             public void onClick(ClickEvent event) {
-                SettingsPopup<CS, FR> sp = new SettingsPopup<CS, FR>(service);
+                SettingsPopup<CS, FR, CC> sp = new SettingsPopup<CS, FR, CC>(service);
                 sp.center();
             }
         });
@@ -257,7 +259,6 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         mainHeader.add(mainHeaderLabel);
         mainPanel.add(mainHeader);
 
-        registerWidgets();
 
         Log.debug("AbstractEntryPoint created.");
     }
@@ -279,7 +280,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
         Log.debug("Send refresh request.");
         refProg.progress();
-        
+
         service.refresh(alertsWidget.getLastAlertId(), refreshCallback);
     }
 
@@ -302,7 +303,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
      */
     public void registerWidgets() {
         addMonitoringWidget(new ThreadPoolsWidget<CS, FR>());
-        addMonitoringWidget(new ServersWidget<CS, FR>(service));
+        addMonitoringWidget(new ServersWidget<CS, FR, CC>(service));
         alertsWidget = new AlertsWidget<CS, FR>(AlertType.values());
         addMonitoringWidget(alertsWidget);
     }
@@ -313,7 +314,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         }
     }
 
-    public MonitoringServiceAsync<CS, FR> getService() {
+    public MonitoringServiceAsync<CS, FR, CC> getService() {
         return service;
     }
 
@@ -336,5 +337,10 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
             alertBtn.setText("Stop Alerts");
 
         }
+    }
+    
+    
+    public CC getClientConfigurations() {
+        return clientConfigurations;
     }
 }

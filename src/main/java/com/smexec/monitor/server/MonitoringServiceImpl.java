@@ -25,6 +25,8 @@ import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.alert.Alert;
+import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.config.Version;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 /**
@@ -43,6 +45,9 @@ public class MonitoringServiceImpl
         return new FullRefreshResult(alerts, servers, poolFeedMap);
     }
 
+    public ClientConfigurations getClientConfigurations() {
 
+        return new ClientConfigurations(Version.getEnvName(), Version.getVersion(), getConfigurationService().getServersConfig().getAlertsConfig().isEnabled());
+    }
 
 }

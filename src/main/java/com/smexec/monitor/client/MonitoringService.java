@@ -30,7 +30,7 @@ import com.smexec.monitor.shared.runtime.ThreadDump;
  * The client side stub for the RPC service.
  */
 
-public interface MonitoringService<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public interface MonitoringService<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
     extends RemoteService {
 
     FR refresh(int lastAlertId);
@@ -45,7 +45,7 @@ public interface MonitoringService<CS extends ConnectedServer, FR extends Abstra
 
     LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks);
 
-    ClientConfigurations getClientConfigurations();
+    CC getClientConfigurations();
 
     RuntimeInfo getRuntimeInfo(Integer serverCode);
     

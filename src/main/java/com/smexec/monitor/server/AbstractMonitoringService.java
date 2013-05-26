@@ -31,16 +31,14 @@ import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
-import com.smexec.monitor.server.services.alert.AlertService;
+import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
-import com.smexec.monitor.server.utils.JMXGeneralStats;
+import com.smexec.monitor.server.utils.IJMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.server.utils.ListUtils;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
-import com.smexec.monitor.shared.config.ClientConfigurations;
-import com.smexec.monitor.shared.config.Version;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
@@ -65,13 +63,13 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
     private JMXThreadDumpUtils jmxThreadDumpUtils;
 
     @Inject
-    private AlertService alertService;
+    private IAlertService<SS> alertService;
 
     @Inject
     private IConfigurationService<SC> configurationService;
 
     @Inject
-    private JMXGeneralStats jmxGeneralStats;
+    private IJMXGeneralStats<SS> jmxGeneralStats;
 
     public AbstractMonitoringService() {
         GuiceUtils.getInjector().injectMembers(this);
@@ -100,7 +98,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
 
     public String getGCHistory(Integer serverCode) {
         checkAuthenticated();
-        ServerStatus serverStataus = (ServerStatus) connectedServersState.getServerStataus(serverCode);
+        SS serverStataus = connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             return serverStataus.getGCHistory();
         } else {
@@ -138,7 +136,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
 
     public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks) {
         checkAuthenticated();
-        ServerStatus serverStataus = (ServerStatus) connectedServersState.getServerStataus(serverCode);
+        SS serverStataus = connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             LinkedList<MemoryUsage> memoryUsage = serverStataus.getMemoryUsage(chunks);
             return ListUtils.blur(memoryUsage, 200, new LinkedList<MemoryUsage>());
@@ -150,7 +148,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
 
     public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks) {
         checkAuthenticated();
-        ServerStatus serverStataus = (ServerStatus) connectedServersState.getServerStataus(serverCode);
+        SS serverStataus = connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             LinkedList<CpuUtilizationChunk> percentList = serverStataus.getCpuUtilization().getPercentList(chunks);
             return ListUtils.blur(percentList, 200, new LinkedList<CpuUtilizationChunk>());
@@ -161,7 +159,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
 
     public RuntimeInfo getRuntimeInfo(Integer serverCode) {
         checkAuthenticated();
-        ServerStatus serverStataus = (ServerStatus) connectedServersState.getServerStataus(serverCode);
+        SS serverStataus = connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null && serverStataus.isConnected()) {
             try {
                 return jmxGeneralStats.getRuntimeInfo(serverStataus);
@@ -178,12 +176,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
         return connectedServersState;
     }
 
-    public ClientConfigurations getClientConfigurations() {
-
-        return new ClientConfigurations(Version.getEnvName(), Version.getVersion(), configurationService.getServersConfig().getAlertsConfig().isEnabled());
-    }
-
-    public AlertService getAlertService() {
+    public IAlertService<SS> getAlertService() {
         return alertService;
     }
 
@@ -210,6 +203,10 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
 
     public Boolean stopAlerts(boolean enable) {
         return configurationService.stopAlerts(enable);
+    }
+
+    public IConfigurationService<SC> getConfigurationService() {
+        return configurationService;
     }
 
 }

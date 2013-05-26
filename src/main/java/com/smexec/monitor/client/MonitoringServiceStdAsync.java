@@ -17,8 +17,9 @@ package com.smexec.monitor.client;
 
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
+import com.smexec.monitor.shared.config.ClientConfigurations;
 
 public interface MonitoringServiceStdAsync
-    extends MonitoringServiceAsync<ConnectedServer, FullRefreshResult> {
+    extends MonitoringServiceAsync<ConnectedServer, FullRefreshResult, ClientConfigurations> {
     // should not have any methods, all methods should go to MonitoringServiceAsync
 }

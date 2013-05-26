@@ -38,7 +38,7 @@ import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.model.config.ServerGroup;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
-import com.smexec.monitor.server.services.alert.AlertService;
+import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
@@ -69,7 +69,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStatus, CS ext
     private IConfigurationService<SC> configurationService;
 
     @Inject
-    private AlertService alertService;
+    private IAlertService<SS> alertService;
 
     public AbstractJMXConnectorThread() {
         logger.info("AbstractJMXConnectorThread");

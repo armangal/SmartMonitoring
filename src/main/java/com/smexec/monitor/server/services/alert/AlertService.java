@@ -28,14 +28,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.model.ServerStatus;
-import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.server.services.config.IConfigurationService;
-import com.smexec.monitor.server.services.mail.MailService;
+import com.smexec.monitor.server.services.mail.IMailService;
 import com.smexec.monitor.server.services.persistence.IPersistenceService;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.IAlertType;
 
-public class AlertService {
+public abstract class AlertService<SS extends ServerStatus, SC extends AbstractServersConfig>
+    implements IAlertService<SS> {
 
     private static Logger logger = LoggerFactory.getLogger("AlertService");
 
@@ -44,22 +45,19 @@ public class AlertService {
     private static AtomicInteger alertCounter = new AtomicInteger();
 
     @Inject
-    private IConfigurationService<ServersConfig> configurationService;
+    private IConfigurationService<SC> configurationService;
 
     @Inject
-    private MailService mailService;
+    private IMailService<SS> mailService;
 
     @Inject
     private IPersistenceService persistenceService;
 
-    /**
-     * Return the latest alerts from a given alertId.<br>
-     * The result is limited to 1000 items, meaning if there're 2K alerts, then only the latest 1K will be
-     * returned.
-     * 
-     * @param alertId
-     * @return
+    /*
+     * (non-Javadoc)
+     * @see com.smexec.monitor.server.services.alert.IAlertService#getAlertsAfter(int, int)
      */
+    @Override
     public LinkedList<Alert> getAlertsAfter(int alertId, int max) {
         if (alertId == -1) {
             // first time, take the last max
@@ -92,14 +90,14 @@ public class AlertService {
         return alerts;
     }
 
-    /**
-     * Use it to add alert message to local storage. <br>
-     * Message will be communicated later to client. <br>
-     * Email alerts are sent as well if applicable.
-     * 
-     * @param alert
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.smexec.monitor.server.services.alert.IAlertService#addAlert(com.smexec.monitor.shared.alert.Alert,
+     * SS)
      */
-    public <SS extends ServerStatus> void addAlert(Alert alert, SS ss) {
+    @Override
+    public void addAlert(Alert alert, SS ss) {
         try {
             alert.setId(alertCounter.getAndIncrement());
             boolean mailSent = false;
@@ -120,12 +118,23 @@ public class AlertService {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.smexec.monitor.server.services.alert.IAlertService#createAlert(java.lang.String,
+     * java.lang.String, int, java.lang.String, long, com.smexec.monitor.shared.alert.IAlertType)
+     */
+    @Override
     public Alert createAlert(String message, String details, int serverCode, String serverName, long alertTime, IAlertType alertType) {
         SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return new Alert(message, details, serverCode, serverName, alertTime, DATE_FORMAT.format(new Date(alertTime)), alertType);
 
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.smexec.monitor.server.services.alert.IAlertService#getAlertsList()
+     */
+    @Override
     public LinkedList<Alert> getAlertsList() {
         return alertsList;
     }

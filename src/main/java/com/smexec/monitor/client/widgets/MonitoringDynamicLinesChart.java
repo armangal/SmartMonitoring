@@ -15,6 +15,8 @@
  */
 package com.smexec.monitor.client.widgets;
 
+import java.util.List;
+
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -79,6 +81,12 @@ public class MonitoringDynamicLinesChart<V extends Number, X extends Number>
 
     public void updateChart(ILineType[] lineTypes, ChartFeed<V, X> chartFeeds) {
         updateChart(lineTypes, chartFeeds, false);
+    }
+
+    public void updateChart(List<ILineType> lineTypes, ChartFeed<V, X> chartFeeds, boolean hasXLineValues) {
+        ILineType[] lines = new ILineType[lineTypes.size()];
+        lineTypes.toArray(lines);
+        updateChart(lines, chartFeeds, hasXLineValues);
     }
 
     /**
@@ -176,10 +184,10 @@ public class MonitoringDynamicLinesChart<V extends Number, X extends Number>
         }
 
     }
-    
+
     @Override
     public void setTitle(String title) {
-        this.title=title;
+        this.title = title;
     }
 
 }

@@ -31,9 +31,9 @@ import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.MailUpdaterConfig;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
-import com.smexec.monitor.server.services.alert.AlertService;
+import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
-import com.smexec.monitor.server.services.mail.MailService;
+import com.smexec.monitor.server.services.mail.IMailService;
 import com.smexec.monitor.server.services.mail.MailService.MailItem;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
@@ -51,10 +51,10 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS exte
     private IConfigurationService<SC> configurationService;
 
     @Inject
-    private MailService mailService;
+    private IMailService<SS> mailService;
 
     @Inject
-    private AlertService alertService;
+    private IAlertService<SS> alertService;
 
     private int lastAlertMailed = -1;
 
@@ -158,7 +158,7 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS exte
         return connectedServersState;
     }
 
-    public MailService getMailService() {
+    public IMailService<SS> getMailService() {
         return mailService;
     }
 

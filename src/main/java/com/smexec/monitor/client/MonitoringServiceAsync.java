@@ -26,7 +26,7 @@ import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
 
-public interface MonitoringServiceAsync<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>> {
+public interface MonitoringServiceAsync<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations> {
 
     void refresh(int lastAlertId, AsyncCallback<FR> callback);
 
@@ -40,7 +40,7 @@ public interface MonitoringServiceAsync<CS extends ConnectedServer, FR extends A
 
     void getCpuUsageHistory(Integer serverCode, Integer chunks, AsyncCallback<LinkedList<CpuUtilizationChunk>> callback);
 
-    void getClientConfigurations(AsyncCallback<ClientConfigurations> callback);
+    void getClientConfigurations(AsyncCallback<CC> callback);
 
     void getRuntimeInfo(Integer serverCode, AsyncCallback<RuntimeInfo> callback);
 

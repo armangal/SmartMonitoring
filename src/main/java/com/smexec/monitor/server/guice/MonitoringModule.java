@@ -22,16 +22,20 @@ import com.smexec.monitor.server.model.ConnectedServersState;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServersConfig;
-import com.smexec.monitor.server.services.alert.AlertService;
+import com.smexec.monitor.server.services.alert.IAlertService;
+import com.smexec.monitor.server.services.alert.StandardAlertService;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
-import com.smexec.monitor.server.services.mail.MailService;
+import com.smexec.monitor.server.services.mail.IMailService;
+import com.smexec.monitor.server.services.mail.StandardMailService;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
 import com.smexec.monitor.server.tasks.impl.JMXConnectorThread;
 import com.smexec.monitor.server.tasks.impl.PeriodicalUpdater;
 import com.smexec.monitor.server.tasks.impl.StateUpdaterThread;
+import com.smexec.monitor.server.utils.IJMXGeneralStats;
+import com.smexec.monitor.server.utils.JMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.shared.ConnectedServer;
 
@@ -46,13 +50,17 @@ public class MonitoringModule<SS extends ServerStatus, CS extends ConnectedServe
 
         bind(new TypeLiteral<IConnectedServersState<ServerStatus, ConnectedServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
 
+        bind(new TypeLiteral<IMailService<ServerStatus>>() {}).to(StandardMailService.class).in(Singleton.class);
+
+        bind(new TypeLiteral<IAlertService<ServerStatus>>() {}).to(StandardAlertService.class).in(Singleton.class);
+
+        bind(new TypeLiteral<IJMXGeneralStats<ServerStatus>>() {}).to(JMXGeneralStats.class).in(Singleton.class);
+        
         bind(IJMXConnectorThread.class).to(JMXConnectorThread.class).in(Singleton.class);
         bind(IStateUpdaterThread.class).to(StateUpdaterThread.class).in(Singleton.class);
         bind(IPeriodicalUpdater.class).to(PeriodicalUpdater.class).in(Singleton.class);
 
         bind(JMXThreadDumpUtils.class).in(Singleton.class);
-        bind(AlertService.class).in(Singleton.class);
-        bind(MailService.class).in(Singleton.class);
 
     }
 
