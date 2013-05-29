@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server.services.alert;
+package com.smexec.monitor.shared.config;
 
-import com.smexec.monitor.server.model.ServerStatus;
-import com.smexec.monitor.server.model.config.ServersConfig;
 
-public class StandardAlertService
-    extends AlertService<ServerStatus, ServersConfig> {
-
+public class Colors {
+    public static final String[] colors = new String[] {"blue", "#EC3B83", "#7C0A02", "#568203", "red", "black", "#00FFFF"};
 }

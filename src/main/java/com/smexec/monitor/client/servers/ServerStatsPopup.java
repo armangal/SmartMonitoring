@@ -50,6 +50,7 @@ import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.config.Colors;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
@@ -442,13 +443,13 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
             return;
         }
 
-        String[] colors = new String[] {"blue", "#EC3B83", "#7C0A02", "#568203", "red", "black", "#00FFFF"};
+        
         HashMap<String, DynamicLine> names = new HashMap<String, DynamicLine>(0);
         int i = 0;
         for (MemoryUsage mu : result) {
             for (MemoryState memoryState : mu.getMemoryState()) {
                 if (memoryState.isHeap() == showHeap && !names.containsKey(memoryState.getName())) {
-                    names.put(memoryState.getName(), new DynamicLine(i, memoryState.getName(), colors[i], ColumnType.NUMBER));
+                    names.put(memoryState.getName(), new DynamicLine(i, memoryState.getName(), Colors.colors[i], ColumnType.NUMBER));
                     i++;
                 }
             }
