@@ -13,18 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server.model;
-
-import com.smexec.monitor.shared.ConnectedServer;
-
-public class ConnectedServersState
-    extends AbstractConnectedServersState<ServerStatus, ConnectedServer, DatabaseServer>
-    implements IConnectedServersState<ServerStatus, ConnectedServer, DatabaseServer> {
-
-    @Override
-    public void mergeExtraData(ServerStatus ss) {
-        // nothing
-    }
+package com.smexec.monitor.server.model.config;
 
 
+public enum DatabaseType {
+    ORACLE;
 }

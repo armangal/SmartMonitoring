@@ -27,10 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
+import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
-import com.smexec.monitor.server.model.config.MailUpdaterConfig;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
+import com.smexec.monitor.server.model.config.MailUpdaterConfig;
 import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.services.mail.IMailService;
@@ -39,13 +40,13 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.config.Version;
 
-public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS extends ConnectedServer, SC extends AbstractServersConfig>
+public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS extends ConnectedServer, SC extends AbstractServersConfig, DS extends DatabaseServer>
     implements Runnable {
 
     public static Logger logger = LoggerFactory.getLogger("PeriodicalUpdater");
 
     @Inject
-    private IConnectedServersState<SS, CS> connectedServersState;
+    private IConnectedServersState<SS, CS, DS> connectedServersState;
 
     @Inject
     private IConfigurationService<SC> configurationService;
@@ -154,7 +155,7 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS exte
 
     public abstract String getExtraInfo();
 
-    public IConnectedServersState<SS, CS> getConnectedServersState() {
+    public IConnectedServersState<SS, CS, DS> getConnectedServersState() {
         return connectedServersState;
     }
 

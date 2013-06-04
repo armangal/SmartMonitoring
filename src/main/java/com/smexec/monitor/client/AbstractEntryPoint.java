@@ -72,7 +72,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
     private ProgressLabel refProg = new ProgressLabel();
     private HTML footer = new HTML("<ul><li><img title=\"Feedback\" src=\"img/oo_icon.gif\"><span>&nbsp;&nbsp;Created by </span><a target='blank' href=\"https://twitter.com/armangal\">@armangal</a><span>, based on </span><a href='https://github.com/armangal/SmartMonitoring' target='blank'>SmartMonitoring</a><span> project.</span></span></li></ul>");
 
-    private AlertsWidget<CS, FR> alertsWidget;
+    private AlertsWidget<CS, FR, CC> alertsWidget;
 
     private RepeatingCommand refreshCommand = new RepeatingCommand() {
 
@@ -171,24 +171,30 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
             @Override
             public void loggedIn(CC cc) {
-                clientConfigurations = cc;
+                try {
+                    clientConfigurations = cc;
 
-                registerWidgets();
-                
-                Log.debug("Authenticated");
-                RootPanel.get().clear();
-                addMainWidgets();
-                RootPanel.get().add(mainPanel);
-                footer.setStyleName("footer");
-                RootPanel.get().add(footer);
+                    registerWidgets();
 
-                refresh = true;
-                refresh();
-                Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isProdMode() ? 60000 : 20000);
-                mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
+                    Log.debug("Authenticated");
+                    RootPanel.get().clear();
+                    addMainWidgets();
+                    RootPanel.get().add(mainPanel);
+                    footer.setStyleName("footer");
+                    RootPanel.get().add(footer);
 
-                alertBtn.getElement().setAttribute("state", cc.isAlertsEnabled() ? "2" : "1");
-                alertButtonClicked(cc.isAlertsEnabled() ? "2" : "1");
+                    refresh = true;
+                    refresh();
+                    Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isProdMode() ? 60000 : 20000);
+
+                    alertBtn.getElement().setAttribute("state", cc.isAlertsEnabled() ? "2" : "1");
+                    alertButtonClicked(cc.isAlertsEnabled() ? "2" : "1");
+
+                    mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
+                } catch (Exception e) {
+                    Log.error(clientConfigurations.toString());
+                    Log.error(e.getMessage(), e);
+                }
             }
         });
 
@@ -259,7 +265,6 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         mainHeader.add(mainHeaderLabel);
         mainPanel.add(mainHeader);
 
-
         Log.debug("AbstractEntryPoint created.");
     }
 
@@ -281,7 +286,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         Log.debug("Send refresh request.");
         refProg.progress();
 
-        service.refresh(alertsWidget.getLastAlertId(), refreshCallback);
+        service.refresh(refreshCallback);
     }
 
     /**
@@ -304,7 +309,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
     public void registerWidgets() {
         addMonitoringWidget(new ThreadPoolsWidget<CS, FR>());
         addMonitoringWidget(new ServersWidget<CS, FR, CC>(service));
-        alertsWidget = new AlertsWidget<CS, FR>(AlertType.values());
+        alertsWidget = new AlertsWidget<CS, FR, CC>(service, AlertType.values());
         addMonitoringWidget(alertsWidget);
     }
 
@@ -338,9 +343,13 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
         }
     }
-    
-    
+
     public CC getClientConfigurations() {
         return clientConfigurations;
+    }
+
+    public void hideHeaderAndFooter() {
+        mainHeader.setVisible(false);
+        footer.setVisible(false);
     }
 }

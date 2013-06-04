@@ -17,14 +17,17 @@ package com.smexec.monitor.client.login;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.FontStyle;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -38,6 +41,10 @@ import com.smexec.monitor.shared.config.ClientConfigurations;
 
 public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
     extends Composite {
+
+    private static final String SSIP = "ssip";
+    private static final String SSIU = "ssiu";
+    private static final String SSICH = "ssich";
 
     public interface LoggedInCallBack<CC extends ClientConfigurations> {
 
@@ -53,6 +60,8 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
     private TextBox userName = new TextBox();
     private PasswordTextBox password = new PasswordTextBox();
     private Button login = new Button("Login");
+    private CheckBox staySignedIn = new CheckBox("Stay signed in");
+    private Label errorMsg = new Label();
 
     private KeyPressHandler enterhandler = new KeyPressHandler() {
 
@@ -84,6 +93,10 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
         fp.add(pw);
         fp.add(password);
         fp.add(login);
+        fp.add(staySignedIn);
+        fp.add(errorMsg);
+        errorMsg.getElement().getStyle().setColor("red");
+        errorMsg.getElement().getStyle().setFontStyle(FontStyle.ITALIC);
 
         password.addKeyPressHandler(enterhandler);
         password.getElement().setId("input");
@@ -119,12 +132,22 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
             }
         });
 
+        staySignedIn.setValue(Cookies.getCookie(SSICH) != null && Cookies.getCookie(SSICH).equals("on"));
+        String user = Cookies.getCookie(SSIU);
+        String pass = Cookies.getCookie(SSIP);
+        if (staySignedIn.getValue() && user != null && pass != null) {
+            userName.setText(user);
+            password.setText(pass);
+            login();
+        }
+
     }
 
     @Override
     protected void onAttach() {
         super.onAttach();
         userName.setFocus(true);
+        errorMsg.setText("");
     }
 
     private void login() {
@@ -133,20 +156,31 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
             @Override
             public void onSuccess(Boolean result) {
                 if (result.booleanValue() == true) {
+                    if (staySignedIn.getValue()) {
+                        Log.debug("Store cookie");
+                        Cookies.setCookie(SSICH, "on");
+                        Cookies.setCookie(SSIU, userName.getText().trim().toLowerCase());
+                        Cookies.setCookie(SSIP, password.getText().trim().toLowerCase());
+                    } else {
+                        Log.debug("Cleaning cookie");
+                        Cookies.removeCookie(SSIP);
+                        Cookies.removeCookie(SSIU);
+                        Cookies.removeCookie(SSICH);
+                    }
                     callBack.loggedIn(cc);
                 } else {
-                    Window.alert("Can't login");
+                    errorMsg.setText("Can't login, try again.");
                 }
             }
 
             @Override
             public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
+                errorMsg.setText("Error loging-in:" + caught.getMessage());
             }
         });
     }
 
-    public void registerCallBack(LoggedInCallBack callBack) {
+    public void registerCallBack(LoggedInCallBack<CC> callBack) {
         this.callBack = callBack;
     }
 

@@ -59,6 +59,10 @@ public abstract class AbstractServersConfig {
 
     private MailUpdaterConfig mailUpdaterConfig = new MailUpdaterConfig();
 
+    @XmlElement(name = "database")
+    @XmlElementWrapper
+    private List<DatabaseConfig> databases = new ArrayList<DatabaseConfig>();
+
     public AbstractServersConfig() {
         this.serverGroups = new ArrayList<ServerGroup>(0);
         this.serverGroups.add(ServerGroup.DEFAULT_GROUP);
@@ -69,15 +73,23 @@ public abstract class AbstractServersConfig {
         return servers;
     }
 
-    private void setServers(List<ServerConfig> servers) {
+    public void setServers(List<ServerConfig> servers) {
         this.servers = servers;
+    }
+
+    public List<DatabaseConfig> getDatabases() {
+        return databases;
+    }
+
+    public void setDatabases(List<DatabaseConfig> databases) {
+        this.databases = databases;
     }
 
     public List<ServerGroup> getServerGroups() {
         return serverGroups;
     }
 
-    private void setServerGroups(List<ServerGroup> serverGroups) {
+    public void setServerGroups(List<ServerGroup> serverGroups) {
         this.serverGroups = serverGroups;
     }
 
@@ -150,6 +162,8 @@ public abstract class AbstractServersConfig {
         StringBuilder builder = new StringBuilder();
         builder.append("ServersConfig [servers=");
         builder.append(servers);
+        builder.append(",\nDatabases=");
+        builder.append(databases);
         builder.append(",\nGroups=");
         builder.append(serverGroups);
         builder.append(",\n name=");
@@ -175,11 +189,12 @@ public abstract class AbstractServersConfig {
      */
     public static void main(String[] args) {
         try {
-            JAXBContext context = JAXBContext.newInstance(AbstractServersConfig.class);
+            JAXBContext context = JAXBContext.newInstance(ServersConfig.class);
+
             ServerConfig s = new ServerConfig("a", 11, "ip", 1111);
             List<ServerConfig> l = new ArrayList<ServerConfig>();
             l.add(s);
-            AbstractServersConfig sc = new ServersConfig();
+            ServersConfig sc = new ServersConfig();
             sc.setServers(l);
 
             ArrayList<String> toAddressList = new ArrayList<String>();
@@ -212,6 +227,9 @@ public abstract class AbstractServersConfig {
 
             sc.setMailUpdaterConfig(muc);
 
+            List<DatabaseConfig> dbs = new ArrayList<DatabaseConfig>();
+            dbs.add(new DatabaseConfig("11", DatabaseType.ORACLE, "ip", 1234, "poker", "user", "password"));
+            sc.setDatabases(dbs);
             context.createMarshaller().marshal(sc, System.out);
         } catch (Exception e) {
             e.printStackTrace();
@@ -226,6 +244,16 @@ public abstract class AbstractServersConfig {
             Boolean put = map.put(sc.getServerCode(), Boolean.TRUE);
             if (put != null) {
                 throw new RuntimeException("Duplicate server code:" + sc.getServerCode());
+            }
+        }
+
+        Map<String, Boolean> dbs = new HashMap<String, Boolean>();
+        if (databases == null)
+            return;
+        for (DatabaseConfig dc : databases) {
+            Boolean put = dbs.put(dc.getName(), true);
+            if (put != null) {
+                throw new RuntimeException("Duplicate database name:" + dc.toString());
             }
         }
     }

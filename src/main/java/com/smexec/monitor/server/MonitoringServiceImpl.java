@@ -17,14 +17,13 @@ package com.smexec.monitor.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import com.smexec.monitor.client.MonitoringServiceStd;
+import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServersConfig;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
-import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.config.Version;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
@@ -34,15 +33,15 @@ import com.smexec.monitor.shared.smartpool.PoolsFeed;
  */
 @SuppressWarnings("serial")
 public class MonitoringServiceImpl
-    extends AbstractMonitoringService<ServerStatus, ConnectedServer, FullRefreshResult, ServersConfig>
+    extends AbstractMonitoringService<ServerStatus, ConnectedServer, FullRefreshResult, ServersConfig, DatabaseServer>
     implements MonitoringServiceStd {
 
     public MonitoringServiceImpl() {}
 
     @Override
-    public FullRefreshResult createFullRefreshResult(LinkedList<Alert> alerts, ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+    public FullRefreshResult createFullRefreshResult(ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
 
-        return new FullRefreshResult(alerts, servers, poolFeedMap);
+        return new FullRefreshResult(servers, poolFeedMap);
     }
 
     public ClientConfigurations getClientConfigurations() {

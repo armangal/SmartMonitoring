@@ -15,6 +15,9 @@
  */
 package com.smexec.monitor.server.tasks.impl;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,11 +36,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
+import com.smexec.monitor.server.model.config.AbstractServersConfig;
+import com.smexec.monitor.server.model.config.DatabaseConfig;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.model.config.ServerGroup;
-import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
@@ -46,7 +51,16 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
 
-public abstract class AbstractJMXConnectorThread<SS extends ServerStatus, CS extends ConnectedServer, SC extends AbstractServersConfig>
+/**
+ * main connection manager, makes sure that all servers that are configured in configuration XML are actually
+ * connected
+ * 
+ * @author armang
+ * @param <SS>
+ * @param <CS>
+ * @param <SC>
+ */
+public abstract class AbstractServersConnectorThread<SS extends ServerStatus, CS extends ConnectedServer, SC extends AbstractServersConfig, DS extends DatabaseServer>
     implements IJMXConnectorThread {
 
     public static Logger logger = LoggerFactory.getLogger("JMXConnectorThread");
@@ -63,7 +77,7 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStatus, CS ext
     });
 
     @Inject
-    private IConnectedServersState<SS, CS> connectedServersState;
+    private IConnectedServersState<SS, CS, DS> connectedServersState;
 
     @Inject
     private IConfigurationService<SC> configurationService;
@@ -71,8 +85,63 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStatus, CS ext
     @Inject
     private IAlertService<SS> alertService;
 
-    public AbstractJMXConnectorThread() {
+    public AbstractServersConnectorThread() {
         logger.info("AbstractJMXConnectorThread");
+    }
+
+    private class DbConnector
+        implements Runnable {
+
+        private DatabaseConfig dc;
+
+        public DbConnector(DatabaseConfig dc) {
+            super();
+            this.dc = dc;
+        }
+
+        @Override
+        public void run() {
+            String oldName = Thread.currentThread().getName();
+            try {
+                Thread.currentThread().setName("CONN_DB_" + dc.getName());
+                connectDb(dc);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                Thread.currentThread().setName(oldName);
+            } finally {
+                Thread.currentThread().setName(oldName);
+            }
+        }
+
+    }
+
+    public abstract DS getDatabaseServer(DatabaseConfig dc);
+    
+    public void connectDb(DatabaseConfig dc)
+        throws ClassNotFoundException, SQLException {
+        DS ds = connectedServersState.getDatabaseServer(dc.getName());
+        if (ds == null) {
+            ds = getDatabaseServer(dc);
+            connectedServersState.addDatabaseServer(ds);
+        }
+        logger.info("Coonecting to:{}", dc);
+        Connection connection = null;
+        switch (dc.getType()) {
+            case ORACLE:
+                Class.forName("oracle.jdbc.OracleDriver");
+                connection = DriverManager.getConnection("jdbc:oracle:thin:@//" + dc.getIp() + ":" + dc.getPort() + "/" + dc.getService(),
+                                                         dc.getUser(),
+                                                         dc.getPassword());
+
+                break;
+            default:
+                throw new RuntimeException("Unknown database type:" + dc.getType());
+        }
+
+        ds.setConnection(connection);
+        ds.setDatabaseConfig(dc);
+        logger.info("Conneted to DB:{}", connection);
+
     }
 
     private class Connector
@@ -122,7 +191,15 @@ public abstract class AbstractJMXConnectorThread<SS extends ServerStatus, CS ext
                 }
             }
 
-            logger.info("Connection loop finished");
+            logger.info("JMX Connection loop finished, Starting database");
+
+            for (DatabaseConfig dc : serversConfig.getDatabases()) {
+                DS ds = connectedServersState.getDatabaseServer(dc.getName());
+                if (ds == null || !ds.isConnected()) {
+                    // connect
+                    threadPool.execute(new DbConnector(dc));
+                }
+            }
 
         } catch (Throwable e) {
             logger.error("Error loading config:{}", e.getMessage());

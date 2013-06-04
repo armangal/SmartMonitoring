@@ -26,13 +26,16 @@ import org.slf4j.LoggerFactory;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
-public abstract class AbstractConnectedServersState<SS extends ServerStatus, CS extends ConnectedServer> {
+public abstract class AbstractConnectedServersState<SS extends ServerStatus, CS extends ConnectedServer, DS extends DatabaseServer> {
 
     private static Logger logger = LoggerFactory.getLogger(AbstractConnectedServersState.class);
 
     private ConcurrentHashMap<Integer, SS> connectedServersMap = new ConcurrentHashMap<Integer, SS>();
 
     private ArrayList<CS> servers;
+
+    private ConcurrentHashMap<String, DS> databases = new ConcurrentHashMap<String, DS>(0);
+
     private HashMap<String, PoolsFeed> poolFeedMap;
 
     public abstract void mergeExtraData(SS ss);
@@ -88,4 +91,17 @@ public abstract class AbstractConnectedServersState<SS extends ServerStatus, CS 
     public HashMap<String, PoolsFeed> getPoolFeedMap() {
         return poolFeedMap;
     }
+
+    public ArrayList<DS> getDatabases() {
+        return new ArrayList<DS>(databases.values());
+    }
+
+    public DS getDatabaseServer(String name) {
+        return databases.get(name);
+    }
+
+    public void addDatabaseServer(DS ds) {
+        databases.put(ds.getDatabaseConfig().getName(), ds);
+    }
+
 }

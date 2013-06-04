@@ -28,34 +28,44 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
+import com.smexec.monitor.client.widgets.ProgressLabel;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.IAlertType;
+import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
     extends AbstractMonitoringWidget
     implements IMonitoringWidget<CS, FR> {
+
+    private final MonitoringServiceAsync<CS, FR, CC> service;
 
     private ScrollPanel sp = new ScrollPanel();
     private FlexTable alertsTable = new FlexTable();
     private HorizontalPanel title = new HorizontalPanel();
     private ListBox typesListBox;
+    private ProgressLabel refProg = new ProgressLabel();
+
 
     private int lastAlertId = -1;
     private List<IAlertType> alertTypesList = new ArrayList<IAlertType>();
     private LinkedList<Alert> alerts = new LinkedList<Alert>();
 
-    public AlertsWidget(IAlertType[]... types) {
-        super("Alerts:");
+    public AlertsWidget(MonitoringServiceAsync<CS, FR, CC> service, IAlertType[]... types) {
+        super("Alerts:", 20000);
+
+        this.service = service;
 
         for (IAlertType[] arr : types) {
             for (IAlertType at : arr) {
@@ -74,6 +84,7 @@ public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRef
         typesListBox = getTypesListBox();
         title.add(typesListBox);
         title.add(getExportButton());
+        title.add(refProg);
 
         setTitleWidget(title);
         initAlertTable();
@@ -118,7 +129,7 @@ public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRef
         int i = 0;
         alertsTable.setText(0, i++, "Msg.Id:");
         alertsTable.setText(0, i++, "Message");
-        alertsTable.setText(0, i++, "Srever");
+        alertsTable.setText(0, i++, "Server");
         alertsTable.setText(0, i++, "Time");
 
         alertsTable.getRowFormatter().getElement(0).setId("th");
@@ -127,29 +138,9 @@ public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRef
 
     @Override
     public void update(FR fullRefreshResult) {
-
-        try {
-            LinkedList<Alert> newAlerts = fullRefreshResult.getAlerts();
-            alerts.addAll(newAlerts);
-            Collections.sort(alerts, new Comparator<Alert>() {
-
-                @Override
-                public int compare(Alert o1, Alert o2) {
-                    return o2.getId() - o1.getId();
-                }
-            });
-
-            if (alerts.size() > 1000) {
-                for (int i = 0; i < alerts.size() - 1000; i++) {
-                    Alert remove = alerts.remove();
-                    Log.debug("Alert widget, removing alert from memory:" + remove);
-                }
-            }
-
-            redrawTable();
-
-        } catch (Exception e) {
-            Log.error(e.getMessage(), e);
+        if (!isRefresh()) {
+            setRefresh(true);
+            refresh();
         }
 
     }
@@ -186,13 +177,54 @@ public class AlertsWidget<CS extends ConnectedServer, FR extends AbstractFullRef
         initAlertTable();
     }
 
-    public int getLastAlertId() {
+    private int getLastAlertId() {
         return lastAlertId;
     }
 
     @Override
     public void refresh() {
-        // TODO Auto-generated method stub
+        refProg.progress();
+        service.getAlerts(getLastAlertId(), new AsyncCallback<LinkedList<Alert>>() {
+
+            @Override
+            public void onSuccess(LinkedList<Alert> result) {
+                refProg.progress();
+
+                try {
+                    for (Alert a : result) {
+                        if (a.getId() > lastAlertId) {
+                            alerts.add(a);
+                        }
+                    }
+                    Collections.sort(alerts, new Comparator<Alert>() {
+
+                        @Override
+                        public int compare(Alert o1, Alert o2) {
+                            return o2.getId() - o1.getId();
+                        }
+                    });
+
+                    if (alerts.size() > 1000) {
+                        for (int i = 0; i < alerts.size() - 1000; i++) {
+                            Alert remove = alerts.remove();
+                            Log.debug("Alert widget, removing alert from memory:" + remove);
+                        }
+                    }
+
+                    redrawTable();
+
+                } catch (Exception e) {
+                    refProg.progress();
+                    Log.error(e.getMessage(), e);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Log.error("Failed to refresh alerts: " + caught.getMessage(), caught);
+            }
+        });
 
     }
 }

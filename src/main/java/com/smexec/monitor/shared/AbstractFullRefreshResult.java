@@ -19,17 +19,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 
-import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 public abstract class AbstractFullRefreshResult<CS extends ConnectedServer>
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private LinkedList<Alert> alerts;
 
     private String serverTime;
 
@@ -44,21 +40,15 @@ public abstract class AbstractFullRefreshResult<CS extends ConnectedServer>
     private ArrayList<CS> servers = new ArrayList<CS>(0);
 
     public AbstractFullRefreshResult() {
-        this.alerts = new LinkedList<Alert>();
         this.poolFeedMap = new HashMap<String, PoolsFeed>();
         this.servers = new ArrayList<CS>(0);
     }
 
-    public AbstractFullRefreshResult(LinkedList<Alert> alerts, ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+    public AbstractFullRefreshResult(ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap) {
         super();
-        this.alerts = alerts;
         this.serverTime = new Date().toString();
         this.servers = servers;
         this.poolFeedMap = poolFeedMap;
-    }
-
-    public LinkedList<Alert> getAlerts() {
-        return alerts;
     }
 
     public String getServerTime() {
@@ -77,9 +67,7 @@ public abstract class AbstractFullRefreshResult<CS extends ConnectedServer>
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("[ARR [pfm=");
-        builder.append(poolFeedMap!= null ? poolFeedMap.size() : "0")
-               .append(", alerts=")
-               .append(alerts)
+        builder.append(poolFeedMap != null ? poolFeedMap.size() : "0")
                .append(", server:")
                .append(servers)
                .append(", serverTime:")

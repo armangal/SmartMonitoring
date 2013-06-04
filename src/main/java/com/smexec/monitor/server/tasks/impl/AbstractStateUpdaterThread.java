@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
@@ -42,7 +44,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 
-public abstract class AbstractStateUpdaterThread<S extends ServerStatus, R extends Refresher<S>, C extends ConnectedServer>
+public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R extends Refresher<SS>, CS extends ConnectedServer, DS extends DatabaseServer>
     implements IStateUpdaterThread {
 
     private static Logger logger = LoggerFactory.getLogger("StateUpdaterThread");
@@ -61,7 +63,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStatus, R exten
     });
 
     @Inject
-    private IConnectedServersState<S, C> connectedServersState;
+    private IConnectedServersState<SS, CS, DS> connectedServersState;
 
     @Override
     public void run() {
@@ -73,31 +75,31 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStatus, R exten
 
             long start = System.currentTimeMillis();
             logger.info("Refreshing stats for all servers.");
-            ArrayList<C> serversList = new ArrayList<C>(0);
+            ArrayList<CS> serversList = new ArrayList<CS>(0);
 
-            CompletionService<S> compService = new ExecutorCompletionService<S>(threadPool);
+            CompletionService<SS> compService = new ExecutorCompletionService<SS>(threadPool);
 
-            Collection<S> values = connectedServersState.getAllServers();
+            Collection<SS> values = connectedServersState.getAllServers();
 
             // scheduling update threads
-            Map<Future<S>, R> futuresMap = new HashMap<Future<S>, R>();
-            for (S ss : values) {
+            Map<Future<SS>, R> futuresMap = new HashMap<Future<SS>, R>();
+            for (SS ss : values) {
                 R refresher = getRefresher(ss, new Date(), executionNumber.getAndIncrement());
-                Future<S> future = compService.submit(refresher);
+                Future<SS> future = compService.submit(refresher);
                 futuresMap.put(future, refresher);
             }
 
             // Waiting for all threads to finish
             int i = 0;
             do {
-                Future<S> take = compService.poll(15, TimeUnit.SECONDS);
+                Future<SS> take = compService.poll(15, TimeUnit.SECONDS);
                 i++;
                 if (take != null) {
                     futuresMap.remove(take);
                     try {
-                        S ss = take.get(10, TimeUnit.SECONDS);
+                        SS ss = take.get(10, TimeUnit.SECONDS);
                         logger.info("Finished updating:{}, {} from {}", new Object[] {ss.getServerConfig().getName(), i, values.size()});
-                        C cs = getConnectedServer(ss);
+                        CS cs = getConnectedServer(ss);
                         serversList.add(cs);
                     } catch (Exception e) {
                         take.cancel(true);
@@ -112,12 +114,12 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStatus, R exten
             if (futuresMap.size() > 0) {
                 // not good, for some server we couldn't collect stats
                 logger.error("Can't collect stats from all servers, skipped servers are below.");
-                for (Future<S> f : futuresMap.keySet()) {
+                for (Future<SS> f : futuresMap.keySet()) {
                     R r = futuresMap.get(f);
-                    S serverStataus = r.getServerStataus();
+                    SS serverStataus = r.getServerStataus();
                     logger.error("Skipped:{}", serverStataus);
                     f.cancel(true);
-                    C cs = getConnectedServer(serverStataus);
+                    CS cs = getConnectedServer(serverStataus);
                     serversList.add(cs);
                 }
 
@@ -127,6 +129,8 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStatus, R exten
             logger.info("Staring merge stats");
             connectedServersState.mergeStats(serversList);
             logger.info("Finished merge stats");
+
+            refreshDBs();
 
             finishedRefresh();
 
@@ -141,11 +145,37 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStatus, R exten
         }
     }
 
+    private void refreshDBs() {
+        CompletionService<DS> compService = new ExecutorCompletionService<DS>(threadPool);
+        int ref = 0;
+        for (DS ds : connectedServersState.getDatabases()) {
+            if (ds.isConnected()) {
+                compService.submit(getDbRefresher(ds));
+                ref++;
+            }
+        }
+
+        for (int i = 0; i < ref; i++) {
+            try {
+                Future<DS> take = compService.take();
+                DS ds = take.get();
+                logger.info("Finished refersh database:" + ds.getDatabaseConfig().getName());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public abstract DbRefresher<DS> getDbRefresher(DS ds);
+
     public void finishedRefresh() {
         // Nothing for now
     }
 
-    public abstract R getRefresher(S ss, Date executionDate, int excutionNumber);
+    public abstract R getRefresher(SS ss, Date executionDate, int excutionNumber);
 
     /**
      * prepares ConnectedServer with relevant to client/UI information
@@ -153,7 +183,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStatus, R exten
      * @param ss
      * @return
      */
-    public abstract C getConnectedServer(S ss);
+    public abstract CS getConnectedServer(SS ss);
 
     /**
      * gets the light object from client representation
@@ -170,7 +200,7 @@ public abstract class AbstractStateUpdaterThread<S extends ServerStatus, R exten
         return mul;
     }
 
-    public IConnectedServersState<S, C> getConnectedServersState() {
+    public IConnectedServersState<SS, CS, DS> getConnectedServersState() {
         return connectedServersState;
     }
 

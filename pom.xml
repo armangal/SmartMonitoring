@@ -54,6 +54,7 @@
 		<junit.version>4.11</junit.version>
 		<javax.mail.version>1.4</javax.mail.version>
 		<commons-io.version>2.4</commons-io.version>
+		<oracle.jdbc.version>11.2.0.3</oracle.jdbc.version>
 
 		<gwt.version>2.5.0</gwt.version>
 		<gin.version>2.0.0</gin.version>
@@ -167,6 +168,13 @@
 				<version>${morphia.version}</version>
 				<scope>compile</scope>
 			</dependency>
+			<!-- Oracle JDBC Dependencies -->
+			<dependency>
+				<groupId>com.oracle</groupId>
+				<artifactId>ojdbc5</artifactId>
+				<version>${oracle.jdbc.version}</version>
+				<scope>compile</scope>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
@@ -252,6 +260,12 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Oracle JDBC Dependencies -->
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc5</artifactId>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
@@ -33,7 +34,7 @@ import com.smexec.monitor.shared.runtime.ThreadDump;
 public interface MonitoringService<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
     extends RemoteService {
 
-    FR refresh(int lastAlertId);
+    FR refresh();
 
     ThreadDump getThreadDump(Integer serverCode);
 
@@ -54,4 +55,6 @@ public interface MonitoringService<CS extends ConnectedServer, FR extends Abstra
     Boolean saveSettingsXML(String xml);
     
     Boolean stopAlerts(boolean enable);
+    
+    LinkedList<Alert> getAlerts(final int lastAlertId);
 }

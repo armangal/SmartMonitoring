@@ -19,6 +19,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.smexec.monitor.server.model.ConnectedServersState;
+import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServersConfig;
@@ -31,8 +32,8 @@ import com.smexec.monitor.server.services.mail.StandardMailService;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
-import com.smexec.monitor.server.tasks.impl.JMXConnectorThread;
 import com.smexec.monitor.server.tasks.impl.PeriodicalUpdater;
+import com.smexec.monitor.server.tasks.impl.ServersConnectorThread;
 import com.smexec.monitor.server.tasks.impl.StateUpdaterThread;
 import com.smexec.monitor.server.utils.IJMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXGeneralStats;
@@ -48,7 +49,7 @@ public class MonitoringModule<SS extends ServerStatus, CS extends ConnectedServe
 
         install(new MongoDbModule());
 
-        bind(new TypeLiteral<IConnectedServersState<ServerStatus, ConnectedServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
+        bind(new TypeLiteral<IConnectedServersState<ServerStatus, ConnectedServer, DatabaseServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
 
         bind(new TypeLiteral<IMailService<ServerStatus>>() {}).to(StandardMailService.class).in(Singleton.class);
 
@@ -56,7 +57,7 @@ public class MonitoringModule<SS extends ServerStatus, CS extends ConnectedServe
 
         bind(new TypeLiteral<IJMXGeneralStats<ServerStatus>>() {}).to(JMXGeneralStats.class).in(Singleton.class);
         
-        bind(IJMXConnectorThread.class).to(JMXConnectorThread.class).in(Singleton.class);
+        bind(IJMXConnectorThread.class).to(ServersConnectorThread.class).in(Singleton.class);
         bind(IStateUpdaterThread.class).to(StateUpdaterThread.class).in(Singleton.class);
         bind(IPeriodicalUpdater.class).to(PeriodicalUpdater.class).in(Singleton.class);
 

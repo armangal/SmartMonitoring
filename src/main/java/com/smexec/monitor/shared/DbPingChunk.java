@@ -16,23 +16,40 @@
 package com.smexec.monitor.shared;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-import com.smexec.monitor.shared.smartpool.PoolsFeed;
-
-public class FullRefreshResult
-    extends AbstractFullRefreshResult<ConnectedServer>
+public class DbPingChunk
+    extends AbstractMergeableChunkStats
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    long pingTime;
 
-    public FullRefreshResult() {
+    public DbPingChunk() {}
 
+    public DbPingChunk(long pingTime, long time) {
+        super(time, time);
+        this.pingTime = pingTime;
     }
 
-    public FullRefreshResult(ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
-        super(servers, poolFeedMap);
+    public long getPingTime() {
+        return pingTime;
+    }
+
+    @Override
+    public AbstractMergeableChunkStats copyMe() {
+        return new DbPingChunk(this.pingTime, getEndTime());
+    }
+
+    @Override
+    public void aggregate(AbstractMergeableChunkStats value) {
+        DbPingChunk v = (DbPingChunk) value;
+        this.pingTime = Math.max(pingTime, v.getPingTime());
+    }
+
+    @Override
+    public void divide(int elements) {
+
     }
 
 }

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
+import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
@@ -49,7 +50,7 @@ import com.smexec.monitor.shared.smartpool.PoolsFeed;
  * The server side implementation of the monitoring RPC service.
  */
 @SuppressWarnings("serial")
-public abstract class AbstractMonitoringService<SS extends ServerStatus, CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, SC extends AbstractServersConfig>
+public abstract class AbstractMonitoringService<SS extends ServerStatus, CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, SC extends AbstractServersConfig, DS extends DatabaseServer>
     extends RemoteServiceServlet {
 
     private static Logger logger = LoggerFactory.getLogger("MonitoringService");
@@ -57,7 +58,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
     private static final String AUTHENTICATED = "authenticated";
 
     @Inject
-    private IConnectedServersState<SS, CS> connectedServersState;
+    private IConnectedServersState<SS, CS, DS> connectedServersState;
 
     @Inject
     private JMXThreadDumpUtils jmxThreadDumpUtils;
@@ -75,14 +76,21 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
         GuiceUtils.getInjector().injectMembers(this);
     }
 
-    public FR refresh(int lastAlertId) {
+    public FR refresh() {
         checkAuthenticated();
-        LinkedList<Alert> alertsAfter = alertService.getAlertsAfter(lastAlertId, 1000);
 
-        return createFullRefreshResult(alertsAfter, connectedServersState.getServers(), connectedServersState.getPoolFeedMap());
+        return createFullRefreshResult(connectedServersState.getServers(), connectedServersState.getPoolFeedMap());
     }
 
-    public abstract FR createFullRefreshResult(LinkedList<Alert> alerts, ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap);
+    public LinkedList<Alert> getAlerts(int lastAlertId) {
+        checkAuthenticated();
+        logger.info("GetAlerts Request: alertId:{}", lastAlertId);
+        LinkedList<Alert> alertsAfter = getAlertService().getAlertsAfter(lastAlertId, 1000);
+        logger.info("Returning:{} alerts.", alertsAfter.size());
+        return alertsAfter;
+    }
+
+    public abstract FR createFullRefreshResult(ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap);
 
     public ThreadDump getThreadDump(Integer serverCode) {
         checkAuthenticated();
@@ -172,7 +180,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
         return null;
     }
 
-    public IConnectedServersState<SS, CS> getConnectedServersState() {
+    public IConnectedServersState<SS, CS, DS> getConnectedServersState() {
         return connectedServersState;
     }
 

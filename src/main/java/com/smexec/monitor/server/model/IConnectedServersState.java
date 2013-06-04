@@ -22,7 +22,7 @@ import java.util.List;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
-public interface IConnectedServersState<SS extends ServerStatus, CS extends ConnectedServer> {
+public interface IConnectedServersState<SS extends ServerStatus, CS extends ConnectedServer, DS extends DatabaseServer> {
 
     SS getServerStataus(final Integer serevrCode);
 
@@ -38,4 +38,9 @@ public interface IConnectedServersState<SS extends ServerStatus, CS extends Conn
 
     HashMap<String, PoolsFeed> getPoolFeedMap();
 
+    ArrayList<DS> getDatabases();
+
+    DS getDatabaseServer(String name);
+
+    void addDatabaseServer(DS ds);
 }
