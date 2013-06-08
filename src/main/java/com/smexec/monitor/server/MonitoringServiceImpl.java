@@ -22,6 +22,7 @@ import com.smexec.monitor.client.MonitoringServiceStd;
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.shared.ConnectedDB;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.FullRefreshResult;
 import com.smexec.monitor.shared.config.ClientConfigurations;
@@ -39,9 +40,9 @@ public class MonitoringServiceImpl
     public MonitoringServiceImpl() {}
 
     @Override
-    public FullRefreshResult createFullRefreshResult(ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+    public FullRefreshResult createFullRefreshResult(ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap, ArrayList<ConnectedDB> databases) {
 
-        return new FullRefreshResult(servers, poolFeedMap);
+        return new FullRefreshResult(servers, poolFeedMap, databases);
     }
 
     public ClientConfigurations getClientConfigurations() {

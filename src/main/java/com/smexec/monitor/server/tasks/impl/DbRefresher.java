@@ -60,7 +60,7 @@ public class DbRefresher<DS extends DatabaseServer>
             ResultSet rs = st.executeQuery(ds.getDatabaseConfig().getPingStatement());
             rs.next();
             pingTime = (System.currentTimeMillis() - pingTime);
-            logger.info("DB_Ping date:{} time:", rs.getDate(1), pingTime);
+            logger.info("DB_Ping date:{} time:{}", rs.getDate(1), pingTime);
             ds.addPing(pingTime);
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);

@@ -24,4 +24,7 @@ interface Resources extends ClientBundle {
 
     @Source("img/settings-blue-small.png")
     ImageResource settingsSmall();
+
+    @Source("img/logout.png")
+    ImageResource logout();
 }

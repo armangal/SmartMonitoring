@@ -57,4 +57,6 @@ public interface MonitoringService<CS extends ConnectedServer, FR extends Abstra
     Boolean stopAlerts(boolean enable);
     
     LinkedList<Alert> getAlerts(final int lastAlertId);
+    
+    void logout();
 }

@@ -32,12 +32,14 @@ import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
+import com.smexec.monitor.server.model.config.DatabaseConfig;
 import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.utils.IJMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.server.utils.ListUtils;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
+import com.smexec.monitor.shared.ConnectedDB;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
@@ -77,23 +79,32 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
     }
 
     public FR refresh() {
-        checkAuthenticated();
+        checkAuthenticated(false);
 
-        return createFullRefreshResult(connectedServersState.getServers(), connectedServersState.getPoolFeedMap());
+        return createFullRefreshResult(connectedServersState.getServers(), connectedServersState.getPoolFeedMap(), getDatabases());
+    }
+
+    ArrayList<ConnectedDB> getDatabases() {
+        ArrayList<ConnectedDB> ret = new ArrayList<ConnectedDB>(0);
+        for (DS ds : connectedServersState.getDatabases()) {
+            DatabaseConfig dc = ds.getDatabaseConfig();
+            ret.add(new ConnectedDB(dc.getName(), dc.getIp(), dc.getPort(), dc.getType(), dc.getService(), ds.isConnected(), ds.getLastPingTime()));
+        }
+        return ret;
     }
 
     public LinkedList<Alert> getAlerts(int lastAlertId) {
-        checkAuthenticated();
+        checkAuthenticated(false);
         logger.info("GetAlerts Request: alertId:{}", lastAlertId);
         LinkedList<Alert> alertsAfter = getAlertService().getAlertsAfter(lastAlertId, 1000);
         logger.info("Returning:{} alerts.", alertsAfter.size());
         return alertsAfter;
     }
 
-    public abstract FR createFullRefreshResult(ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap);
+    public abstract FR createFullRefreshResult(ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap, ArrayList<ConnectedDB> databases);
 
     public ThreadDump getThreadDump(Integer serverCode) {
-        checkAuthenticated();
+        checkAuthenticated(true);
         SS ss = connectedServersState.getServerStataus(serverCode);
         if (ss == null || !ss.isConnected()) {
             logger.warn("Server:" + serverCode + " not found or not connected.");
@@ -105,7 +116,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
     }
 
     public String getGCHistory(Integer serverCode) {
-        checkAuthenticated();
+        checkAuthenticated(false);
         SS serverStataus = connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             return serverStataus.getGCHistory();
@@ -121,9 +132,13 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
         userName = userName.trim();
         password = password.trim();
         SC sc = configurationService.getServersConfig();
-        if (sc.getUsername().equalsIgnoreCase(userName) && sc.getPassword().equals(password)) {
-            session.setAttribute(AUTHENTICATED, Boolean.TRUE);
-            logger.info("Authnticated user:{}, pass:{}", userName, password);
+        if ("admin".equalsIgnoreCase(userName) && sc.getPassword().equals(password)) {
+            session.setAttribute(AUTHENTICATED, "1");
+            logger.info("Authnticated admin user:{}, pass:{}", userName, password);
+            return true;
+        } else if ("guest".equalsIgnoreCase(userName) && sc.getGuestPassword().equals(password)) {
+            session.setAttribute(AUTHENTICATED, "2");
+            logger.info("Authnticated guest user:{}, pass:{}", userName, password);
             return true;
         } else {
             logger.info("NOT Authnticated user:{}, pass:{}", userName, password);
@@ -132,18 +147,37 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
         }
     }
 
-    void checkAuthenticated() {
+    public void logout() {
         HttpSession session = getThreadLocalRequest().getSession();
-        Object auth = session.getAttribute(AUTHENTICATED);
-        if (auth == null || !(auth instanceof Boolean) || (((Boolean) auth).booleanValue() == false)) {
-            logger.info("Session is not authenticated");
+        logger.info("logging out");
+        session.removeAttribute(AUTHENTICATED);
+    }
 
+    /**
+     * @param admin - check if the user is admin
+     */
+    void checkAuthenticated(boolean admin) {
+        HttpSession session = getThreadLocalRequest().getSession();
+        String auth = session.getAttribute(AUTHENTICATED).toString();
+        if (auth == null || (!auth.equals("1") && !auth.equals("2"))) {
+            logger.info("Session is not authenticated");
             throw new SecurityException("Session not authenticated, please refresh the browser.");
         }
+
+        if (admin && !auth.equals("1")) {
+            logger.info("Session is authenticated but not admin");
+            throw new SecurityException("Session is authenticated but not admin");
+        }
+
+        if (!admin && (!auth.equals("1") && !auth.equals("2"))) {
+            logger.info("Session is authenticated but not admin");
+            throw new SecurityException("Session is authenticated but not admin");
+        }
+
     }
 
     public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks) {
-        checkAuthenticated();
+        checkAuthenticated(false);
         SS serverStataus = connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             LinkedList<MemoryUsage> memoryUsage = serverStataus.getMemoryUsage(chunks);
@@ -155,7 +189,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
     }
 
     public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks) {
-        checkAuthenticated();
+        checkAuthenticated(false);
         SS serverStataus = connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null) {
             LinkedList<CpuUtilizationChunk> percentList = serverStataus.getCpuUtilization().getPercentList(chunks);
@@ -166,7 +200,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
     }
 
     public RuntimeInfo getRuntimeInfo(Integer serverCode) {
-        checkAuthenticated();
+        checkAuthenticated(false);
         SS serverStataus = connectedServersState.getServerStataus(serverCode);
         if (serverStataus != null && serverStataus.isConnected()) {
             try {
@@ -190,6 +224,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
 
     public String getSettingsXML() {
         try {
+            checkAuthenticated(true);
             logger.info("About to load configuration xml");
             return configurationService.getServersConfigXML();
         } catch (Exception e) {
@@ -200,6 +235,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
 
     public Boolean saveSettingsXML(String xml) {
         try {
+            checkAuthenticated(true);
             logger.info("About to save xml:{}", xml);
             configurationService.saveServersConfigXML(xml);
             return true;
@@ -210,6 +246,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
     }
 
     public Boolean stopAlerts(boolean enable) {
+        checkAuthenticated(true);
         return configurationService.stopAlerts(enable);
     }
 

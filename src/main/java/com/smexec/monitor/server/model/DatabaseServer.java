@@ -74,6 +74,10 @@ public class DatabaseServer {
         return pings;
     }
 
+    public long getLastPingTime() {
+        return pings.size() > 0 ? pings.getLast().getPingTime() : -1L;
+    }
+
     public void addPing(long pingTime) {
         pings.add(new DbPingChunk(pingTime, DateUtils.roundDate(new Date())));
 

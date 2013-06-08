@@ -31,8 +31,8 @@ public class FullRefreshResult
 
     }
 
-    public FullRefreshResult(ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap) {
-        super(servers, poolFeedMap);
+    public FullRefreshResult(ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap, ArrayList<ConnectedDB> databases) {
+        super(servers, poolFeedMap, databases);
     }
 
 }

@@ -52,4 +52,6 @@ public interface MonitoringServiceAsync<CS extends ConnectedServer, FR extends A
     void stopAlerts(boolean enable, AsyncCallback<Boolean> callback);
 
     void getAlerts(final int lastAlertId, AsyncCallback<LinkedList<Alert>> callback);
+
+    void logout(AsyncCallback<Void> callback);
 }

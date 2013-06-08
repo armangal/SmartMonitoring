@@ -124,6 +124,14 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
                 Window.setTitle(result.getTitle() + ", v:" + result.getVersion());
                 cc = result;
 
+                staySignedIn.setValue(Cookies.getCookie(SSICH) != null && Cookies.getCookie(SSICH).equals("on"));
+                String user = Cookies.getCookie(SSIU);
+                String pass = Cookies.getCookie(SSIP);
+                if (staySignedIn.getValue() && user != null && pass != null) {
+                    userName.setText(user);
+                    password.setText(pass);
+                    login();
+                }
             }
 
             @Override
@@ -131,15 +139,6 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
                 version.setText("Error getting version:" + caught.getMessage());
             }
         });
-
-        staySignedIn.setValue(Cookies.getCookie(SSICH) != null && Cookies.getCookie(SSICH).equals("on"));
-        String user = Cookies.getCookie(SSIU);
-        String pass = Cookies.getCookie(SSIP);
-        if (staySignedIn.getValue() && user != null && pass != null) {
-            userName.setText(user);
-            password.setText(pass);
-            login();
-        }
 
     }
 

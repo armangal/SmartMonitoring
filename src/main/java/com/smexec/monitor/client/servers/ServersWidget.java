@@ -49,6 +49,7 @@ import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
+import com.smexec.monitor.shared.ConnectedDB;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
@@ -112,7 +113,8 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
     };
 
     private Map<Integer, CS> serversMap = new HashMap<Integer, CS>(0);
-    ArrayList<CS> servesList;
+    private ArrayList<CS> servesList;
+    private ArrayList<ConnectedDB> databases;
 
     private HorizontalPanel title = new HorizontalPanel();
     private TextBox filter = new TextBox();
@@ -323,6 +325,24 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
         }
 
         ft.getColumnFormatter().setWidth(0, "100px");
+
+        if (databases != null && databases.size() > 0) {
+            for (ConnectedDB cd : databases) {
+                j = 0;
+                HTML value = new HTML("<b>Database</b>:" + cd.getName() + " (" + cd.getService() + ")");
+                value.setTitle(cd.toString());
+                ft.setWidget(i, j, value);
+                ft.getFlexCellFormatter().setColSpan(i, j, 2);
+                ft.setText(i, 1, cd.getIp() + ":" + cd.getPort() );
+                ft.setText(i, 2, (cd.getStatus() ? "ONLINE" : "OFFLINE"));
+                ft.setText(i, 3, "LastPing:" + cd.getLastPingTime() + "ms");
+                ft.getFlexCellFormatter().setColSpan(i, 3, 2);
+                if ((!cd.getStatus())) {
+                    ft.getRowFormatter().getElement(i).setId("offline");
+                }
+                i++;
+            }
+        }
         serversLabel.setText("Servers:" + servesList.size() + " (" + offline + ")");
     }
 
@@ -330,7 +350,7 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
     public void update(FR fullResult) {
         this.servesList = (ArrayList<CS>) fullResult.getServers();
         Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
-
+        this.databases = fullResult.getDatabases();
         updateServersTable();
 
     }
@@ -362,7 +382,7 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
     @Override
     public void refresh() {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

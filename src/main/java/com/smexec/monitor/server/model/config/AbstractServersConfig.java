@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.smexec.monitor.server.model.config.MongoConfig.HostAddress;
+import com.smexec.monitor.shared.DatabaseType;
 
 //@XmlRootElement(name = "ServersConfig", namespace = "")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -47,11 +48,11 @@ public abstract class AbstractServersConfig {
     @XmlElement(name = "name")
     private String name;
 
-    @XmlElement(name = "username")
-    private String username;
-
     @XmlElement(name = "password")
     private String password;
+
+    @XmlElement(name = "guestPassword")
+    private String guestPassword;
 
     private AlertsConfig alertsConfig = new AlertsConfig();
 
@@ -101,8 +102,8 @@ public abstract class AbstractServersConfig {
         return password;
     }
 
-    public String getUsername() {
-        return username;
+    public String getGuestPassword() {
+        return guestPassword;
     }
 
     public AlertsConfig getAlertsConfig() {
@@ -168,8 +169,8 @@ public abstract class AbstractServersConfig {
         builder.append(serverGroups);
         builder.append(",\n name=");
         builder.append(name);
-        builder.append(", username=");
-        builder.append(username);
+        builder.append(", guestPassword=");
+        builder.append(guestPassword);
         builder.append(", password=");
         builder.append(password);
         builder.append(",\nalertsConfig=");

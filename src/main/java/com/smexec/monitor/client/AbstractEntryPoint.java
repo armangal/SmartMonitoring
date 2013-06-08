@@ -145,20 +145,23 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
             errorCount++;
             refProg.progress();
             if (errorCount > 3) {
-                // Window.setTitle("Error:" + caught.getMessage());
-                refresh = false;
-                RootPanel.get().clear();
-                RootPanel.get().add(loginWidget);
-
-                // reset last IDs
-                resetLastIDs();
-                for (IMonitoringWidget<CS, FR> widget : widgets) {
-                    widget.clear(null);
-                    widget.setRefresh(false);
-                }
+                closeClient();
             }
         }
     };
+
+    private void closeClient() {
+        refresh = false;
+        RootPanel.get().clear();
+        RootPanel.get().add(loginWidget);
+
+        // reset last IDs
+        resetLastIDs();
+        for (IMonitoringWidget<CS, FR> widget : widgets) {
+            widget.clear(null);
+            widget.setRefresh(false);
+        }
+    }
 
     public void resetLastIDs() {
         alertsWidget.clear(null);
@@ -191,12 +194,52 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                     alertButtonClicked(cc.isAlertsEnabled() ? "2" : "1");
 
                     mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
+
                 } catch (Exception e) {
-                    Log.error(clientConfigurations.toString());
                     Log.error(e.getMessage(), e);
+                    Log.error(clientConfigurations.toString());
                 }
             }
         });
+
+        mainPanel.setStyleName("mainPanel");
+
+        Log.debug("AbstractEntryPoint created.");
+    }
+
+    /**
+     * Add widget to the screen, the order matters.
+     * 
+     * @param widget
+     */
+    @SuppressWarnings("unchecked")
+    public void addMonitoringWidget(IMonitoringWidget<?, FR> widget) {
+        widgets.add((IMonitoringWidget<CS, FR>) widget);
+    }
+
+    /**
+     * might be overridden to call other refresh function
+     */
+    public void refresh() {
+
+        Log.debug("Send refresh request.");
+        refProg.progress();
+
+        service.refresh(refreshCallback);
+    }
+
+    /**
+     * This is the entry point method.
+     */
+    public void onModuleLoad() {
+        Log.debug("Starting monitoring client.");
+
+        Window.setMargin("0px");
+        RootPanel.get().clear();
+        RootPanel.get().add(loginWidget);
+
+        refreshBtn.getElement().setAttribute("state", "1");
+        alertBtn.getElement().setAttribute("state", "1");
 
         refreshBtn.addClickHandler(new ClickHandler() {
 
@@ -241,8 +284,6 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                 });
             }
         });
-
-        mainPanel.setStyleName("mainPanel");
         mainHeader.setStyleName("mainHeader");
         Style style = refProg.getElement().getStyle();
         style.setWidth(20, Unit.PX);
@@ -253,6 +294,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         Resources resources = GWT.create(Resources.class);
         Image settings = new Image(resources.settingsSmall());
         settings.addStyleName("settings");
+        settings.setTitle("Settings");
         settings.addClickHandler(new ClickHandler() {
 
             @Override
@@ -262,45 +304,31 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
             }
         });
         mainHeader.add(settings);
+        Image logout = new Image(resources.logout());
+        logout.addStyleName("settings");
+        logout.setTitle("Logout");
+        logout.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                service.logout(new AsyncCallback<Void>() {
+
+                    @Override
+                    public void onSuccess(Void result) {
+                        closeClient();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        closeClient();
+                    }
+                });
+            }
+        });
+        mainHeader.add(logout);
+
         mainHeader.add(mainHeaderLabel);
         mainPanel.add(mainHeader);
-
-        Log.debug("AbstractEntryPoint created.");
-    }
-
-    /**
-     * Add widget to the screen, the order matters.
-     * 
-     * @param widget
-     */
-    @SuppressWarnings("unchecked")
-    public void addMonitoringWidget(IMonitoringWidget<?, FR> widget) {
-        widgets.add((IMonitoringWidget<CS, FR>) widget);
-    }
-
-    /**
-     * might be overridden to call other refresh function
-     */
-    public void refresh() {
-
-        Log.debug("Send refresh request.");
-        refProg.progress();
-
-        service.refresh(refreshCallback);
-    }
-
-    /**
-     * This is the entry point method.
-     */
-    public void onModuleLoad() {
-        Log.debug("Starting monitoring client.");
-
-        Window.setMargin("0px");
-        RootPanel.get().clear();
-        RootPanel.get().add(loginWidget);
-
-        refreshBtn.getElement().setAttribute("state", "1");
-        alertBtn.getElement().setAttribute("state", "1");
     }
 
     /**

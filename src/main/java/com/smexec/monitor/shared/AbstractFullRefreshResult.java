@@ -39,16 +39,19 @@ public abstract class AbstractFullRefreshResult<CS extends ConnectedServer>
      */
     private ArrayList<CS> servers = new ArrayList<CS>(0);
 
+    private ArrayList<ConnectedDB> databases = new ArrayList<ConnectedDB>(0);
+
     public AbstractFullRefreshResult() {
         this.poolFeedMap = new HashMap<String, PoolsFeed>();
         this.servers = new ArrayList<CS>(0);
     }
 
-    public AbstractFullRefreshResult(ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap) {
+    public AbstractFullRefreshResult(ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap, ArrayList<ConnectedDB> databases) {
         super();
         this.serverTime = new Date().toString();
         this.servers = servers;
         this.poolFeedMap = poolFeedMap;
+        this.databases = databases;
     }
 
     public String getServerTime() {
@@ -63,13 +66,19 @@ public abstract class AbstractFullRefreshResult<CS extends ConnectedServer>
         return servers;
     }
 
+    public ArrayList<ConnectedDB> getDatabases() {
+        return databases;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("[ARR [pfm=");
         builder.append(poolFeedMap != null ? poolFeedMap.size() : "0")
-               .append(", server:")
+               .append(", servers:")
                .append(servers)
+               .append(", databases:")
+               .append(databases)
                .append(", serverTime:")
                .append(serverTime)
                .append("]");
