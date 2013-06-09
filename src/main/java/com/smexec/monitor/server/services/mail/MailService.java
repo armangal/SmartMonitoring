@@ -174,6 +174,7 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
                 sb.append("<tr><td>System Load AVG: </td><td>").append(ss.getCpuUtilization().getLastPercent().getSystemLoadAverage()).append(" </td></tr> ");
                 sb.append("<tr><td>Memory Usage: </td><td>").append(ss.getLastMemoryUsage().getPercentage()).append("% </td></tr> ");
                 sb.append("<tr><td>Detailed Memory Usage: </td><td>").append(ss.getMemoryState().replace("\n", "</br>")).append(" </td></tr> ");
+                sb.append("<tr><td>Extra Data: </td><td>").append(ss.getExtraServerDetails()).append("</td></tr>");
             }
 
             StringBuilder details = new StringBuilder();

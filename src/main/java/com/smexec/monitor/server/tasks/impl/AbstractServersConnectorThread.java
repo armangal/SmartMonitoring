@@ -116,7 +116,7 @@ public abstract class AbstractServersConnectorThread<SS extends ServerStatus, CS
     }
 
     public abstract DS getDatabaseServer(DatabaseConfig dc);
-    
+
     public void connectDb(DatabaseConfig dc)
         throws ClassNotFoundException, SQLException {
         DS ds = connectedServersState.getDatabaseServer(dc.getName());
@@ -197,6 +197,14 @@ public abstract class AbstractServersConnectorThread<SS extends ServerStatus, CS
                 DS ds = connectedServersState.getDatabaseServer(dc.getName());
                 if (ds == null || !ds.isConnected()) {
                     // connect
+                    threadPool.execute(new DbConnector(dc));
+                } else if (!ds.getDatabaseConfig().getUser().equals(dc.getUser())) {
+                    // settings changed username, reconnect
+                    try {
+                        ds.getConnection().close();
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
                     threadPool.execute(new DbConnector(dc));
                 }
             }

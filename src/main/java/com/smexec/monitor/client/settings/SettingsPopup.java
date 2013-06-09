@@ -39,10 +39,10 @@ public class SettingsPopup<CS extends ConnectedServer, FR extends AbstractFullRe
         this.service = service;
         setWidget(fp);
         fp.add(ta);
-        setAutoHideEnabled(true);
+        setAutoHideEnabled(false);
         setAnimationEnabled(true);
         setModal(true);
-        setSize("800px", "800px");
+        setSize("1000px", "500px");
         setGlassEnabled(true);
 
         service.getSettingsXML(new AsyncCallback<String>() {
@@ -57,7 +57,7 @@ public class SettingsPopup<CS extends ConnectedServer, FR extends AbstractFullRe
                 ta.setText(result);
                 int left = (Window.getClientWidth() - getOffsetWidth()) >> 1;
                 setPopupPosition(Math.max(Window.getScrollLeft() + left, 0), 26);
-                ta.setSize("800px", "800px");
+                ta.setSize("1000px", "500px");
 
             }
         });
@@ -87,5 +87,14 @@ public class SettingsPopup<CS extends ConnectedServer, FR extends AbstractFullRe
         });
 
         fp.add(save);
+        Button close = new Button("Close");
+        close.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                hide();
+            }
+        });
+        fp.add(close);
     }
 }

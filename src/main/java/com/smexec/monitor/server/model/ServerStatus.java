@@ -374,6 +374,14 @@ public class ServerStatus {
 
         return allow;
     }
+    
+    /**
+     * for extending object to override
+     * @return
+     */
+    public String getExtraServerDetails() {
+        return "---";
+    }
 
     @Override
     public int hashCode() {

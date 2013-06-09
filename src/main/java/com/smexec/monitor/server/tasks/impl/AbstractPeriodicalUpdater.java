@@ -111,7 +111,7 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS exte
                     sb.append("<td>").append(dnf.format(ss.getCpuUtilization().getLastPercent().getUsage()) + "%").append("</td>");
                     double sla = ss.getCpuUtilization().getLastPercent().getSystemLoadAverage();
                     sb.append("<td>").append(sla == -1 ? "N/A" : dnf.format(sla)).append("</td>");
-                    sb.append("<td>").append(getExtraServerInfo(ss)).append("</td>");
+                    sb.append("<td>").append(ss.getExtraServerDetails()).append("</td>");
 
                     sb.append("</tr>");
 
@@ -147,10 +147,6 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS exte
         } finally {
             Thread.currentThread().setName(oldName);
         }
-    }
-
-    public String getExtraServerInfo(SS ss) {
-        return "&nbsp---";
     }
 
     public abstract String getExtraInfo();
