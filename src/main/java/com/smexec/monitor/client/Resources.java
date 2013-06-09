@@ -27,4 +27,16 @@ interface Resources extends ClientBundle {
 
     @Source("img/logout.png")
     ImageResource logout();
+
+    @Source("img/StopRefresh.png")
+    ImageResource stopRefresh();
+
+    @Source("img/ContinueRefresh.png")
+    ImageResource continueRefresh();
+
+    @Source("img/ContinueAlerts.png")
+    ImageResource continueAlerts();
+
+    @Source("img/StopAlerts.png")
+    ImageResource stopAlerts();
 }

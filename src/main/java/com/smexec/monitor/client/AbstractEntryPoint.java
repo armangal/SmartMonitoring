@@ -31,7 +31,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
@@ -57,14 +56,16 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
      */
     private final MonitoringServiceAsync<CS, FR, CC> service;
     private final LoginWidget<CS, FR, CC> loginWidget;
+    private Resources resources = GWT.create(Resources.class);
 
     private LinkedList<IMonitoringWidget<CS, FR>> widgets = new LinkedList<IMonitoringWidget<CS, FR>>();
     final FlowPanel mainPanel = new FlowPanel();
 
     private CC clientConfigurations;
 
-    final Button refreshBtn = new Button("Stop Refresh");
-    final Button alertBtn = new Button("Stop Alerts");
+    final Image refreshImg = new Image(resources.stopRefresh());
+    final Image alertImg = new Image(resources.stopAlerts());
+
     boolean refresh = true;
 
     private FlowPanel mainHeader = new FlowPanel();
@@ -91,8 +92,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
         @Override
         public boolean execute() {
-            if ("2".equals(alertBtn.getElement().getAttribute("state"))) {
-                Style style = alertBtn.getElement().getStyle();
+            if ("2".equals(alertImg.getElement().getAttribute("state"))) {
+                Style style = alertImg.getElement().getStyle();
                 style.setColor(style.getColor().equals("red") ? "blue" : "red");
                 return true;
             } else {
@@ -190,7 +191,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                     refresh();
                     Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isProdMode() ? 60000 : 20000);
 
-                    alertBtn.getElement().setAttribute("state", cc.isAlertsEnabled() ? "2" : "1");
+                    alertImg.getElement().setAttribute("state", cc.isAlertsEnabled() ? "2" : "1");
                     alertButtonClicked(cc.isAlertsEnabled() ? "2" : "1");
 
                     mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
@@ -238,37 +239,39 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         RootPanel.get().clear();
         RootPanel.get().add(loginWidget);
 
-        refreshBtn.getElement().setAttribute("state", "1");
-        alertBtn.getElement().setAttribute("state", "1");
+        refreshImg.getElement().setAttribute("state", "1");
+        alertImg.getElement().setAttribute("state", "1");
 
-        refreshBtn.addClickHandler(new ClickHandler() {
+        refreshImg.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-                String attribute = refreshBtn.getElement().getAttribute("state");
+                String attribute = refreshImg.getElement().getAttribute("state");
                 if ("1".equals(attribute)) {
-                    refreshBtn.getElement().setAttribute("state", "2");
+                    refreshImg.getElement().setAttribute("state", "2");
                     refresh = false;
-                    refreshBtn.setText("Start Refresh");
+                    refreshImg.setResource(resources.continueRefresh());
+                    refreshImg.setTitle("Start Refresh");
                     for (IMonitoringWidget<CS, FR> widget : widgets) {
                         widget.setRefresh(false);
                     }
 
                 } else {
-                    refreshBtn.getElement().setAttribute("state", "1");
+                    refreshImg.getElement().setAttribute("state", "1");
                     refresh = true;
                     refresh();
-                    refreshBtn.setText("Stop Refresh");
+                    refreshImg.setTitle("Stop Refresh");
+                    refreshImg.setResource(resources.stopRefresh());
                 }
 
             }
         });
 
-        alertBtn.addClickHandler(new ClickHandler() {
+        alertImg.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-                String attribute = alertBtn.getElement().getAttribute("state");
+                String attribute = alertImg.getElement().getAttribute("state");
                 alertButtonClicked(attribute);
                 service.stopAlerts("2".equals(attribute), new AsyncCallback<Boolean>() {
 
@@ -289,9 +292,12 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         style.setWidth(20, Unit.PX);
         style.setFloat(Float.LEFT);
         mainHeader.add(refProg);
-        mainHeader.add(refreshBtn);
-        mainHeader.add(alertBtn);
-        Resources resources = GWT.create(Resources.class);
+        refreshImg.addStyleName("settings");
+        refreshImg.setTitle("Stop Refresh");
+        mainHeader.add(refreshImg);
+        alertImg.addStyleName("settings");
+        mainHeader.add(alertImg);
+
         Image settings = new Image(resources.settingsSmall());
         settings.addStyleName("settings");
         settings.setTitle("Settings");
@@ -356,19 +362,20 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
     }
 
     private void alertButtonClicked(String attribute) {
-        Style style = alertBtn.getElement().getStyle();
+        Style style = alertImg.getElement().getStyle();
         if ("1".equals(attribute)) {
-            alertBtn.getElement().setAttribute("state", "2");
+            alertImg.getElement().setAttribute("state", "2");
             style.setColor("red");
             style.setFontWeight(FontWeight.BOLDER);
-            alertBtn.setText("Continue Alerts");
+            alertImg.setTitle("Continue Alerts");
+            alertImg.setResource(resources.continueAlerts());
             Scheduler.get().scheduleFixedDelay(alertBlick, 1500);
         } else {
-            alertBtn.getElement().setAttribute("state", "1");
+            alertImg.getElement().setAttribute("state", "1");
             style.setColor("black");
             style.setFontWeight(FontWeight.NORMAL);
-            alertBtn.setText("Stop Alerts");
-
+            alertImg.setTitle("Stop Alerts");
+            alertImg.setResource(resources.stopAlerts());
         }
     }
 
