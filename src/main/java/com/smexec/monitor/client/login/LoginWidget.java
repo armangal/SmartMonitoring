@@ -38,6 +38,7 @@ import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.utils.StringFormatter;
 
 public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
     extends Composite {
@@ -125,8 +126,8 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
                 cc = result;
 
                 staySignedIn.setValue(Cookies.getCookie(SSICH) != null && Cookies.getCookie(SSICH).equals("on"));
-                String user = Cookies.getCookie(SSIU);
-                String pass = Cookies.getCookie(SSIP);
+                String user = StringFormatter.Base64Decode(Cookies.getCookie(SSIU));
+                String pass = StringFormatter.Base64Decode(Cookies.getCookie(SSIP));
                 if (staySignedIn.getValue() && user != null && pass != null) {
                     userName.setText(user);
                     password.setText(pass);
@@ -158,8 +159,8 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
                     if (staySignedIn.getValue()) {
                         Log.debug("Store cookie");
                         Cookies.setCookie(SSICH, "on");
-                        Cookies.setCookie(SSIU, userName.getText().trim().toLowerCase());
-                        Cookies.setCookie(SSIP, password.getText().trim().toLowerCase());
+                        Cookies.setCookie(SSIU, StringFormatter.Base64Encode(userName.getText().trim()));
+                        Cookies.setCookie(SSIP, StringFormatter.Base64Encode(password.getText().trim()));
                     } else {
                         Log.debug("Cleaning cookie");
                         Cookies.removeCookie(SSIP);

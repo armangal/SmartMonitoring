@@ -38,7 +38,6 @@ import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
-import com.smexec.monitor.shared.utils.StringFormatter;
 
 /**
  * Class represents a current state of connected server with some historical data about memory, GC cycles and
@@ -180,6 +179,7 @@ public class ServerStatus {
 
     /**
      * returns the highes values of GC ever recorder by system to be shown in the UI
+     * 
      * @param lastGCHistory
      * @return
      */
@@ -193,7 +193,7 @@ public class ServerStatus {
                 }
             }
             if (max != Double.MIN_VALUE) {
-                history.add(max/1000d);
+                history.add(max / 1000d);
             }
 
         }
@@ -217,8 +217,8 @@ public class ServerStatus {
             for (int i = Math.max(0, list.size() - 20); i < list.size(); i++) {
                 GCHistory gch = map.get(list.get(i));
                 sb.append("[T:").append(gch.getTime()).append(" CNT=" + gch.getCollectionCount());
-                sb.append(" TT=" + StringFormatter.formatMillis(gch.getCollectionTime()));
-                sb.append(" LT=" + StringFormatter.formatMillis(gch.getLastColleactionTime()));
+                sb.append(" TT=" + String.format("%.4fsec", gch.getCollectionTime() / (double) 1000));
+                sb.append(" LT=" + String.format("%.4fsec", gch.getLastColleactionTime() / (double) 1000));
                 sb.append("]\n");
             }
             sb.append("\n\n");
@@ -374,9 +374,10 @@ public class ServerStatus {
 
         return allow;
     }
-    
+
     /**
      * for extending object to override
+     * 
      * @return
      */
     public String getExtraServerDetails() {
