@@ -15,8 +15,10 @@
  */
 package com.smexec.monitor.client.servers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
@@ -113,7 +115,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
                              + ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%, GC Time:" + gcs + "</h2>");
 
         fp.add(tech);
-        
+
         HTML info = new HTML("<h2>" + cs.getMoreInfo() + "</h2");
         fp.add(info);
 
@@ -443,7 +445,6 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
             return;
         }
 
-        
         HashMap<String, DynamicLine> names = new HashMap<String, DynamicLine>(0);
         int i = 0;
         for (MemoryUsage mu : result) {
@@ -468,8 +469,8 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
         }
 
         Log.debug("ServerStatsPopup.Updating memry, values size:" + memoryDetailsHistory.getValuesLenght());
-        ILineType[] ilt = new DynamicLine[names.values().size()];
-        names.values().toArray(ilt);
+
+        List<ILineType> ilt = new ArrayList<ILineType>(names.values());
         memoryDetailsChart.updateChart(ilt, memoryDetailsHistory, true);
     }
 

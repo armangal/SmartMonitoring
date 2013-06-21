@@ -43,7 +43,7 @@ public class MonitoringDynamicLinesChart<V extends Number, X extends Number>
     private String xColumnname;
     private ChartFeed<V, X> chartFeeds;
     private boolean lastRowAsColumn;
-    private ILineType[] lineTypes;
+    private List<ILineType> lineTypes;
     private boolean initilized = false;
 
     public MonitoringDynamicLinesChart(CurveType curveType, String yColumnName, String xColumnname, String title) {
@@ -79,14 +79,13 @@ public class MonitoringDynamicLinesChart<V extends Number, X extends Number>
         initWidget(fp);
     }
 
-    public void updateChart(ILineType[] lineTypes, ChartFeed<V, X> chartFeeds) {
+    public void updateChart(List<ILineType> lineTypes, ChartFeed<V, X> chartFeeds) {
         updateChart(lineTypes, chartFeeds, false);
     }
 
-    public void updateChart(List<ILineType> lineTypes, ChartFeed<V, X> chartFeeds, boolean hasXLineValues) {
-        ILineType[] lines = new ILineType[lineTypes.size()];
-        lineTypes.toArray(lines);
-        updateChart(lines, chartFeeds, hasXLineValues);
+    public void updateChart(CurveType curveType, List<ILineType> lineTypes, ChartFeed<V, X> chartFeeds, boolean hasXLineValues) {
+        this.curveType = curveType;
+        updateChart(lineTypes, chartFeeds, hasXLineValues);
     }
 
     /**
@@ -94,7 +93,7 @@ public class MonitoringDynamicLinesChart<V extends Number, X extends Number>
      * @param hasXLineValues - meaning the the last row in the chartFeeds includes X line values (usually
      *            time)
      */
-    public void updateChart(ILineType[] lineTypes, ChartFeed<V, X> chartFeeds, boolean hasXLineValues) {
+    public void updateChart(List<ILineType> lineTypes, ChartFeed<V, X> chartFeeds, boolean hasXLineValues) {
         try {
             if (!initilized) {
                 this.chartFeeds = chartFeeds;
@@ -108,8 +107,8 @@ public class MonitoringDynamicLinesChart<V extends Number, X extends Number>
             dataTable.addColumn(ColumnType.STRING, xColumnname); // 0 index
 
             // adding lines
-            for (int i = 0; i < lineTypes.length; i++) {
-                dataTable.addColumn(lineTypes[i].getColumnType(), lineTypes[i].getName());
+            for (int i = 0; i < lineTypes.size(); i++) {
+                dataTable.addColumn(lineTypes.get(i).getColumnType(), lineTypes.get(i).getName());
             }
 
             dataTable.addRows(chartFeeds.getValuesLenght());
@@ -126,8 +125,8 @@ public class MonitoringDynamicLinesChart<V extends Number, X extends Number>
                 }
             }
 
-            for (int i = 0; i < lineTypes.length; i++) {
-                drawLine(chartFeeds, lineTypes[i], dataTable);
+            for (int i = 0; i < lineTypes.size(); i++) {
+                drawLine(chartFeeds, lineTypes.get(i), dataTable);
             }
 
             // Set options
@@ -138,10 +137,10 @@ public class MonitoringDynamicLinesChart<V extends Number, X extends Number>
             options.setHAxis(HAxis.create(xColumnname));
             options.setVAxis(VAxis.create(yColumnName));
             options.setCurveType(curveType);
-            String[] color = new String[lineTypes.length];
+            String[] color = new String[lineTypes.size()];
 
-            for (int i = 0; i < lineTypes.length; i++) {
-                color[i] = lineTypes[i].getLineColor();
+            for (int i = 0; i < lineTypes.size(); i++) {
+                color[i] = lineTypes.get(i).getLineColor();
             }
             options.setColors(color);
 
