@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.smexec.monitor.server.model.DatabaseServer;
+import com.smexec.monitor.server.utils.SQLUtils;
 
 public class DbRefresher<DS extends DatabaseServer>
     implements Callable<DS> {
@@ -58,9 +59,14 @@ public class DbRefresher<DS extends DatabaseServer>
             long pingTime = System.currentTimeMillis();
             st = ds.getConnection().createStatement();
             ResultSet rs = st.executeQuery(ds.getDatabaseConfig().getPingStatement());
-            rs.next();
-            pingTime = (System.currentTimeMillis() - pingTime);
-            logger.info("DB_Ping date:{} time:{}", rs.getDate(1), pingTime);
+            try {
+                rs.next();
+                pingTime = (System.currentTimeMillis() - pingTime);
+                logger.info("DB_Ping date:{} time:{}", rs.getDate(1), pingTime);
+            } finally {
+                SQLUtils.closeResultSet(rs);
+
+            }
             ds.addPing(pingTime);
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);

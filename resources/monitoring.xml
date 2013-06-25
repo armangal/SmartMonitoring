@@ -18,8 +18,8 @@
 -->
 <ServersConfig xmlns:ns2="http://www.armangal.com/smartexecutormonitor/v1">
 	<name>Demo Monitoring</name>
-	<username>admin</username>
-	<password>password</password>
+	<password>pass</password>
+	<guestPassword>pass</guestPassword>
 
 	<alertsConfig>
 		<enabled>true</enabled>
@@ -75,25 +75,13 @@
 			<serverCode>1</serverCode>
 			<name>Local (1)</name>
 			<serverGroup>special</serverGroup>
-			
 			<ip>127.0.0.1</ip>
 			<jmxPort>9010</jmxPort>
-			
 			<authenticate>false</authenticate>
 			<username>admin</username>
 			<password>password</password>
 		</server>
 
-		<server>
-			<serverCode>2</serverCode>
-			<name>Local (2)</name>
-			
-			<ip>127.0.0.1</ip>
-			<jmxPort>9020</jmxPort>
-			
-			<authenticate>false</authenticate>
-			<username>admin</username>
-			<password>password</password>
-		</server>
+	
 	</servers>
 </ServersConfig>

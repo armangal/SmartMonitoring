@@ -154,6 +154,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
     private void closeClient() {
         refresh = false;
         RootPanel.get().clear();
+        widgets.clear();
         RootPanel.get().add(loginWidget);
 
         // reset last IDs
@@ -161,7 +162,10 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         for (IMonitoringWidget<CS, FR> widget : widgets) {
             widget.clear(null);
             widget.setRefresh(false);
+            widget.asWidget().removeFromParent();
         }
+        mainPanel.clear();
+        mainPanel.add(mainHeader);
     }
 
     public void resetLastIDs() {

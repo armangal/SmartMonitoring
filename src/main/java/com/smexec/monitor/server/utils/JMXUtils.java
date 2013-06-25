@@ -39,6 +39,24 @@ public class JMXUtils {
         }
     }
 
+    public static Double getDoubleAtributeFromComposite(CompositeData cd, String name) {
+        try {
+            return Double.valueOf(cd.get(name).toString());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return -1d;
+        }
+    }
+
+    public static Boolean getBooleanAtributeFromComposite(CompositeData cd, String name) {
+        try {
+            return Boolean.valueOf(cd.get(name).toString());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        }
+    }
+
     public static Long getLongAtributeFromComposite(CompositeData cd, String name) {
         try {
             return Long.valueOf(cd.get(name).toString());
