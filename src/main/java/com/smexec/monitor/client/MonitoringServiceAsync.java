@@ -18,8 +18,9 @@ package com.smexec.monitor.client;
 import java.util.LinkedList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.ServerTimeResult;
+import com.smexec.monitor.shared.ServerWidgetRefresh;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
@@ -27,9 +28,13 @@ import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
 
-public interface MonitoringServiceAsync<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations> {
+public interface MonitoringServiceAsync<CC extends ClientConfigurations> {
 
-    void refresh(AsyncCallback<FR> callback);
+    void getServerWidgetRefresh(AsyncCallback<ServerWidgetRefresh> callback);
+
+    void getConnectedServer(Integer serverCode, AsyncCallback<ConnectedServer> callback);
+
+    void refresh(AsyncCallback<ServerTimeResult> callback);
 
     void getThreadDump(Integer serverCode, AsyncCallback<ThreadDump> callback);
 
@@ -54,4 +59,5 @@ public interface MonitoringServiceAsync<CS extends ConnectedServer, FR extends A
     void getAlerts(final int lastAlertId, AsyncCallback<LinkedList<Alert>> callback);
 
     void logout(AsyncCallback<Void> callback);
+
 }

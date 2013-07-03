@@ -13,19 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server.tasks.impl;
+package com.smexec.monitor.shared;
 
-import com.smexec.monitor.server.model.DatabaseServer;
-import com.smexec.monitor.server.model.ServerStatus;
-import com.smexec.monitor.server.model.config.ServersConfig;
-import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
+import java.io.Serializable;
+import java.util.Date;
 
-public class PeriodicalUpdater
-    extends AbstractPeriodicalUpdater<ServerStatus, ServersConfig, DatabaseServer>
-    implements IPeriodicalUpdater {
+public class ServerTimeResult
+    implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private String serverTime;
+
+    public ServerTimeResult() {
+        this.serverTime = new Date().toString();
+
+    }
+
+    public String getServerTime() {
+        return serverTime;
+    }
 
     @Override
-    public String getExtraInfo() {
-        return "";
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[ServerTime [serverTime:").append(serverTime).append("]");
+        return builder.toString();
     }
+
 }

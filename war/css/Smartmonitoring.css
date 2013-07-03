@@ -162,7 +162,7 @@ body {
 }
 
 .serversHeader {
-	   	color: white;
+	color: white;
     float: left;
     font-family: Arial,sans-serif;
     font-size: 14px;
@@ -172,6 +172,7 @@ body {
     padding: 0;
     position: absolute;
     top: 9px;
+    width: 90%;
 }
 
 .serversHeader td {

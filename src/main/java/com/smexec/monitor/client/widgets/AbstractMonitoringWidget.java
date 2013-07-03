@@ -45,6 +45,11 @@ public abstract class AbstractMonitoringWidget
     private Widget title;
 
     /**
+     * refresh progress indicator, it's up to developer to decide if to use it.
+     */
+    private ProgressLabel refProg = new ProgressLabel();
+
+    /**
      * widget name
      */
     private String name;
@@ -58,6 +63,7 @@ public abstract class AbstractMonitoringWidget
         @Override
         public boolean execute() {
             if (isRefresh()) {
+                refProg.progress();
                 refresh();
             }
             Log.debug("Reschedule container refresh?:" + isRefresh());
@@ -91,6 +97,10 @@ public abstract class AbstractMonitoringWidget
         this(name, 0);
     }
 
+    /**
+     * @param name - the name of the widget
+     * @param refreshDelay - referesh rate in ms.
+     */
     public AbstractMonitoringWidget(final String name, final int refreshDelay) {
         this.name = name;
         header.setStyleName("header");
@@ -114,6 +124,7 @@ public abstract class AbstractMonitoringWidget
         if (refreshDelay > 0) {
             Scheduler.get().scheduleFixedDelay(refreshCommand, refreshDelay);
         }
+        setRefresh(true);
 
     }
 
@@ -146,4 +157,7 @@ public abstract class AbstractMonitoringWidget
         this.refresh = refresh;
     }
 
+    public ProgressLabel getRefProg() {
+        return refProg;
+    }
 }

@@ -24,18 +24,16 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.smexec.monitor.client.MonitoringServiceAsync;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public class SettingsPopup<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
+public class SettingsPopup<CC extends ClientConfigurations>
     extends DialogBox {
 
     private FlowPanel fp = new FlowPanel();
     private TextArea ta = new TextArea();
-    private final MonitoringServiceAsync<CS, FR, CC> service;
+    private final MonitoringServiceAsync<CC> service;
 
-    public SettingsPopup(final MonitoringServiceAsync<CS, FR, CC> service) {
+    public SettingsPopup(final MonitoringServiceAsync<CC> service) {
         this.service = service;
         setWidget(fp);
         fp.add(ta);

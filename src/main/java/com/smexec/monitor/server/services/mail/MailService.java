@@ -33,13 +33,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
+import com.smexec.monitor.server.model.DatabaseServer;
+import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.server.model.config.AlertsConfig;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.shared.alert.Alert;
 
-public abstract class MailService<SC extends AbstractServersConfig, SS extends ServerStatus>
+public abstract class MailService<SC extends AbstractServersConfig, SS extends ServerStatus, DS extends DatabaseServer>
     implements IMailService<SS> {
 
     private static Logger logger = LoggerFactory.getLogger("MailService");
@@ -50,6 +52,9 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
 
     @Inject
     private IConfigurationService<SC> configurationService;
+
+    @Inject
+    private IConnectedServersState<SS, DS> connectedServersState;
 
     private String alerTemplate = "{1}, {2}";
 
@@ -174,7 +179,9 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
                 sb.append("<tr><td>System Load AVG: </td><td>").append(ss.getCpuUtilization().getLastPercent().getSystemLoadAverage()).append(" </td></tr> ");
                 sb.append("<tr><td>Memory Usage: </td><td>").append(ss.getLastMemoryUsage().getPercentage()).append("% </td></tr> ");
                 sb.append("<tr><td>Detailed Memory Usage: </td><td>").append(ss.getMemoryState().replace("\n", "</br>")).append(" </td></tr> ");
-                sb.append("<tr><td>Extra Data: </td><td>").append(ss.getExtraServerDetails()).append("</td></tr>");
+                sb.append("<tr><td>Extra Data: </td><td>")
+                  .append(connectedServersState.getExtraServerDetails(ss.getServerConfig().getServerCode()))
+                  .append("</td></tr>");
             }
 
             StringBuilder details = new StringBuilder();

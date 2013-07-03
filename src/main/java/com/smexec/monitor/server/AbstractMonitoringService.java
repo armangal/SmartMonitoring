@@ -17,7 +17,6 @@ package com.smexec.monitor.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.servlet.http.HttpSession;
@@ -38,21 +37,21 @@ import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.utils.IJMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.server.utils.ListUtils;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedDB;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.ServerTimeResult;
+import com.smexec.monitor.shared.ServerWidgetRefresh;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
-import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 /**
  * The server side implementation of the monitoring RPC service.
  */
 @SuppressWarnings("serial")
-public abstract class AbstractMonitoringService<SS extends ServerStatus, CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, SC extends AbstractServersConfig, DS extends DatabaseServer>
+public abstract class AbstractMonitoringService<SS extends ServerStatus, SC extends AbstractServersConfig, DS extends DatabaseServer>
     extends RemoteServiceServlet {
 
     private static Logger logger = LoggerFactory.getLogger("MonitoringService");
@@ -60,7 +59,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
     private static final String AUTHENTICATED = "authenticated";
 
     @Inject
-    private IConnectedServersState<SS, CS, DS> connectedServersState;
+    private IConnectedServersState<SS, DS> connectedServersState;
 
     @Inject
     private JMXThreadDumpUtils jmxThreadDumpUtils;
@@ -78,10 +77,22 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
         GuiceUtils.getInjector().injectMembers(this);
     }
 
-    public FR refresh() {
+    public ConnectedServer getConnectedServer(Integer serverCode) {
+        checkAuthenticated(false);
+        ConnectedServer cs = connectedServersState.getConnectedServer(serverCode);
+        if (cs == null) {
+            logger.warn("getConnectedServer, server:{} was not found or not connected.", serverCode);
+            return null;
+
+        } else {
+            return cs;
+        }
+    }
+
+    public ServerTimeResult refresh() {
         checkAuthenticated(false);
 
-        return createFullRefreshResult(connectedServersState.getServers(), connectedServersState.getPoolFeedMap(), getDatabases());
+        return new ServerTimeResult();
     }
 
     ArrayList<ConnectedDB> getDatabases() {
@@ -101,7 +112,9 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
         return alertsAfter;
     }
 
-    public abstract FR createFullRefreshResult(ArrayList<CS> servers, HashMap<String, PoolsFeed> poolFeedMap, ArrayList<ConnectedDB> databases);
+    public ServerWidgetRefresh getServerWidgetRefresh() {
+        return new ServerWidgetRefresh(connectedServersState.getServers(), getDatabases());
+    }
 
     public ThreadDump getThreadDump(Integer serverCode) {
         checkAuthenticated(true);
@@ -214,7 +227,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, CS exte
         return null;
     }
 
-    public IConnectedServersState<SS, CS, DS> getConnectedServersState() {
+    public IConnectedServersState<SS, DS> getConnectedServersState() {
         return connectedServersState;
     }
 

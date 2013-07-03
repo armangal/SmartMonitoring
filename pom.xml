@@ -4,7 +4,7 @@
 
 	<groupId>org.smexec</groupId>
 	<artifactId>smartmonitoring</artifactId>
-	<version>1.0.31</version>
+	<version>1.0.32</version>
 	<name>Smart Monitoring, open-source JMX monitoring server with HTML (GWT) UI</name>
 	<description>Smart Monitoring</description>
 
@@ -55,6 +55,7 @@
 		<javax.mail.version>1.4</javax.mail.version>
 		<commons-io.version>2.4</commons-io.version>
 		<oracle.jdbc.version>11.2.0.3</oracle.jdbc.version>
+		<smartexecutor.version>1.0.3-SNAPSHOT</smartexecutor.version>
 
 		<gwt.version>2.5.0</gwt.version>
 		<gin.version>2.0.0</gin.version>
@@ -175,7 +176,11 @@
 				<version>${oracle.jdbc.version}</version>
 				<scope>compile</scope>
 			</dependency>
-
+			<dependency>
+				<groupId>org.smexec</groupId>
+				<artifactId>smartexecutor</artifactId>
+				<version>${smartexecutor.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -268,6 +273,11 @@
 			<artifactId>ojdbc5</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.smexec</groupId>
+			<artifactId>smartexecutor</artifactId>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -277,6 +287,7 @@
 				<includes>
 					<include>**/*.java</include>
 					<include>**/*.gwt.xml</include>
+					<include>**/*.xml</include>
 				</includes>
 			</resource>
 		</resources>
@@ -315,7 +326,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>

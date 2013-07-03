@@ -15,6 +15,8 @@
  */
 package com.smexec.monitor.server.guice;
 
+import org.smexec.SmartExecutor;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
@@ -45,18 +47,20 @@ public class MonitoringModule<SS extends ServerStatus, CS extends ConnectedServe
 
     @Override
     protected void configure() {
+        bind(SmartExecutor.class).toProvider(SmartExecutorProvider.class).in(Singleton.class);
+
         bind(new TypeLiteral<IConfigurationService<ServersConfig>>() {}).toInstance(ConfigurationService.getInstance());
 
         install(new MongoDbModule());
 
-        bind(new TypeLiteral<IConnectedServersState<ServerStatus, ConnectedServer, DatabaseServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
+        bind(new TypeLiteral<IConnectedServersState<ServerStatus, DatabaseServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
 
         bind(new TypeLiteral<IMailService<ServerStatus>>() {}).to(StandardMailService.class).in(Singleton.class);
 
         bind(new TypeLiteral<IAlertService<ServerStatus>>() {}).to(StandardAlertService.class).in(Singleton.class);
 
         bind(new TypeLiteral<IJMXGeneralStats<ServerStatus>>() {}).to(JMXGeneralStats.class).in(Singleton.class);
-        
+
         bind(IJMXConnectorThread.class).to(ServersConnectorThread.class).in(Singleton.class);
         bind(IStateUpdaterThread.class).to(StateUpdaterThread.class).in(Singleton.class);
         bind(IPeriodicalUpdater.class).to(PeriodicalUpdater.class).in(Singleton.class);

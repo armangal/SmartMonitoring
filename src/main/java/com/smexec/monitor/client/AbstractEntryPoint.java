@@ -15,7 +15,6 @@
  */
 package com.smexec.monitor.client;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.allen_sauer.gwt.log.client.Log;
@@ -43,22 +42,21 @@ import com.smexec.monitor.client.settings.SettingsPopup;
 import com.smexec.monitor.client.smartpool.ThreadPoolsWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.client.widgets.ProgressLabel;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
-import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.ServerTimeResult;
 import com.smexec.monitor.shared.alert.AlertType;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
+public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
     implements EntryPoint {
 
     /**
      * Create a remote service proxy to talk to the server-side service.
      */
-    private final MonitoringServiceAsync<CS, FR, CC> service;
-    private final LoginWidget<CS, FR, CC> loginWidget;
+    private final MonitoringServiceAsync<CC> service;
+    private final LoginWidget<CC> loginWidget;
     private Resources resources = GWT.create(Resources.class);
 
-    private LinkedList<IMonitoringWidget<CS, FR>> widgets = new LinkedList<IMonitoringWidget<CS, FR>>();
+    private LinkedList<IMonitoringWidget> widgets = new LinkedList<IMonitoringWidget>();
     final FlowPanel mainPanel = new FlowPanel();
 
     private CC clientConfigurations;
@@ -73,7 +71,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
     private ProgressLabel refProg = new ProgressLabel();
     private HTML footer = new HTML("<ul><li><img title=\"Feedback\" src=\"img/oo_icon.gif\"><span>&nbsp;&nbsp;Created by </span><a target='blank' href=\"https://twitter.com/armangal\">@armangal</a><span>, based on </span><a href='https://github.com/armangal/SmartMonitoring' target='blank'>SmartMonitoring</a><span> project.</span></span></li></ul>");
 
-    private AlertsWidget<CS, FR, CC> alertsWidget;
+    private AlertsWidget<CC> alertsWidget;
 
     private RepeatingCommand refreshCommand = new RepeatingCommand() {
 
@@ -102,12 +100,12 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
         }
     };
 
-    private AsyncCallback<FR> refreshCallback = new AsyncCallback<FR>() {
+    private AsyncCallback<ServerTimeResult> refreshCallback = new AsyncCallback<ServerTimeResult>() {
 
         int errorCount = 0;
 
         @Override
-        public void onSuccess(FR fullResult) {
+        public void onSuccess(ServerTimeResult fullResult) {
             errorCount = 0;
             refProg.progress();
 
@@ -116,23 +114,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                 return;
             }
 
-            Log.debug("Full Result:" + fullResult.toString());
-
-            ArrayList<CS> servers = fullResult.getServers();
-            if (servers != null && !servers.isEmpty()) {
-                Log.debug("Received FULL refresh response.");
-
-                for (IMonitoringWidget<CS, FR> widget : widgets) {
-                    widget.update(fullResult);
-                }
-
-            } else {
-                Log.debug("Received EMPTY response.");
-                for (IMonitoringWidget<CS, FR> widget : widgets) {
-                    widget.clear(fullResult);
-                }
-
-            }
+            Log.debug("Server time:" + fullResult.toString());
 
             mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime()
                                     + ")</h1>");
@@ -159,8 +141,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
         // reset last IDs
         resetLastIDs();
-        for (IMonitoringWidget<CS, FR> widget : widgets) {
-            widget.clear(null);
+        for (IMonitoringWidget widget : widgets) {
+            widget.clear();
             widget.setRefresh(false);
             widget.asWidget().removeFromParent();
         }
@@ -169,12 +151,12 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
     }
 
     public void resetLastIDs() {
-        alertsWidget.clear(null);
+        alertsWidget.clear();
     }
 
-    public AbstractEntryPoint(final MonitoringServiceAsync<CS, FR, CC> service) {
+    public AbstractEntryPoint(final MonitoringServiceAsync<CC> service) {
         this.service = service;
-        this.loginWidget = new LoginWidget<CS, FR, CC>(service);
+        this.loginWidget = new LoginWidget<CC>(service);
         this.loginWidget.registerCallBack(new LoggedInCallBack<CC>() {
 
             @Override
@@ -217,9 +199,8 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
      * 
      * @param widget
      */
-    @SuppressWarnings("unchecked")
-    public void addMonitoringWidget(IMonitoringWidget<?, FR> widget) {
-        widgets.add((IMonitoringWidget<CS, FR>) widget);
+    public void addMonitoringWidget(IMonitoringWidget widget) {
+        widgets.add((IMonitoringWidget) widget);
     }
 
     /**
@@ -256,7 +237,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
                     refresh = false;
                     refreshImg.setResource(resources.continueRefresh());
                     refreshImg.setTitle("Start Refresh");
-                    for (IMonitoringWidget<CS, FR> widget : widgets) {
+                    for (IMonitoringWidget widget : widgets) {
                         widget.setRefresh(false);
                     }
 
@@ -309,7 +290,7 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
 
             @Override
             public void onClick(ClickEvent event) {
-                SettingsPopup<CS, FR, CC> sp = new SettingsPopup<CS, FR, CC>(service);
+                SettingsPopup<CC> sp = new SettingsPopup<CC>(service);
                 sp.center();
             }
         });
@@ -345,23 +326,23 @@ public abstract class AbstractEntryPoint<CS extends ConnectedServer, FR extends 
      * should be overridden by extension project, the order is matters
      */
     public void registerWidgets() {
-        addMonitoringWidget(new ThreadPoolsWidget<CS, FR>());
-        addMonitoringWidget(new ServersWidget<CS, FR, CC>(service));
-        alertsWidget = new AlertsWidget<CS, FR, CC>(service, AlertType.values());
+        addMonitoringWidget(new ThreadPoolsWidget());
+        addMonitoringWidget(new ServersWidget<CC>(service));
+        alertsWidget = new AlertsWidget<CC>(service, AlertType.values());
         addMonitoringWidget(alertsWidget);
     }
 
     private void addMainWidgets() {
-        for (IMonitoringWidget<CS, FR> widget : widgets) {
+        for (IMonitoringWidget widget : widgets) {
             mainPanel.add(widget);
         }
     }
 
-    public MonitoringServiceAsync<CS, FR, CC> getService() {
+    public MonitoringServiceAsync<CC> getService() {
         return service;
     }
 
-    public AsyncCallback<FR> getRefreshCallback() {
+    public AsyncCallback<ServerTimeResult> getRefreshCallback() {
         return refreshCallback;
     }
 

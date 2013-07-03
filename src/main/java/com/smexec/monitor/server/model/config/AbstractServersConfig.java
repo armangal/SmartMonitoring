@@ -64,6 +64,8 @@ public abstract class AbstractServersConfig {
     @XmlElementWrapper
     private List<DatabaseConfig> databases = new ArrayList<DatabaseConfig>();
 
+    private ValidateCertificates validateCertificates = new ValidateCertificates();
+
     public AbstractServersConfig() {
         this.serverGroups = new ArrayList<ServerGroup>(0);
         this.serverGroups.add(ServerGroup.DEFAULT_GROUP);
@@ -80,6 +82,14 @@ public abstract class AbstractServersConfig {
 
     public List<DatabaseConfig> getDatabases() {
         return databases;
+    }
+
+    public ValidateCertificates getValidateCertificates() {
+        return validateCertificates;
+    }
+
+    public void setValidateCertificates(ValidateCertificates validateCertificates) {
+        this.validateCertificates = validateCertificates;
     }
 
     public void setDatabases(List<DatabaseConfig> databases) {
@@ -165,6 +175,8 @@ public abstract class AbstractServersConfig {
         builder.append(servers);
         builder.append(",\nDatabases=");
         builder.append(databases);
+        builder.append(",\nvalidateCertificates=");
+        builder.append(validateCertificates);
         builder.append(",\nGroups=");
         builder.append(serverGroups);
         builder.append(",\n name=");
@@ -231,6 +243,15 @@ public abstract class AbstractServersConfig {
             List<DatabaseConfig> dbs = new ArrayList<DatabaseConfig>();
             dbs.add(new DatabaseConfig("11", DatabaseType.ORACLE, "ip", 1234, "poker", "user", "password"));
             sc.setDatabases(dbs);
+
+            ValidateCertificates validateCertificates = new ValidateCertificates();
+            validateCertificates.setValide(true);
+            List<String> servers = new ArrayList<String>();
+            servers.add("127.0.0.1:1234");
+            validateCertificates.setServers(servers);
+
+            sc.setValidateCertificates(validateCertificates);
+
             context.createMarshaller().marshal(sc, System.out);
         } catch (Exception e) {
             e.printStackTrace();

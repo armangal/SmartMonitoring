@@ -15,6 +15,8 @@
  */
 package com.smexec.monitor.client.login;
 
+import java.util.Date;
+
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.FontStyle;
@@ -35,12 +37,10 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.smexec.monitor.client.MonitoringServiceAsync;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.utils.StringFormatter;
 
-public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
+public class LoginWidget<CC extends ClientConfigurations>
     extends Composite {
 
     private static final String SSIP = "ssip";
@@ -52,7 +52,7 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
         void loggedIn(CC cc);
     }
 
-    private final MonitoringServiceAsync<CS, FR, CC> service;
+    private final MonitoringServiceAsync<CC> service;
     private CC cc;
 
     private LoggedInCallBack<CC> callBack;
@@ -75,7 +75,7 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
         }
     };
 
-    public LoginWidget(MonitoringServiceAsync<CS, FR, CC> service) {
+    public LoginWidget(MonitoringServiceAsync<CC> service) {
         this.service = service;
 
         if (!GWT.isScript()) {
@@ -158,9 +158,9 @@ public class LoginWidget<CS extends ConnectedServer, FR extends AbstractFullRefr
                 if (result.booleanValue() == true) {
                     if (staySignedIn.getValue()) {
                         Log.debug("Store cookie");
-                        Cookies.setCookie(SSICH, "on");
-                        Cookies.setCookie(SSIU, StringFormatter.Base64Encode(userName.getText().trim()));
-                        Cookies.setCookie(SSIP, StringFormatter.Base64Encode(password.getText().trim()));
+                        Cookies.setCookie(SSICH, "on", new Date(Long.MAX_VALUE));
+                        Cookies.setCookie(SSIU, StringFormatter.Base64Encode(userName.getText().trim()), new Date(Long.MAX_VALUE));
+                        Cookies.setCookie(SSIP, StringFormatter.Base64Encode(password.getText().trim()), new Date(Long.MAX_VALUE));
                     } else {
                         Log.debug("Cleaning cookie");
                         Cookies.removeCookie(SSIP);

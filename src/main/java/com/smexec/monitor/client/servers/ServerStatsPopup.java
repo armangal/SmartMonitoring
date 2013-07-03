@@ -48,7 +48,6 @@ import com.smexec.monitor.client.widgets.DynamicLine;
 import com.smexec.monitor.client.widgets.ILineType;
 import com.smexec.monitor.client.widgets.MonitoringDynamicLinesChart;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
@@ -59,10 +58,10 @@ import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
 
-public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
+public class ServerStatsPopup<CC extends ClientConfigurations>
     extends DialogBox {
 
-    private final MonitoringServiceAsync<CS, FR, CC> service;
+    private final MonitoringServiceAsync<CC> service;
 
     private MonitoringLineChart<Double, Long> cpuChart = new MonitoringLineChart<Double, Long>(new ILineType[] {ServersLineType.CPU},
                                                                                                "CPU%",
@@ -86,7 +85,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
     private FlowPanel sysLoad = new FlowPanel();
     private FlowPanel details = new FlowPanel();
 
-    private CS cs;
+    private Integer serverCode;
 
     private Integer chunks = 30;
     private boolean showHeap = true;
@@ -94,58 +93,73 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
     private LinkedList<MemoryUsage> memoryUsages;// local copy for fast refresh
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public ServerStatsPopup(MonitoringServiceAsync service, CS cs) {
-        this.cs = cs;
+    public ServerStatsPopup(MonitoringServiceAsync service, final Integer serverCode) {
+        this.serverCode = serverCode;
         this.service = service;
         setAnimationEnabled(true);
         setModal(true);
         setSize("760px", "450px");
         setGlassEnabled(true);
 
-        fp.add(new HTML("<h1>Server:" + cs.getServerCode() + ", " + cs.getName() + "</h1>"));
+        service.getConnectedServer(serverCode, new AsyncCallback<ConnectedServer>() {
 
-        fp.add(new HTML("<h2>Up Time:" + ClientStringFormatter.formatMilisecondsToHours(cs.getUpTime()) + "</h2>"));
+            public void onSuccess(ConnectedServer cs) {
+                fp.add(new HTML("<h1>Server:" + cs.getServerCode() + ", " + cs.getName() + "</h1>"));
 
-        String gcs = "";
-        for (Double gch : cs.getGcHistories()) {
-            gcs += ClientStringFormatter.formatMillisShort(gch) + ";";
-        }
-        HTML tech = new HTML("<h2>Memory:" + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + " of "
-                             + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB, Usage:"
-                             + ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%, GC Time:" + gcs + "</h2>");
+                fp.add(new HTML("<h2>Up Time:" + ClientStringFormatter.formatMilisecondsToHours(cs.getUpTime()) + "</h2>"));
 
-        fp.add(tech);
+                String gcs = "";
+                for (Double gch : cs.getGcHistories()) {
+                    gcs += ClientStringFormatter.formatMillisShort(gch) + ";";
+                }
+                HTML tech = new HTML("<h2>Memory:" + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getUsed()) + " of "
+                                     + ClientStringFormatter.formatMBytes(cs.getMemoryUsage().getMax()) + " MB, Usage:"
+                                     + ClientStringFormatter.formatMillisShort(cs.getMemoryUsage().getPercentage()) + "%, GC Time:" + gcs + "</h2>");
 
-        HTML info = new HTML("<h2>" + cs.getMoreInfo() + "</h2");
-        fp.add(info);
+                fp.add(tech);
 
-        fp.getElement().setId("xxx");
-        setWidget(fp);
+                HTML info = new HTML("<h2>" + cs.getMoreInfo() + "</h2");
+                fp.add(info);
 
-        memoryChart.setStyleName("serverPopupChart");
-        memory.add(memoryChart);
+                fp.getElement().setId("xxx");
+                setWidget(fp);
 
-        memoryDetailsChart.setStyleName("serverPopupChart");
-        final CheckBox heap = new CheckBox("Show Heap");
-        heap.setValue(true);
-        heap.addClickHandler(new ClickHandler() {
+                memoryChart.setStyleName("serverPopupChart");
+                memory.add(memoryChart);
+
+                memoryDetailsChart.setStyleName("serverPopupChart");
+                final CheckBox heap = new CheckBox("Show Heap");
+                heap.setValue(true);
+                heap.addClickHandler(new ClickHandler() {
+
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        showHeap = heap.getValue();
+                        if (memoryUsages != null) {
+                            updateMemoryDetailsChart(memoryUsages);
+                        }
+                    }
+                });
+                memoryDetails.add(heap);
+                memoryDetails.add(memoryDetailsChart);
+
+                cpuChart.setStyleName("serverPopupChart");
+                cpu.add(cpuChart);
+
+                sysLoadChart.setStyleName("serverPopupChart");
+                sysLoad.add(sysLoadChart);
+
+                loadSecondPart();
+
+            };
 
             @Override
-            public void onClick(ClickEvent event) {
-                showHeap = heap.getValue();
-                if (memoryUsages != null) {
-                    updateMemoryDetailsChart(memoryUsages);
-                }
+            public void onFailure(Throwable caught) {
+                Window.alert("Error loading server:" + caught.getMessage());
+                Log.error("Error loading server:" + serverCode + ", Error:" + caught.getMessage(), caught);
+                hide();
             }
         });
-        memoryDetails.add(heap);
-        memoryDetails.add(memoryDetailsChart);
-
-        cpuChart.setStyleName("serverPopupChart");
-        cpu.add(cpuChart);
-
-        sysLoadChart.setStyleName("serverPopupChart");
-        sysLoad.add(sysLoadChart);
 
     }
 
@@ -184,12 +198,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
 
     }
 
-    @Override
-    public void center() {
-        setSize("760px", "450px");
-
-        super.center();
-
+    public void loadSecondPart() {
         HorizontalPanel hp = new HorizontalPanel();
         Button threadDump = new Button("Get Thread Dump");
         hp.add(threadDump);
@@ -224,7 +233,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
                 final ThreadDumpPopup tdp = new ThreadDumpPopup();
                 tdp.center();
 
-                service.getThreadDump(cs.getServerCode(), new AsyncCallback<ThreadDump>() {
+                service.getThreadDump(serverCode, new AsyncCallback<ThreadDump>() {
 
                     @Override
                     public void onSuccess(ThreadDump result) {
@@ -242,7 +251,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
         getMemoryStats(chunks);
         getCpuStats(chunks);
 
-        service.getRuntimeInfo(cs.getServerCode(), new AsyncCallback<RuntimeInfo>() {
+        service.getRuntimeInfo(serverCode, new AsyncCallback<RuntimeInfo>() {
 
             @Override
             public void onSuccess(RuntimeInfo result) {
@@ -277,6 +286,14 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
         Scheduler.get().scheduleFixedDelay(refreshCommand, 20000);
     }
 
+    @Override
+    public void center() {
+        setSize("760px", "450px");
+
+        super.center();
+
+    }
+
     public void getExtraData(Integer chunks) {
 
     }
@@ -288,7 +305,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
     }
 
     private void getCpuStats(int chunks) {
-        service.getCpuUsageHistory(cs.getServerCode(), chunks, new AsyncCallback<LinkedList<CpuUtilizationChunk>>() {
+        service.getCpuUsageHistory(serverCode, chunks, new AsyncCallback<LinkedList<CpuUtilizationChunk>>() {
 
             @Override
             public void onSuccess(LinkedList<CpuUtilizationChunk> result) {
@@ -304,7 +321,7 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
     }
 
     private void getMemoryStats(int chunks) {
-        service.getMemoryStats(cs.getServerCode(), chunks, new AsyncCallback<LinkedList<MemoryUsage>>() {
+        service.getMemoryStats(serverCode, chunks, new AsyncCallback<LinkedList<MemoryUsage>>() {
 
             @Override
             public void onSuccess(LinkedList<MemoryUsage> result) {
@@ -474,8 +491,8 @@ public class ServerStatsPopup<CS extends ConnectedServer, FR extends AbstractFul
         memoryDetailsChart.updateChart(ilt, memoryDetailsHistory, true);
     }
 
-    public CS getConnectedServer() {
-        return cs;
+    public Integer getServerCode() {
+        return serverCode;
     }
 
     @SuppressWarnings("rawtypes")

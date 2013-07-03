@@ -15,16 +15,14 @@
  */
 package com.smexec.monitor.server.model;
 
-import com.smexec.monitor.shared.ConnectedServer;
 
 public class ConnectedServersState
-    extends AbstractConnectedServersState<ServerStatus, ConnectedServer, DatabaseServer>
-    implements IConnectedServersState<ServerStatus, ConnectedServer, DatabaseServer> {
+    extends AbstractConnectedServersState<ServerStatus, DatabaseServer>
+    implements IConnectedServersState<ServerStatus, DatabaseServer> {
 
     @Override
     public void mergeExtraData(ServerStatus ss) {
         // nothing
     }
-
 
 }

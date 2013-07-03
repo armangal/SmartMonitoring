@@ -48,19 +48,19 @@ import com.smexec.monitor.client.MonitoringServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
 import com.smexec.monitor.shared.ConnectedDB;
 import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.ServerWidgetRefresh;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>, CC extends ClientConfigurations>
+public class ServersWidget<CC extends ClientConfigurations>
     extends AbstractMonitoringWidget
-    implements IMonitoringWidget<CS, FR> {
+    implements IMonitoringWidget {
 
     private static final String SERVERS_SHOW_OFF = "servers.showOff";
     private static final String SERVERS_FILTER = "servers.filter";
 
-    private final MonitoringServiceAsync<CS, FR, CC> service;
+    private final MonitoringServiceAsync<CC> service;
 
     private FlowPanel serversList = new FlowPanel();
     private ScrollPanel sp = new ScrollPanel();
@@ -71,9 +71,8 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
         @Override
         public void onClick(ClickEvent event) {
             String code = ((Widget) event.getSource()).getElement().getAttribute("code");
-            CS cs = serversMap.get(Integer.valueOf(code));
-            if (cs != null) {
-                ServerStatsPopup<CS, FR, CC> ssp = new ServerStatsPopup<CS, FR, CC>(service, cs);
+            if (code != null) {
+                ServerStatsPopup<CC> ssp = new ServerStatsPopup<CC>(service, Integer.valueOf(code));
                 ssp.center();
             } else {
                 Window.alert("Server couldn't be found:" + code);
@@ -112,16 +111,16 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
         }
     };
 
-    private Map<Integer, CS> serversMap = new HashMap<Integer, CS>(0);
-    private ArrayList<CS> servesList;
+    private Map<Integer, ConnectedServer> serversMap = new HashMap<Integer, ConnectedServer>(0);
+    private ArrayList<ConnectedServer> servesList;
     private ArrayList<ConnectedDB> databases;
 
     private HorizontalPanel title = new HorizontalPanel();
     private TextBox filter = new TextBox();
     private Label serversLabel = new Label("Servers");
 
-    public ServersWidget(MonitoringServiceAsync<CS, FR, CC> service) {
-        super("Servers");
+    public ServersWidget(MonitoringServiceAsync<CC> service) {
+        super("Servers", 20000);
         this.service = service;
 
         addStyleName("serversWidget");
@@ -138,6 +137,7 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
         title.add(chkShowOffline);
         title.add(new Label("Filter:"));
         title.add(filter);
+        title.add(getRefProg());
         String filterText = Cookies.getCookie(SERVERS_FILTER);
         if (filterText != null) {
             filter.setText(filterText.trim().toLowerCase());
@@ -168,10 +168,13 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
                 Cookies.setCookie(SERVERS_SHOW_OFF, showOffline ? "1" : "0");
             }
         });
+
+        refresh();
+
     }
 
     @Override
-    public void clear(FR result) {
+    public void clear() {
 
     }
 
@@ -183,10 +186,10 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
         ft.setCellPadding(0);
         ft.setCellSpacing(0);
 
-        Collections.sort(servesList, new Comparator<CS>() {
+        Collections.sort(servesList, new Comparator<ConnectedServer>() {
 
             @Override
-            public int compare(CS o1, CS o2) {
+            public int compare(ConnectedServer o1, ConnectedServer o2) {
                 double o1p = 0, o2p = 0;
                 if (o1.getStatus() && o2.getStatus()) {
                     if (o1.getCpuUsage() > 80 || o2.getCpuUsage() > 80) {
@@ -236,7 +239,7 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
 
         serversMap.clear();
 
-        for (CS cs : servesList) {
+        for (ConnectedServer cs : servesList) {
             serversMap.put(cs.getServerCode(), cs);
 
             j = 0;
@@ -333,7 +336,7 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
                 value.setTitle(cd.toString());
                 ft.setWidget(i, j, value);
                 ft.getFlexCellFormatter().setColSpan(i, j, 2);
-                ft.setText(i, 1, cd.getIp() + ":" + cd.getPort() );
+                ft.setText(i, 1, cd.getIp() + ":" + cd.getPort());
                 ft.setText(i, 2, (cd.getStatus() ? "ONLINE" : "OFFLINE"));
                 ft.setText(i, 3, "LastPing:" + cd.getLastPingTime() + "ms");
                 ft.getFlexCellFormatter().setColSpan(i, 3, 2);
@@ -344,15 +347,6 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
             }
         }
         serversLabel.setText("Servers:" + servesList.size() + " (" + offline + ")");
-    }
-
-    @Override
-    public void update(FR fullResult) {
-        this.servesList = (ArrayList<CS>) fullResult.getServers();
-        Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
-        this.databases = fullResult.getDatabases();
-        updateServersTable();
-
     }
 
     private boolean toShow(String serverName) {
@@ -381,8 +375,23 @@ public class ServersWidget<CS extends ConnectedServer, FR extends AbstractFullRe
 
     @Override
     public void refresh() {
-        // TODO Auto-generated method stub
+        service.getServerWidgetRefresh(new AsyncCallback<ServerWidgetRefresh>() {
 
+            @Override
+            public void onSuccess(ServerWidgetRefresh result) {
+                Log.debug("ServerWidget, refereshing:" + result.toString());
+                Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
+                servesList = result.getServers();
+                databases = result.getDatabases();
+                updateServersTable();
+                getRefProg().progress();
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Log.error("ServerWidget, error refereshing:" + caught.getMessage(), caught);
+            }
+        });
     }
 
 }

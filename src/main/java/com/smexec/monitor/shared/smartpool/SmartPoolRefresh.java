@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.shared;
+package com.smexec.monitor.shared.smartpool;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.smexec.monitor.shared.smartpool.PoolsFeed;
-
-public class FullRefreshResult
-    extends AbstractFullRefreshResult<ConnectedServer>
+public class SmartPoolRefresh
     implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public FullRefreshResult() {
-
+    /**
+     * a map of aggregated thread pools statistic, ready to be presented by client
+     */
+    private HashMap<String, PoolsFeed> poolFeedMap;
+    
+    
+    public SmartPoolRefresh() {
     }
-
-    public FullRefreshResult(ArrayList<ConnectedServer> servers, HashMap<String, PoolsFeed> poolFeedMap, ArrayList<ConnectedDB> databases) {
-        super(servers, poolFeedMap, databases);
+    
+    
+    public HashMap<String, PoolsFeed> getPoolFeedMap() {
+        return poolFeedMap;
     }
-
+    
 }

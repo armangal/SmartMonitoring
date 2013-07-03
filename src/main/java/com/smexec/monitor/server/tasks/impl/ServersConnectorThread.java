@@ -23,10 +23,9 @@ import com.smexec.monitor.server.model.config.DatabaseConfig;
 import com.smexec.monitor.server.model.config.ServerConfig;
 import com.smexec.monitor.server.model.config.ServerGroup;
 import com.smexec.monitor.server.model.config.ServersConfig;
-import com.smexec.monitor.shared.ConnectedServer;
 
 public class ServersConnectorThread
-    extends AbstractServersConnectorThread<ServerStatus, ConnectedServer, ServersConfig, DatabaseServer> {
+    extends AbstractServersConnectorThread<ServerStatus, ServersConfig, DatabaseServer> {
 
     public ServersConnectorThread()
         throws JAXBException {
@@ -38,7 +37,7 @@ public class ServersConnectorThread
         // keeping history stats for 24 hours
         return new ServerStatus(sc, serverGroup, (24 * 60 * 3), (24 * 60 * 3));
     }
-    
+
     @Override
     public DatabaseServer getDatabaseServer(DatabaseConfig dc) {
         return new DatabaseServer(dc);

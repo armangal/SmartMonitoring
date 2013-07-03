@@ -16,15 +16,11 @@
 package com.smexec.monitor.client.widgets;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
-import com.smexec.monitor.shared.ConnectedServer;
 
-public interface IMonitoringWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public interface IMonitoringWidget
     extends IsWidget {
 
-    void update(FR result);
-
-    void clear(FR result);
+    void clear();
 
     /**
      * to be used to stop/start/continue widget refresh

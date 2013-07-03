@@ -20,6 +20,8 @@ import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smexec.ITaskIdentification;
+import org.smexec.IThreadNameSuffixAware;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
@@ -34,7 +36,7 @@ import com.smexec.monitor.server.utils.JMXSmartExecutorStats;
  * @author armang
  */
 public class Refresher<SS extends ServerStatus>
-    implements Callable<SS> {
+    implements Callable<SS>, ITaskIdentification, IThreadNameSuffixAware {
 
     private static Logger logger = LoggerFactory.getLogger("Refresher");
 
@@ -55,11 +57,21 @@ public class Refresher<SS extends ServerStatus>
     }
 
     @Override
+    public String getTaskId() {
+        return "REF_" + ss.getServerConfig().getName();
+    }
+
+    @Override
+    public String getThreadNameSuffix() {
+        return "REF_" + ss.getServerConfig().getName();
+    }
+
+    @Override
     public SS call()
         throws Exception {
         String old = Thread.currentThread().getName();
         try {
-            Thread.currentThread().setName("REF_" + ss.getServerConfig().getName());
+            Thread.currentThread().setName(old + "_REF_" + ss.getServerConfig().getName());
             if (ss.isConnected()) {
                 logger.info("Refreshing:{}", ss.getServerConfig().getName());
                 jmxGeneralStats.getMemoryStats(ss, executionDate);

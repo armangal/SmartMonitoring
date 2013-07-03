@@ -24,17 +24,17 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smexec.SmartExecutor;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.server.SmartPoolsMonitoring;
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
@@ -44,40 +44,30 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 
-public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R extends Refresher<SS>, CS extends ConnectedServer, DS extends DatabaseServer>
+public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R extends Refresher<SS>, DS extends DatabaseServer>
     implements IStateUpdaterThread {
 
     private static Logger logger = LoggerFactory.getLogger("StateUpdaterThread");
 
     private AtomicInteger executionNumber = new AtomicInteger(0);
 
-    static ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
-
-        private AtomicInteger num = new AtomicInteger();
-
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "REFRESH_" + num.getAndIncrement());
-        }
-
-    });
+    @Inject
+    private SmartExecutor smartExecutor;
 
     @Inject
-    private IConnectedServersState<SS, CS, DS> connectedServersState;
+    private IConnectedServersState<SS, DS> connectedServersState;
 
     @Override
     public void run() {
-        String name = Thread.currentThread().getName();
         try {
-            Thread.currentThread().setName("FULL_REFRESH");
             // During threads scheduling, do not allow updates to servers
             ConnectionSynch.connectionLock.lock();
 
             long start = System.currentTimeMillis();
             logger.info("Refreshing stats for all servers.");
-            ArrayList<CS> serversList = new ArrayList<CS>(0);
+            ArrayList<ConnectedServer> serversList = new ArrayList<ConnectedServer>(0);
 
-            CompletionService<SS> compService = new ExecutorCompletionService<SS>(threadPool);
+            CompletionService<SS> compService = new ExecutorCompletionService<SS>(smartExecutor.getThreadPool(SmartPoolsMonitoring.REFERSHER));
 
             Collection<SS> values = connectedServersState.getAllServers();
 
@@ -99,7 +89,7 @@ public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R exte
                     try {
                         SS ss = take.get(10, TimeUnit.SECONDS);
                         logger.info("Finished updating:{}, {} from {}", new Object[] {ss.getServerConfig().getName(), i, values.size()});
-                        CS cs = getConnectedServer(ss);
+                        ConnectedServer cs = getConnectedServer(ss);
                         serversList.add(cs);
                     } catch (Exception e) {
                         take.cancel(true);
@@ -119,7 +109,7 @@ public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R exte
                     SS serverStataus = r.getServerStataus();
                     logger.error("Skipped:{}", serverStataus);
                     f.cancel(true);
-                    CS cs = getConnectedServer(serverStataus);
+                    ConnectedServer cs = getConnectedServer(serverStataus);
                     serversList.add(cs);
                 }
 
@@ -141,12 +131,11 @@ public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R exte
 
         } finally {
             ConnectionSynch.connectionLock.unlock();
-            Thread.currentThread().setName(name);
         }
     }
 
     private void refreshDBs() {
-        CompletionService<DS> compService = new ExecutorCompletionService<DS>(threadPool);
+        CompletionService<DS> compService = new ExecutorCompletionService<DS>(smartExecutor.getThreadPool(SmartPoolsMonitoring.REFERSHER));
         int ref = 0;
         for (DS ds : connectedServersState.getDatabases()) {
             if (ds.isConnected()) {
@@ -183,7 +172,7 @@ public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R exte
      * @param ss
      * @return
      */
-    public abstract CS getConnectedServer(SS ss);
+    public abstract ConnectedServer getConnectedServer(SS ss);
 
     /**
      * gets the light object from client representation
@@ -200,7 +189,7 @@ public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R exte
         return mul;
     }
 
-    public IConnectedServersState<SS, CS, DS> getConnectedServersState() {
+    public IConnectedServersState<SS, DS> getConnectedServersState() {
         return connectedServersState;
     }
 
@@ -209,7 +198,7 @@ public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R exte
         @org.junit.Test
         public void test() {
             System.out.println("start");
-            CompletionService<Boolean> compService = new ExecutorCompletionService<Boolean>(threadPool);
+            CompletionService<Boolean> compService = new ExecutorCompletionService<Boolean>(Executors.newCachedThreadPool());
 
             for (int i = 0; i < 10; i++) {
                 compService.submit(new Callable<Boolean>() {

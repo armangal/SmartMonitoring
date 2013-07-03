@@ -15,26 +15,45 @@
  */
 package com.smexec.monitor.server.tasks.impl;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smexec.ITaskIdentification;
+import org.smexec.IThreadNameSuffixAware;
 
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.utils.SQLUtils;
 
 public class DbRefresher<DS extends DatabaseServer>
-    implements Callable<DS> {
+    implements Callable<DS>, ITaskIdentification, IThreadNameSuffixAware {
 
     private static Logger logger = LoggerFactory.getLogger("DbRefresher");
 
     private DS ds;
 
+    private PreparedStatement ps;
+
     public DbRefresher(DS ds) {
         this.ds = ds;
+        try {
+            ps = ds.getConnection().prepareStatement(ds.getDatabaseConfig().getPingStatement());
+        } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public String getTaskId() {
+        return "DBREF_" + ds.getDatabaseConfig().getName();
+    }
+
+    @Override
+    public String getThreadNameSuffix() {
+        return "DBREF_" + ds.getDatabaseConfig().getName();
     }
 
     @Override
@@ -42,7 +61,7 @@ public class DbRefresher<DS extends DatabaseServer>
         throws Exception {
         String oldName = Thread.currentThread().getName();
         try {
-            Thread.currentThread().setName("DB_REF_" + ds.getDatabaseConfig().getName());
+            Thread.currentThread().setName(oldName + "_DB_REF_" + ds.getDatabaseConfig().getName());
             refersh();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -54,18 +73,16 @@ public class DbRefresher<DS extends DatabaseServer>
     }
 
     public void refersh() {
-        Statement st;
         try {
             long pingTime = System.currentTimeMillis();
-            st = ds.getConnection().createStatement();
-            ResultSet rs = st.executeQuery(ds.getDatabaseConfig().getPingStatement());
+
+            ResultSet rs = ps.executeQuery();
             try {
                 rs.next();
                 pingTime = (System.currentTimeMillis() - pingTime);
                 logger.info("DB_Ping date:{} time:{}", rs.getDate(1), pingTime);
             } finally {
                 SQLUtils.closeResultSet(rs);
-
             }
             ds.addPing(pingTime);
         } catch (SQLException e) {

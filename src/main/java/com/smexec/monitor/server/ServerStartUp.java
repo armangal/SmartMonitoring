@@ -26,6 +26,8 @@ import javax.servlet.ServletContextListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smexec.SmartExecutor;
+import org.smexec.TaskMetadata;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.server.guice.GuiceUtils;
@@ -44,16 +46,8 @@ public class ServerStartUp
 
     private static Logger logger = LoggerFactory.getLogger(ServerStartUp.class);
 
-    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(3, new ThreadFactory() {
-
-        int count = 0;
-
-        @Override
-        public Thread newThread(Runnable r) {
-
-            return new Thread(r, "STARTER_" + count++);
-        }
-    });
+    @Inject
+    private SmartExecutor smartExecutor;
 
     @Inject
     private IJMXConnectorThread jmxConnectorThread;
@@ -96,21 +90,29 @@ public class ServerStartUp
         logger.info("Version:{}", Version.getVersion());
 
         logger.info("Starting AbstractJMXConnectorThread");
-        executor.scheduleAtFixedRate(jmxConnectorThread, 5, 60, TimeUnit.SECONDS);
+        smartExecutor.scheduleAtFixedRate(jmxConnectorThread, 5, 60, TimeUnit.SECONDS, TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "CONNECTOR"));
 
         logger.info("Starting StateUpdaterThread");
-        executor.scheduleAtFixedRate(stateUpdaterThread, 20, 20, TimeUnit.SECONDS);
+        smartExecutor.scheduleAtFixedRate(stateUpdaterThread,
+                                          20,
+                                          20,
+                                          TimeUnit.SECONDS,
+                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "FULL_REFRESH"));
 
         if (getMailUpdaterConfig().isEnabled()) {
             logger.info("Starting Periodicat Updater");
-            executor.scheduleAtFixedRate(periodicalUpdater, getMailUpdaterConfig().getPeriod() / 2, getMailUpdaterConfig().getPeriod(), TimeUnit.SECONDS);
+            smartExecutor.scheduleAtFixedRate(periodicalUpdater,
+                                              getMailUpdaterConfig().getPeriod() / 2,
+                                              getMailUpdaterConfig().getPeriod(),
+                                              TimeUnit.SECONDS,
+                                              TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "MAIL_UPD"));
         }
 
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
-        executor.shutdown();
+        smartExecutor.shutdown();
     }
 
     public MailUpdaterConfig getMailUpdaterConfig() {

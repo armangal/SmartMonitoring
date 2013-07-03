@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SmartExecutor xmlns:ns2="http://www.armangal.com/smartexecutor/v1">
+
+	<executor>
+		<name>SmartExecutorMonitoring</name>
+		<description>Smart thread pools for Smart Monitoring System</description>
+		<pools>
+			<pool>
+				<poolName>default</poolName>
+				<poolNameShort>DTP</poolNameShort>
+				<corePollSize>2</corePollSize>
+				<maxPoolSize>3</maxPoolSize>
+				<queueSize>100</queueSize>
+				<keepAliveTime>1000</keepAliveTime>
+				<poolType>regular</poolType>
+				<chunks>200</chunks>
+				<chunkInterval>5000</chunkInterval>
+			</pool>
+
+			<pool>
+				<poolName>Custom1</poolName>
+				<poolNameShort>CM1</poolNameShort>
+				<corePollSize>2</corePollSize>
+				<maxPoolSize>2</maxPoolSize>
+				<queueSize>10</queueSize>
+				<keepAliveTime>1000</keepAliveTime>
+				<poolType>regular</poolType>
+				<chunks>200</chunks>
+				<chunkInterval>5000</chunkInterval>
+			</pool>
+			
+			<pool>
+				<poolName>Fast</poolName>
+				<poolNameShort>FST</poolNameShort>
+				<corePollSize>2</corePollSize>
+				<maxPoolSize>2</maxPoolSize>
+				<queueSize>100</queueSize>
+				<keepAliveTime>1000</keepAliveTime>
+				<poolType>regular</poolType>
+				<chunks>50</chunks>
+				<chunkInterval>5000</chunkInterval>
+			</pool>
+			
+			<pool>
+				<poolName>CONNECTOR</poolName>
+				<poolNameShort>CNT</poolNameShort>
+				<corePollSize>3</corePollSize>
+				<poolType>scheduled</poolType>
+				<chunks>180</chunks>
+				<chunkInterval>20000</chunkInterval>
+			</pool>
+
+			<pool>
+				<poolName>Scheduled2</poolName>
+				<poolNameShort>STP2</poolNameShort>
+				<corePollSize>5</corePollSize>
+				<poolType>scheduled</poolType>
+				<chunks>200</chunks>
+				<chunkInterval>5000</chunkInterval>
+			</pool>
+			<pool>
+				<poolName>Cached</poolName>
+				<poolNameShort>CTP</poolNameShort>
+				<poolType>cached</poolType>
+				<chunks>180</chunks>
+				<chunkInterval>20000</chunkInterval>
+			</pool>
+			<pool>
+				<poolName>Refresher</poolName>
+				<poolNameShort>REF</poolNameShort>
+				<poolType>cached</poolType>
+				<chunks>180</chunks>
+				<chunkInterval>20000</chunkInterval>
+			</pool>			
+		</pools>
+	</executor>
+</SmartExecutor>

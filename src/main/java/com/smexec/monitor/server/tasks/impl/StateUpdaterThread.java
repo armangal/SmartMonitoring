@@ -24,7 +24,7 @@ import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 
 public class StateUpdaterThread
-    extends AbstractStateUpdaterThread<ServerStatus, Refresher<ServerStatus>, ConnectedServer, DatabaseServer> {
+    extends AbstractStateUpdaterThread<ServerStatus, Refresher<ServerStatus>, DatabaseServer> {
 
     @Override
     public Refresher<ServerStatus> getRefresher(ServerStatus ss, Date executionDate, int excutionNumber) {

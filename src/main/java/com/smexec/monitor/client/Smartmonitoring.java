@@ -17,14 +17,12 @@ package com.smexec.monitor.client;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
 public class Smartmonitoring
-    extends AbstractEntryPoint<ConnectedServer, AbstractFullRefreshResult<ConnectedServer>, ClientConfigurations> {
+    extends AbstractEntryPoint<ClientConfigurations> {
 
-    private static final MonitoringServiceAsync<ConnectedServer, AbstractFullRefreshResult<ConnectedServer>, ClientConfigurations> service = GWT.create(MonitoringServiceStd.class);
+    private static final MonitoringServiceAsync<ClientConfigurations> service = GWT.create(MonitoringServiceStd.class);
 
     public Smartmonitoring() {
         super(service);

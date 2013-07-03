@@ -36,17 +36,16 @@ import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.services.mail.IMailService;
 import com.smexec.monitor.server.services.mail.MailService.MailItem;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.config.Version;
 
-public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS extends ConnectedServer, SC extends AbstractServersConfig, DS extends DatabaseServer>
+public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, SC extends AbstractServersConfig, DS extends DatabaseServer>
     implements Runnable {
 
     public static Logger logger = LoggerFactory.getLogger("PeriodicalUpdater");
 
     @Inject
-    private IConnectedServersState<SS, CS, DS> connectedServersState;
+    private IConnectedServersState<SS, DS> connectedServersState;
 
     @Inject
     private IConfigurationService<SC> configurationService;
@@ -78,9 +77,7 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS exte
 
     @Override
     public void run() {
-        String oldName = Thread.currentThread().getName();
         try {
-            Thread.currentThread().setName("PERIODICAL_UPDATER");
 
             logger.info("Starting periodical update");
             StringBuilder sb = new StringBuilder();
@@ -111,7 +108,7 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS exte
                     sb.append("<td>").append(dnf.format(ss.getCpuUtilization().getLastPercent().getUsage()) + "%").append("</td>");
                     double sla = ss.getCpuUtilization().getLastPercent().getSystemLoadAverage();
                     sb.append("<td>").append(sla == -1 ? "N/A" : dnf.format(sla)).append("</td>");
-                    sb.append("<td>").append(ss.getExtraServerDetails()).append("</td>");
+                    sb.append("<td>").append(connectedServersState.getExtraServerDetails(ss.getServerConfig().getServerCode())).append("</td>");
 
                     sb.append("</tr>");
 
@@ -144,14 +141,12 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, CS exte
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        } finally {
-            Thread.currentThread().setName(oldName);
         }
     }
 
     public abstract String getExtraInfo();
 
-    public IConnectedServersState<SS, CS, DS> getConnectedServersState() {
+    public IConnectedServersState<SS, DS> getConnectedServersState() {
         return connectedServersState;
     }
 

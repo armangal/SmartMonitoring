@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server.tasks.impl;
+package com.smexec.monitor.server;
 
-import com.smexec.monitor.server.model.DatabaseServer;
-import com.smexec.monitor.server.model.ServerStatus;
-import com.smexec.monitor.server.model.config.ServersConfig;
-import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
+import org.smexec.IPoolName;
 
-public class PeriodicalUpdater
-    extends AbstractPeriodicalUpdater<ServerStatus, ServersConfig, DatabaseServer>
-    implements IPeriodicalUpdater {
+public enum SmartPoolsMonitoring implements IPoolName {
+
+    DEFAULT("default"),//
+    CONNECTOR("CONNECTOR"),//
+    CACHED("Cached"),//
+    REFERSHER("Refresher");
+
+    private String name;
+
+    private SmartPoolsMonitoring(String name) {
+        this.name = name;
+    }
 
     @Override
-    public String getExtraInfo() {
-        return "";
+    public String getPoolName() {
+        return name;
     }
+
 }

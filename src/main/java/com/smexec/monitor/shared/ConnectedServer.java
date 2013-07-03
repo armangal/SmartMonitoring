@@ -42,7 +42,28 @@ public class ConnectedServer
     private double cpuUsage;
     private double systemLoadAverage;
 
+    private String moreInfo;
+    private String toolTip;
+
     public ConnectedServer() {}
+
+    public ConnectedServer(String name,
+                           Integer serverCode,
+                           String ip,
+                           Integer jmxPort,
+                           Boolean status,
+                           MemoryUsageLight memoryUsage,
+                           Double[] gcHistories,
+                           long upTime,
+                           double cpuUsage,
+                           double systemLoadAverage,
+                           String moreInfo,
+                           String toolTip) {
+
+        this(name, serverCode, toolTip, jmxPort, status, memoryUsage, gcHistories, upTime, cpuUsage, systemLoadAverage);
+        this.moreInfo = "IP: " + getIp() + ", jmxPort:" + getJmxPort() + ", cpu usage:" + cpuUsage + "%, SLA:" + systemLoadAverage + "%" + moreInfo;
+        this.toolTip = toolTip;
+    }
 
     public ConnectedServer(String name,
                            Integer serverCode,
@@ -65,6 +86,9 @@ public class ConnectedServer
         this.upTime = upTime;
         this.cpuUsage = cpuUsage;
         this.systemLoadAverage = systemLoadAverage;
+
+        this.toolTip = "JMX >> " + getIp() + ":" + getJmxPort() + "\nClick for more info";
+        this.moreInfo = "IP: " + getIp() + ", jmxPort:" + getJmxPort() + ", cpu usage:" + cpuUsage + "%, SLA:" + systemLoadAverage + "%";
     }
 
     public String getName() {
@@ -135,10 +159,10 @@ public class ConnectedServer
     }
 
     public String getToolTip() {
-        return "JMX >> " + getIp() + ":" + getJmxPort() + "\nClick for more info";
+        return toolTip;
     }
 
     public String getMoreInfo() {
-        return "IP: " + getIp() + ", jmxPort:" + getJmxPort() + ", cpu usage:" + cpuUsage + "%, SLA:" + systemLoadAverage + "%";
+        return moreInfo;
     }
 }

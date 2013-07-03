@@ -21,10 +21,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.Notification;
 import javax.management.NotificationListener;
@@ -34,8 +30,11 @@ import javax.management.remote.JMXServiceURL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smexec.SmartExecutor;
+import org.smexec.TaskMetadata;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.server.SmartPoolsMonitoring;
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
@@ -47,7 +46,6 @@ import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
 
@@ -60,24 +58,16 @@ import com.smexec.monitor.shared.alert.AlertType;
  * @param <CS>
  * @param <SC>
  */
-public abstract class AbstractServersConnectorThread<SS extends ServerStatus, CS extends ConnectedServer, SC extends AbstractServersConfig, DS extends DatabaseServer>
+public abstract class AbstractServersConnectorThread<SS extends ServerStatus, SC extends AbstractServersConfig, DS extends DatabaseServer>
     implements IJMXConnectorThread {
 
     public static Logger logger = LoggerFactory.getLogger("JMXConnectorThread");
 
-    private static ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadFactory() {
-
-        private AtomicInteger num = new AtomicInteger();
-
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "JMX_CONNECTOR_" + num.getAndIncrement());
-        }
-
-    });
+    @Inject
+    private SmartExecutor smartExecutor;
 
     @Inject
-    private IConnectedServersState<SS, CS, DS> connectedServersState;
+    private IConnectedServersState<SS, DS> connectedServersState;
 
     @Inject
     private IConfigurationService<SC> configurationService;
@@ -101,15 +91,10 @@ public abstract class AbstractServersConnectorThread<SS extends ServerStatus, CS
 
         @Override
         public void run() {
-            String oldName = Thread.currentThread().getName();
             try {
-                Thread.currentThread().setName("CONN_DB_" + dc.getName());
                 connectDb(dc);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
-                Thread.currentThread().setName(oldName);
-            } finally {
-                Thread.currentThread().setName(oldName);
             }
         }
 
@@ -157,13 +142,10 @@ public abstract class AbstractServersConnectorThread<SS extends ServerStatus, CS
         @Override
         public void run() {
             // new in mappings or try to connect to offline server reconnection
-            String oldName = Thread.currentThread().getName();
             try {
-                Thread.currentThread().setName("CONN_" + sc.getName());
                 connect(sc);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
-                Thread.currentThread().setName(oldName);
             }
         }
     };
@@ -187,7 +169,8 @@ public abstract class AbstractServersConnectorThread<SS extends ServerStatus, CS
                         }
                     }
                     // reconnect or make first connection attempt
-                    threadPool.execute(new Connector(sc));
+                    smartExecutor.execute(new Connector(sc),
+                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CACHED, "CONN_" + sc.getName(), "CC_" + sc.getName()));
                 }
             }
 
@@ -197,7 +180,8 @@ public abstract class AbstractServersConnectorThread<SS extends ServerStatus, CS
                 DS ds = connectedServersState.getDatabaseServer(dc.getName());
                 if (ds == null || !ds.isConnected()) {
                     // connect
-                    threadPool.execute(new DbConnector(dc));
+                    smartExecutor.execute(new DbConnector(dc),
+                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CACHED, "CONN_DB_" + dc.getName(), "DC_" + dc.getName()));
                 } else if (!ds.getDatabaseConfig().getUser().equals(dc.getUser())) {
                     // settings changed username, reconnect
                     try {
@@ -205,7 +189,8 @@ public abstract class AbstractServersConnectorThread<SS extends ServerStatus, CS
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }
-                    threadPool.execute(new DbConnector(dc));
+                    smartExecutor.execute(new DbConnector(dc),
+                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CACHED, "CONN_DB_" + dc.getName(), "DC_" + dc.getName()));
                 }
             }
 

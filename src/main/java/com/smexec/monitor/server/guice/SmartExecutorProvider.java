@@ -13,19 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server.tasks.impl;
+package com.smexec.monitor.server.guice;
 
-import com.smexec.monitor.server.model.DatabaseServer;
-import com.smexec.monitor.server.model.ServerStatus;
-import com.smexec.monitor.server.model.config.ServersConfig;
-import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
+import org.smexec.SmartExecutor;
 
-public class PeriodicalUpdater
-    extends AbstractPeriodicalUpdater<ServerStatus, ServersConfig, DatabaseServer>
-    implements IPeriodicalUpdater {
+import com.google.inject.Provider;
+
+public class SmartExecutorProvider
+    implements Provider<SmartExecutor> {
 
     @Override
-    public String getExtraInfo() {
-        return "";
+    public SmartExecutor get() {
+        try {
+            return new SmartExecutor(getSmartExecutorConfFileLocation());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public String getSmartExecutorConfFileLocation() {
+        return "/com/smexec/monitor/SmartExecutor-monitoring.xml";
     }
 }

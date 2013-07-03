@@ -18,6 +18,7 @@ package com.smexec.monitor.server.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -26,13 +27,14 @@ import org.slf4j.LoggerFactory;
 import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
-public abstract class AbstractConnectedServersState<SS extends ServerStatus, CS extends ConnectedServer, DS extends DatabaseServer> {
+public abstract class AbstractConnectedServersState<SS extends ServerStatus, DS extends DatabaseServer>
+    implements IConnectedServersState<SS, DS> {
 
     private static Logger logger = LoggerFactory.getLogger(AbstractConnectedServersState.class);
 
     private ConcurrentHashMap<Integer, SS> connectedServersMap = new ConcurrentHashMap<Integer, SS>();
 
-    private ArrayList<CS> servers;
+    private Map<Integer, ConnectedServer> serversMap = new HashMap<Integer, ConnectedServer>();
 
     private ConcurrentHashMap<String, DS> databases = new ConcurrentHashMap<String, DS>(0);
 
@@ -61,7 +63,7 @@ public abstract class AbstractConnectedServersState<SS extends ServerStatus, CS 
      * 
      * @param servers
      */
-    public void mergeStats(ArrayList<CS> servers) {
+    public void mergeStats(ArrayList<ConnectedServer> servers) {
         HashMap<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>();
 
         logger.info("Merging stats");
@@ -80,12 +82,14 @@ public abstract class AbstractConnectedServersState<SS extends ServerStatus, CS 
             }
         }
 
-        this.servers = servers;
+        for (ConnectedServer server : servers) {
+            serversMap.put(server.getServerCode(), server);
+        }
         this.poolFeedMap = poolFeedMap;
     }
 
-    public ArrayList<CS> getServers() {
-        return servers;
+    public ArrayList<ConnectedServer> getServers() {
+        return new ArrayList<ConnectedServer>(serversMap.values());
     }
 
     public HashMap<String, PoolsFeed> getPoolFeedMap() {
@@ -104,4 +108,11 @@ public abstract class AbstractConnectedServersState<SS extends ServerStatus, CS 
         databases.put(ds.getDatabaseConfig().getName(), ds);
     }
 
+    public ConnectedServer getConnectedServer(Integer serverCode) {
+        return serversMap.get(serverCode);
+    }
+
+    public String getExtraServerDetails(Integer serverCode) {
+        return "---";
+    }
 }

@@ -32,13 +32,11 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
-import com.smexec.monitor.shared.AbstractFullRefreshResult;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
-public class ThreadPoolsWidget<CS extends ConnectedServer, FR extends AbstractFullRefreshResult<CS>>
+public class ThreadPoolsWidget
     extends AbstractMonitoringWidget
-    implements IMonitoringWidget<CS, FR> {
+    implements IMonitoringWidget {
 
     private PoolWidget poolWidget = new PoolWidget();
 
@@ -75,23 +73,26 @@ public class ThreadPoolsWidget<CS extends ConnectedServer, FR extends AbstractFu
      * 
      */
     public ThreadPoolsWidget() {
-        super("Thread Pools");
+        super("Thread Pools", 20000);
         addStyleName("threadPoolsWidget");
         getDataPanel().add(fp);
         fp.add(poolWidget);
         fp.add(poolsTable);
+
+        refresh();
+
     }
 
     @Override
-    public void clear(FR result) {
+    public void clear() {
         this.lastUpdate = null;
         fp.remove(poolsTable);
         poolWidget.clear();
     }
 
     @Override
-    public void update(FR fullResult) {
-        HashMap<String, PoolsFeed> map = fullResult.getPoolFeedMap();
+    public void refresh() {
+        HashMap<String, PoolsFeed> map = null;// fullResult.getPoolFeedMap();
         this.lastUpdate = map;
         fp.remove(poolsTable);
 
@@ -164,11 +165,6 @@ public class ThreadPoolsWidget<CS extends ConnectedServer, FR extends AbstractFu
             poolsTable.setText(i, j++, "" + feed.getHosts());
             i++;
         }
-    }
 
-    @Override
-    public void refresh() {
-        // TODO Auto-generated method stub
-        
     }
 }
