@@ -34,7 +34,7 @@ import org.smexec.SmartExecutor;
 import org.smexec.TaskMetadata;
 
 import com.google.inject.Inject;
-import com.smexec.monitor.server.SmartPoolsMonitoring;
+import com.smexec.monitor.server.constants.SmartPoolsMonitoring;
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;

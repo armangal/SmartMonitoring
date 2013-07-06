@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server;
+package com.smexec.monitor.client;
 
-import org.smexec.IPoolName;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public enum SmartPoolsMonitoring implements IPoolName {
+/**
+ * The client side stub for the RPC service.
+ */
+@RemoteServiceRelativePath("../configurationService")
+public interface ConfigurationService<CC extends ClientConfigurations>
+    extends BasicMonitoringService {
 
-    DEFAULT("default"),//
-    CONNECTOR("CONNECTOR"),//
-    CACHED("Cached"),//
-    REFERSHER("Refresher");
-
-    private String name;
-
-    private SmartPoolsMonitoring(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getPoolName() {
-        return name;
-    }
+    CC getClientConfigurations();
 
 }

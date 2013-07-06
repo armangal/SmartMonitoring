@@ -36,7 +36,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
-import com.smexec.monitor.client.MonitoringServiceAsync;
+import com.smexec.monitor.client.ConfigurationServiceAsync;
+import com.smexec.monitor.client.GeneralService;
+import com.smexec.monitor.client.GeneralServiceAsync;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.utils.StringFormatter;
 
@@ -47,12 +49,12 @@ public class LoginWidget<CC extends ClientConfigurations>
     private static final String SSIU = "ssiu";
     private static final String SSICH = "ssich";
 
-    public interface LoggedInCallBack<CC extends ClientConfigurations> {
+    public interface LoggedInCallBack<CC> {
 
         void loggedIn(CC cc);
     }
 
-    private final MonitoringServiceAsync<CC> service;
+    private final GeneralServiceAsync service = GWT.create(GeneralService.class);
     private CC cc;
 
     private LoggedInCallBack<CC> callBack;
@@ -75,8 +77,7 @@ public class LoginWidget<CC extends ClientConfigurations>
         }
     };
 
-    public LoginWidget(MonitoringServiceAsync<CC> service) {
-        this.service = service;
+    public LoginWidget(ConfigurationServiceAsync<CC> service) {
 
         if (!GWT.isScript()) {
             userName.setText("admin");

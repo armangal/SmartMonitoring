@@ -17,6 +17,7 @@ package com.smexec.monitor.server.utils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,17 @@ public class SQLUtils {
             }
         } catch (SQLException e) {
             logger.error("Exception on closing SQL Result set: " + e.getMessage(), e);
+        }
+    }
+
+    /** Close Statement and do not throw an exception */
+    public static void closeStatement(Statement st) {
+        try {
+            if (st != null) {
+                st.close();
+            }
+        } catch (SQLException e) {
+            logger.error("Exception on closing SQL Statement: " + e.getMessage(), e);
         }
     }
 }

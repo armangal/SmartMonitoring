@@ -34,15 +34,15 @@ import org.slf4j.LoggerFactory;
 import org.smexec.SmartExecutor;
 
 import com.google.inject.Inject;
-import com.smexec.monitor.server.SmartPoolsMonitoring;
+import com.smexec.monitor.server.constants.SmartPoolsMonitoring;
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.tasks.ConnectionSynch;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.MemoryUsageLight;
+import com.smexec.monitor.shared.servers.ConnectedServer;
 
 public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R extends Refresher<SS>, DS extends DatabaseServer>
     implements IStateUpdaterThread {

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.smexec.monitor.server.model.config.DatabaseConfig;
 import com.smexec.monitor.server.utils.DateUtils;
-import com.smexec.monitor.shared.DbPingChunk;
+import com.smexec.monitor.shared.servers.DbPingChunk;
 
 public class DatabaseServer {
 

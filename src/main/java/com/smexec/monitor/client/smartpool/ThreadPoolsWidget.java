@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -30,12 +31,16 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
+import com.smexec.monitor.client.SmartExecutorService;
+import com.smexec.monitor.client.SmartExecutorServiceAsync;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
+import com.smexec.monitor.shared.smartpool.SmartExecutorRefreshRequest;
+import com.smexec.monitor.shared.smartpool.SmartExecutorRefreshResponse;
 
 public class ThreadPoolsWidget
-    extends AbstractMonitoringWidget
+    extends AbstractMonitoringWidget<SmartExecutorRefreshRequest, SmartExecutorRefreshResponse, SmartExecutorServiceAsync>
     implements IMonitoringWidget {
 
     private PoolWidget poolWidget = new PoolWidget();
@@ -73,13 +78,12 @@ public class ThreadPoolsWidget
      * 
      */
     public ThreadPoolsWidget() {
-        super("Thread Pools", 20000);
+        super("Thread Pools", 20000, SmartExecutorService.class);
         addStyleName("threadPoolsWidget");
         getDataPanel().add(fp);
         fp.add(poolWidget);
         fp.add(poolsTable);
 
-        refresh();
 
     }
 
@@ -91,8 +95,19 @@ public class ThreadPoolsWidget
     }
 
     @Override
-    public void refresh() {
-        HashMap<String, PoolsFeed> map = null;// fullResult.getPoolFeedMap();
+    public SmartExecutorRefreshRequest createRefreshRequest() {
+        return new SmartExecutorRefreshRequest();
+    }
+
+    @Override
+    public void refreshFailed(Throwable t) {
+        Log.error("Smart Pool widget resresh error:" + t.getMessage(), t);
+    }
+
+    @Override
+    public void refresh(SmartExecutorRefreshResponse refershResponse) {
+
+        HashMap<String, PoolsFeed> map = new HashMap<String, PoolsFeed>();// fullResult.getPoolFeedMap();
         this.lastUpdate = map;
         fp.remove(poolsTable);
 

@@ -50,10 +50,8 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
     // private static final String MAIL_TYPE_TEXT = "text/plain; charset=";
     private static final String MAIL_TYPE_HTML = "text/html; charset=";
 
-    @Inject
     private IConfigurationService<SC> configurationService;
 
-    @Inject
     private IConnectedServersState<SS, DS> connectedServersState;
 
     private String alerTemplate = "{1}, {2}";
@@ -63,6 +61,7 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
      */
     private LinkedBlockingQueue<MailItem> mailQueue = new LinkedBlockingQueue<MailService.MailItem>();
 
+    @Inject
     public MailService() {
         Thread dispatcher = new Thread(new Runnable() {
 
@@ -90,6 +89,16 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    @Inject
+    public void setConfigurationService(IConfigurationService<SC> configurationService) {
+        this.configurationService = configurationService;
+    }
+
+    @Inject
+    public void setConnectedServersState(IConnectedServersState<SS, DS> connectedServersState) {
+        this.connectedServersState = connectedServersState;
     }
 
     /*

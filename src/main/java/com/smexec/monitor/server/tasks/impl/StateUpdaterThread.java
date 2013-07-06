@@ -20,8 +20,8 @@ import java.util.Date;
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServerConfig;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.runtime.MemoryUsageLight;
+import com.smexec.monitor.shared.servers.ConnectedServer;
 
 public class StateUpdaterThread
     extends AbstractStateUpdaterThread<ServerStatus, Refresher<ServerStatus>, DatabaseServer> {

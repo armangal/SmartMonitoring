@@ -18,19 +18,27 @@ package com.smexec.monitor.client.widgets;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import com.smexec.monitor.client.AbstractRefreshRequest;
+import com.smexec.monitor.client.AbstractRefreshResponse;
+import com.smexec.monitor.client.BasicMonitoringRefreshService;
+import com.smexec.monitor.client.BasicMonitoringRefreshServiceAsync;
 
-public abstract class AbstractMonitoringWidget
+public abstract class AbstractMonitoringWidget<RQ extends AbstractRefreshRequest, RS extends AbstractRefreshResponse, SR extends BasicMonitoringRefreshServiceAsync<RQ, RS>>
     extends Composite {
+
+    private SR service;
 
     private FlowPanel mainPanel = new FlowPanel();
     private FlowPanel header = new FlowPanel();
@@ -58,19 +66,44 @@ public abstract class AbstractMonitoringWidget
      */
     private boolean refresh = false;
 
+    public void forceRefresh() {
+        try {
+            if (isRefresh()) {
+                refProg.progress();
+                service.refresh(createRefreshRequest(), new AsyncCallback<RS>() {
+
+                    public void onSuccess(RS result) {
+                        refresh(result);
+                    };
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        Log.error("Refresh server call failed:" + caught.getMessage(), caught);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            Log.error("Refresh failed:" + e.getMessage(), e);
+        }
+        Log.debug("Reschedule widget refresh" + this.getClass().getName() + " :" + isRefresh());
+
+    }
+
     private RepeatingCommand refreshCommand = new RepeatingCommand() {
 
         @Override
         public boolean execute() {
-            if (isRefresh()) {
-                refProg.progress();
-                refresh();
-            }
-            Log.debug("Reschedule container refresh?:" + isRefresh());
+            forceRefresh();
             return true;
         }
 
     };
+
+    public abstract RQ createRefreshRequest();
+
+    public abstract void refresh(RS refershResponse);
+
+    public abstract void refreshFailed(Throwable t);
 
     private ClickHandler zoom = new ClickHandler() {
 
@@ -93,16 +126,17 @@ public abstract class AbstractMonitoringWidget
         }
     };
 
-    public AbstractMonitoringWidget(String name) {
-        this(name, 0);
+    public SR getService() {
+        return service;
     }
 
     /**
      * @param name - the name of the widget
      * @param refreshDelay - referesh rate in ms.
      */
-    public AbstractMonitoringWidget(final String name, final int refreshDelay) {
+    public <T extends BasicMonitoringRefreshService<RQ, RS>> AbstractMonitoringWidget(final String name, final int refreshDelay, Class<T> serviceClass) {
         this.name = name;
+        this.service = GWT.create(serviceClass);
         header.setStyleName("header");
         Image img = new Image();
         img.setUrl("img/header-icon.png");
@@ -122,13 +156,22 @@ public abstract class AbstractMonitoringWidget
         setStyleName("monitoringWidget");
 
         if (refreshDelay > 0) {
-            Scheduler.get().scheduleFixedDelay(refreshCommand, refreshDelay);
+
+            // first time do the request faster then the original one
+            Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
+
+                @Override
+                public boolean execute() {
+                    forceRefresh();
+                    Scheduler.get().scheduleFixedDelay(refreshCommand, refreshDelay);
+                    return false;
+                }
+            }, 1);
         }
+
         setRefresh(true);
 
     }
-
-    public abstract void refresh();
 
     public FlowPanel getDataPanel() {
         return dataPanel;

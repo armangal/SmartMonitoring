@@ -23,18 +23,15 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextArea;
-import com.smexec.monitor.client.MonitoringServiceAsync;
-import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.client.GeneralServiceAsync;
 
-public class SettingsPopup<CC extends ClientConfigurations>
+public class SettingsPopup
     extends DialogBox {
 
     private FlowPanel fp = new FlowPanel();
     private TextArea ta = new TextArea();
-    private final MonitoringServiceAsync<CC> service;
 
-    public SettingsPopup(final MonitoringServiceAsync<CC> service) {
-        this.service = service;
+    public SettingsPopup(final GeneralServiceAsync service) {
         setWidget(fp);
         fp.add(ta);
         setAutoHideEnabled(false);

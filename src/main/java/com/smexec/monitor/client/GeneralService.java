@@ -15,28 +15,23 @@
  */
 package com.smexec.monitor.client;
 
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.smexec.monitor.shared.ServerTimeResult;
 
-interface Resources extends ClientBundle {
-    @Source("img/settings-blue.png")
-    ImageResource settings();
+/**
+ * The client side stub for the RPC service.
+ */
+@RemoteServiceRelativePath("../generalService")
+public interface GeneralService
+    extends BasicMonitoringService {
 
-    @Source("img/settings-blue-small.png")
-    ImageResource settingsSmall();
+    ServerTimeResult refresh();
 
-    @Source("img/logout.png")
-    ImageResource logout();
+    Boolean authenticate(String userName, String password);
 
-    @Source("img/StopRefresh.png")
-    ImageResource stopRefresh();
+    String getSettingsXML();
 
-    @Source("img/ContinueRefresh.png")
-    ImageResource continueRefresh();
+    Boolean saveSettingsXML(String xml);
 
-    @Source("img/ContinueAlerts.png")
-    ImageResource continueAlerts();
-
-    @Source("img/StopAlerts.png")
-    ImageResource stopAlerts();
+    void logout();
 }

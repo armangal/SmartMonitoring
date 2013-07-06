@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.shared;
+package com.smexec.monitor.shared.servers;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class ServerWidgetRefresh
-    implements Serializable {
+import com.smexec.monitor.client.AbstractRefreshResponse;
+
+public class ServersRefreshResponse
+    extends AbstractRefreshResponse {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -29,12 +31,12 @@ public class ServerWidgetRefresh
 
     private ArrayList<ConnectedDB> databases = new ArrayList<ConnectedDB>(0);
 
-    public ServerWidgetRefresh() {
-
+    public ServersRefreshResponse() {
+        super(new Date().toString());
     }
 
-    public ServerWidgetRefresh(ArrayList<ConnectedServer> servers, ArrayList<ConnectedDB> databases) {
-        super();
+    public ServersRefreshResponse(String serverDate, ArrayList<ConnectedServer> servers, ArrayList<ConnectedDB> databases) {
+        super(serverDate);
         this.servers = servers;
         this.databases = databases;
     }
@@ -50,7 +52,7 @@ public class ServerWidgetRefresh
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ServerWidgetRefresh [servers=").append(servers).append(", databases=").append(databases).append("]");
+        builder.append("ServerWidgetRefresh [servers=").append(servers).append(", databases=").append(databases).append(super.toString()).append("]");
         return builder.toString();
     }
 

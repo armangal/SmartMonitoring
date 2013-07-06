@@ -13,28 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.shared.smartpool;
+package com.smexec.monitor.client;
 
-import java.io.Serializable;
-import java.util.HashMap;
+import com.smexec.monitor.shared.smartpool.SmartExecutorRefreshRequest;
+import com.smexec.monitor.shared.smartpool.SmartExecutorRefreshResponse;
 
-public class SmartPoolRefresh
-    implements Serializable {
+public interface SmartExecutorServiceAsync
+    extends BasicMonitoringRefreshServiceAsync<SmartExecutorRefreshRequest, SmartExecutorRefreshResponse> {
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * a map of aggregated thread pools statistic, ready to be presented by client
-     */
-    private HashMap<String, PoolsFeed> poolFeedMap;
-    
-    
-    public SmartPoolRefresh() {
-    }
-    
-    
-    public HashMap<String, PoolsFeed> getPoolFeedMap() {
-        return poolFeedMap;
-    }
-    
 }

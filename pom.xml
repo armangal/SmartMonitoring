@@ -4,7 +4,7 @@
 
 	<groupId>org.smexec</groupId>
 	<artifactId>smartmonitoring</artifactId>
-	<version>1.0.32</version>
+	<version>1.0.33</version>
 	<name>Smart Monitoring, open-source JMX monitoring server with HTML (GWT) UI</name>
 	<description>Smart Monitoring</description>
 
@@ -55,7 +55,7 @@
 		<javax.mail.version>1.4</javax.mail.version>
 		<commons-io.version>2.4</commons-io.version>
 		<oracle.jdbc.version>11.2.0.3</oracle.jdbc.version>
-		<smartexecutor.version>1.0.3-SNAPSHOT</smartexecutor.version>
+		<smartexecutor.version>1.0.4</smartexecutor.version>
 
 		<gwt.version>2.5.0</gwt.version>
 		<gin.version>2.0.0</gin.version>
@@ -181,6 +181,11 @@
 				<artifactId>smartexecutor</artifactId>
 				<version>${smartexecutor.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>2.5</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -277,6 +282,11 @@
 			<groupId>org.smexec</groupId>
 			<artifactId>smartexecutor</artifactId>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

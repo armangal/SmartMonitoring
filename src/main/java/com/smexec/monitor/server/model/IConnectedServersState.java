@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.servers.ConnectedServer;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 public interface IConnectedServersState<SS extends ServerStatus, DS extends DatabaseServer> {

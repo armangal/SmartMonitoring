@@ -15,15 +15,15 @@
  */
 package com.smexec.monitor.client;
 
-import com.allen_sauer.gwt.log.client.Log;
-import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.smexec.monitor.shared.smartpool.SmartExecutorRefreshRequest;
+import com.smexec.monitor.shared.smartpool.SmartExecutorRefreshResponse;
 
-public class Smartmonitoring
-    extends AbstractEntryPoint<ClientConfigurations> {
+/**
+ * The client side stub for the RPC service.
+ */
+@RemoteServiceRelativePath("../smartExecutorService")
+public interface SmartExecutorService
+    extends BasicMonitoringRefreshService<SmartExecutorRefreshRequest, SmartExecutorRefreshResponse> {
 
-    @SuppressWarnings("unchecked")
-    public Smartmonitoring() {
-        super(GeneralService.class);
-        Log.debug("Smartmonitoring created");
-    }
 }

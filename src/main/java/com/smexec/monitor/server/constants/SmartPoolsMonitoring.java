@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.client;
+package com.smexec.monitor.server.constants;
 
-import com.allen_sauer.gwt.log.client.Log;
-import com.smexec.monitor.shared.config.ClientConfigurations;
+import org.smexec.IPoolName;
 
-public class Smartmonitoring
-    extends AbstractEntryPoint<ClientConfigurations> {
+public enum SmartPoolsMonitoring implements IPoolName {
 
-    @SuppressWarnings("unchecked")
-    public Smartmonitoring() {
-        super(GeneralService.class);
-        Log.debug("Smartmonitoring created");
+    DEFAULT("default"),//
+    CONNECTOR("CONNECTOR"),//
+    CACHED("Cached"),//
+    REFERSHER("Refresher");
+
+    private String name;
+
+    private SmartPoolsMonitoring(String name) {
+        this.name = name;
     }
+
+    @Override
+    public String getPoolName() {
+        return name;
+    }
+
 }

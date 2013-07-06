@@ -15,9 +15,11 @@
  */
 package com.smexec.monitor.client;
 
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-@RemoteServiceRelativePath("../mainService")
-public interface MonitoringServiceStd
-    extends MonitoringService<ClientConfigurations> {}
+public interface BasicMonitoringRefreshServiceAsync<RQ extends AbstractRefreshRequest, RS extends AbstractRefreshResponse>
+    extends BasicMonitoringServiceAsync {
+
+    void refresh(RQ request, AsyncCallback<RS> callback);
+
+}

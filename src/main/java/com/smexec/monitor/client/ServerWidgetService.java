@@ -17,51 +17,32 @@ package com.smexec.monitor.client;
 
 import java.util.LinkedList;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.smexec.monitor.shared.ServerTimeResult;
-import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.ServerWidgetRefresh;
-import com.smexec.monitor.shared.alert.Alert;
-import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
+import com.smexec.monitor.shared.servers.ConnectedServer;
+import com.smexec.monitor.shared.servers.ServersRefreshRequest;
+import com.smexec.monitor.shared.servers.ServersRefreshResponse;
 
 /**
  * The client side stub for the RPC service.
  */
-
-public interface MonitoringService<CC extends ClientConfigurations>
-    extends RemoteService {
-
-    ServerWidgetRefresh getServerWidgetRefresh();
+@RemoteServiceRelativePath("../serverWidgetService")
+public interface ServerWidgetService
+    extends BasicMonitoringRefreshService<ServersRefreshRequest, ServersRefreshResponse> {
 
     ConnectedServer getConnectedServer(Integer serverCode);
-
-    ServerTimeResult refresh();
 
     ThreadDump getThreadDump(Integer serverCode);
 
     String getGCHistory(Integer serverCode);
 
-    Boolean authenticate(String userName, String password);
-
     LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks);
 
     LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks);
 
-    CC getClientConfigurations();
-
     RuntimeInfo getRuntimeInfo(Integer serverCode);
 
-    String getSettingsXML();
-
-    Boolean saveSettingsXML(String xml);
-
-    Boolean stopAlerts(boolean enable);
-
-    LinkedList<Alert> getAlerts(final int lastAlertId);
-
-    void logout();
 }

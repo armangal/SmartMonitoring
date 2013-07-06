@@ -40,6 +40,7 @@ import com.smexec.monitor.client.login.LoginWidget.LoggedInCallBack;
 import com.smexec.monitor.client.servers.ServersWidget;
 import com.smexec.monitor.client.settings.SettingsPopup;
 import com.smexec.monitor.client.smartpool.ThreadPoolsWidget;
+import com.smexec.monitor.client.utils.MonitoringResources;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.client.widgets.ProgressLabel;
 import com.smexec.monitor.shared.ServerTimeResult;
@@ -52,9 +53,11 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
     /**
      * Create a remote service proxy to talk to the server-side service.
      */
-    private final MonitoringServiceAsync<CC> service;
+    private final GeneralServiceAsync service;
+    private final AlertsServiceAsync alertsService = GWT.create(AlertsService.class);
+
     private final LoginWidget<CC> loginWidget;
-    private Resources resources = GWT.create(Resources.class);
+    private MonitoringResources resources = GWT.create(MonitoringResources.class);
 
     private LinkedList<IMonitoringWidget> widgets = new LinkedList<IMonitoringWidget>();
     final FlowPanel mainPanel = new FlowPanel();
@@ -154,9 +157,18 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
         alertsWidget.clear();
     }
 
-    public AbstractEntryPoint(final MonitoringServiceAsync<CC> service) {
-        this.service = service;
-        this.loginWidget = new LoginWidget<CC>(service);
+    /**
+     * should override when configurations are extended
+     * 
+     * @return
+     */
+    public ConfigurationServiceAsync<CC> getConfigurationService() {
+        return GWT.create(ConfigurationService.class);
+    }
+
+    public <T extends GeneralService> AbstractEntryPoint(Class<T> serviceClass) {
+        this.service = GWT.create(serviceClass);
+        this.loginWidget = new LoginWidget<CC>(getConfigurationService());
         this.loginWidget.registerCallBack(new LoggedInCallBack<CC>() {
 
             @Override
@@ -258,7 +270,7 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
             public void onClick(ClickEvent event) {
                 String attribute = alertImg.getElement().getAttribute("state");
                 alertButtonClicked(attribute);
-                service.stopAlerts("2".equals(attribute), new AsyncCallback<Boolean>() {
+                alertsService.stopAlerts("2".equals(attribute), new AsyncCallback<Boolean>() {
 
                     @Override
                     public void onSuccess(Boolean result) {
@@ -290,7 +302,7 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
 
             @Override
             public void onClick(ClickEvent event) {
-                SettingsPopup<CC> sp = new SettingsPopup<CC>(service);
+                SettingsPopup sp = new SettingsPopup(service);
                 sp.center();
             }
         });
@@ -327,8 +339,8 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
      */
     public void registerWidgets() {
         addMonitoringWidget(new ThreadPoolsWidget());
-        addMonitoringWidget(new ServersWidget<CC>(service));
-        alertsWidget = new AlertsWidget<CC>(service, AlertType.values());
+        addMonitoringWidget(new ServersWidget<CC>());
+        alertsWidget = new AlertsWidget<CC>(AlertType.values());
         addMonitoringWidget(alertsWidget);
     }
 
@@ -336,10 +348,6 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
         for (IMonitoringWidget widget : widgets) {
             mainPanel.add(widget);
         }
-    }
-
-    public MonitoringServiceAsync<CC> getService() {
-        return service;
     }
 
     public AsyncCallback<ServerTimeResult> getRefreshCallback() {

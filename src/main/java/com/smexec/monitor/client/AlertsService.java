@@ -13,9 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.shared;
+package com.smexec.monitor.client;
 
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.smexec.monitor.shared.alert.RefreshAlertsRequest;
+import com.smexec.monitor.shared.alert.RefreshAlertsResponse;
 
-public enum DatabaseType {
-    ORACLE;
+/**
+ * The client side stub for the RPC service.
+ */
+@RemoteServiceRelativePath("../alertsService")
+public interface AlertsService
+    extends BasicMonitoringRefreshService<RefreshAlertsRequest, RefreshAlertsResponse> {
+
+    Boolean stopAlerts(boolean enable);
+
 }

@@ -13,17 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.client;
+package com.smexec.monitor.shared.servers;
 
-import com.allen_sauer.gwt.log.client.Log;
-import com.smexec.monitor.shared.config.ClientConfigurations;
 
-public class Smartmonitoring
-    extends AbstractEntryPoint<ClientConfigurations> {
-
-    @SuppressWarnings("unchecked")
-    public Smartmonitoring() {
-        super(GeneralService.class);
-        Log.debug("Smartmonitoring created");
-    }
+public enum DatabaseType {
+    ORACLE;
 }

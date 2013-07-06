@@ -15,15 +15,6 @@
  */
 package com.smexec.monitor.client;
 
-import com.allen_sauer.gwt.log.client.Log;
-import com.smexec.monitor.shared.config.ClientConfigurations;
+public interface BasicMonitoringServiceAsync {
 
-public class Smartmonitoring
-    extends AbstractEntryPoint<ClientConfigurations> {
-
-    @SuppressWarnings("unchecked")
-    public Smartmonitoring() {
-        super(GeneralService.class);
-        Log.debug("Smartmonitoring created");
-    }
 }

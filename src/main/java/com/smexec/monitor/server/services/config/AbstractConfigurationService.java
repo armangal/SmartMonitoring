@@ -162,4 +162,14 @@ public abstract class AbstractConfigurationService<SC extends AbstractServersCon
         return serversConfig.getAlertsConfig().isEnabled();
     }
 
+    @Override
+    public int authenticate(String userName, String password) {
+        SC sc = getServersConfig();
+        if ("admin".equalsIgnoreCase(userName) && sc.getPassword().equals(password)) {
+            return 1;
+        } else if ("guest".equalsIgnoreCase(userName) && sc.getGuestPassword().equals(password)) {
+            return 2;
+        }
+        return 0;
+    }
 }

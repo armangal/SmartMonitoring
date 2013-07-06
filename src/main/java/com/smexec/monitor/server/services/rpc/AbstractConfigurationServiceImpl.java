@@ -13,28 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.server;
+package com.smexec.monitor.server.services.rpc;
 
-import com.smexec.monitor.client.MonitoringServiceStd;
+import com.smexec.monitor.client.ConfigurationService;
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.ServerStatus;
-import com.smexec.monitor.server.model.config.ServersConfig;
+import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.shared.config.ClientConfigurations;
-import com.smexec.monitor.shared.config.Version;
 
-/**
- * The server side implementation of the monitoring RPC service.
- */
 @SuppressWarnings("serial")
-public class MonitoringServiceImpl
-    extends AbstractMonitoringService<ServerStatus, ServersConfig, DatabaseServer>
-    implements MonitoringServiceStd {
+public abstract class AbstractConfigurationServiceImpl<CC extends ClientConfigurations, SS extends ServerStatus, SC extends AbstractServersConfig, DS extends DatabaseServer>
+    extends AbstractMonitoringService<SS, SC, DS>
+    implements ConfigurationService<ClientConfigurations> {
 
-    public MonitoringServiceImpl() {}
+    public AbstractConfigurationServiceImpl() {}
 
-    public ClientConfigurations getClientConfigurations() {
-
-        return new ClientConfigurations(Version.getEnvName(), Version.getVersion(), getConfigurationService().getServersConfig().getAlertsConfig().isEnabled());
-    }
+    public abstract CC getClientConfigurations();
 
 }

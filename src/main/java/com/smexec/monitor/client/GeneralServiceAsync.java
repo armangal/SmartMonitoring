@@ -15,15 +15,20 @@
  */
 package com.smexec.monitor.client;
 
-import com.allen_sauer.gwt.log.client.Log;
-import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smexec.monitor.shared.ServerTimeResult;
 
-public class Smartmonitoring
-    extends AbstractEntryPoint<ClientConfigurations> {
+public interface GeneralServiceAsync
+    extends BasicMonitoringServiceAsync {
 
-    @SuppressWarnings("unchecked")
-    public Smartmonitoring() {
-        super(GeneralService.class);
-        Log.debug("Smartmonitoring created");
-    }
+    void refresh(AsyncCallback<ServerTimeResult> callback);
+
+    void authenticate(String userName, String password, AsyncCallback<Boolean> callback);
+
+    void getSettingsXML(AsyncCallback<String> callback);
+
+    void saveSettingsXML(String xml, AsyncCallback<Boolean> callback);
+
+    void logout(AsyncCallback<Void> callback);
+
 }

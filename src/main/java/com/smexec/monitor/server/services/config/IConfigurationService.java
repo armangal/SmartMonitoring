@@ -40,5 +40,7 @@ public interface IConfigurationService<SC extends AbstractServersConfig> {
     void loadServersConfig(boolean toStopServer);
 
     Boolean stopAlerts(boolean enable);
+    
+    int authenticate(final String userName, final String password);
 
 }

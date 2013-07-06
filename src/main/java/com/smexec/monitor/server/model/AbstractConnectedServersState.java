@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.smexec.monitor.shared.ConnectedServer;
+import com.smexec.monitor.shared.servers.ConnectedServer;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 
 public abstract class AbstractConnectedServersState<SS extends ServerStatus, DS extends DatabaseServer>
@@ -40,7 +40,7 @@ public abstract class AbstractConnectedServersState<SS extends ServerStatus, DS 
 
     private HashMap<String, PoolsFeed> poolFeedMap;
 
-    public abstract void mergeExtraData(SS ss);
+    public void mergeExtraData(SS ss) {}
 
     public SS getServerStataus(final Integer serverCode) {
         return connectedServersMap.get(serverCode);

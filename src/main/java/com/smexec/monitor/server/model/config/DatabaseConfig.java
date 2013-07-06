@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.smexec.monitor.shared.DatabaseType;
+import com.smexec.monitor.shared.servers.DatabaseType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "database")

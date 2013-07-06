@@ -44,23 +44,23 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.smexec.monitor.client.MonitoringServiceAsync;
+import com.smexec.monitor.client.ServerWidgetService;
+import com.smexec.monitor.client.ServerWidgetServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.AbstractMonitoringWidget;
 import com.smexec.monitor.client.widgets.IMonitoringWidget;
-import com.smexec.monitor.shared.ConnectedDB;
-import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.ServerWidgetRefresh;
 import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.smexec.monitor.shared.servers.ConnectedDB;
+import com.smexec.monitor.shared.servers.ConnectedServer;
+import com.smexec.monitor.shared.servers.ServersRefreshRequest;
+import com.smexec.monitor.shared.servers.ServersRefreshResponse;
 
 public class ServersWidget<CC extends ClientConfigurations>
-    extends AbstractMonitoringWidget
+    extends AbstractMonitoringWidget<ServersRefreshRequest, ServersRefreshResponse, ServerWidgetServiceAsync>
     implements IMonitoringWidget {
 
     private static final String SERVERS_SHOW_OFF = "servers.showOff";
     private static final String SERVERS_FILTER = "servers.filter";
-
-    private final MonitoringServiceAsync<CC> service;
 
     private FlowPanel serversList = new FlowPanel();
     private ScrollPanel sp = new ScrollPanel();
@@ -72,7 +72,7 @@ public class ServersWidget<CC extends ClientConfigurations>
         public void onClick(ClickEvent event) {
             String code = ((Widget) event.getSource()).getElement().getAttribute("code");
             if (code != null) {
-                ServerStatsPopup<CC> ssp = new ServerStatsPopup<CC>(service, Integer.valueOf(code));
+                ServerStatsPopup<CC> ssp = new ServerStatsPopup<CC>(Integer.valueOf(code));
                 ssp.center();
             } else {
                 Window.alert("Server couldn't be found:" + code);
@@ -86,7 +86,7 @@ public class ServersWidget<CC extends ClientConfigurations>
         @Override
         public void onClick(ClickEvent event) {
             String code = ((Widget) event.getSource()).getElement().getAttribute("code");
-            service.getGCHistory(Integer.valueOf(code), new AsyncCallback<String>() {
+            getService().getGCHistory(Integer.valueOf(code), new AsyncCallback<String>() {
 
                 @Override
                 public void onSuccess(String result) {
@@ -119,9 +119,8 @@ public class ServersWidget<CC extends ClientConfigurations>
     private TextBox filter = new TextBox();
     private Label serversLabel = new Label("Servers");
 
-    public ServersWidget(MonitoringServiceAsync<CC> service) {
-        super("Servers", 20000);
-        this.service = service;
+    public ServersWidget() {
+        super("Servers", 20000, ServerWidgetService.class);
 
         addStyleName("serversWidget");
         serversList.setStyleName("serversWidgetInternal");
@@ -168,8 +167,6 @@ public class ServersWidget<CC extends ClientConfigurations>
                 Cookies.setCookie(SERVERS_SHOW_OFF, showOffline ? "1" : "0");
             }
         });
-
-        refresh();
 
     }
 
@@ -374,24 +371,24 @@ public class ServersWidget<CC extends ClientConfigurations>
     }
 
     @Override
-    public void refresh() {
-        service.getServerWidgetRefresh(new AsyncCallback<ServerWidgetRefresh>() {
+    public ServersRefreshRequest createRefreshRequest() {
+        return new ServersRefreshRequest();
+    }
 
-            @Override
-            public void onSuccess(ServerWidgetRefresh result) {
-                Log.debug("ServerWidget, refereshing:" + result.toString());
-                Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
-                servesList = result.getServers();
-                databases = result.getDatabases();
-                updateServersTable();
-                getRefProg().progress();
-            }
+    @Override
+    public void refreshFailed(Throwable t) {
+        Log.error("ServerWidget, error refereshing:" + t.getMessage(), t);
 
-            @Override
-            public void onFailure(Throwable caught) {
-                Log.error("ServerWidget, error refereshing:" + caught.getMessage(), caught);
-            }
-        });
+    }
+
+    @Override
+    public void refresh(ServersRefreshResponse refershResponse) {
+        Log.debug("ServerWidget, refereshing:" + refershResponse.toString());
+        Log.debug("ServersWidget spInterrupted:" + sp.getVerticalScrollPosition());
+        servesList = refershResponse.getServers();
+        databases = refershResponse.getDatabases();
+        updateServersTable();
+        getRefProg().progress();
     }
 
 }

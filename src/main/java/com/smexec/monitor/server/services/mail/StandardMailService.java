@@ -20,6 +20,7 @@ import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.ServersConfig;
 
 public class StandardMailService
-    extends MailService<ServersConfig, ServerStatus, DatabaseServer> {
+    extends MailService<ServersConfig, ServerStatus, DatabaseServer>
+    implements IMailService<ServerStatus> {
 
 }

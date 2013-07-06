@@ -15,15 +15,16 @@
  */
 package com.smexec.monitor.client;
 
-import com.allen_sauer.gwt.log.client.Log;
-import com.smexec.monitor.shared.config.ClientConfigurations;
+public interface BasicMonitoringRefreshService<RQ extends AbstractRefreshRequest, RS extends AbstractRefreshResponse>
+    extends BasicMonitoringService {
 
-public class Smartmonitoring
-    extends AbstractEntryPoint<ClientConfigurations> {
+    /**
+     * All widgets should work with build in refresh mechanism, this interface should provide fresh data from
+     * server.
+     * 
+     * @param request
+     * @return
+     */
+    RS refresh(RQ request);
 
-    @SuppressWarnings("unchecked")
-    public Smartmonitoring() {
-        super(GeneralService.class);
-        Log.debug("Smartmonitoring created");
-    }
 }

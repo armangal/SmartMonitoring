@@ -15,9 +15,12 @@
  */
 package com.smexec.monitor.client;
 
-import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smexec.monitor.shared.alert.RefreshAlertsRequest;
+import com.smexec.monitor.shared.alert.RefreshAlertsResponse;
 
-public interface MonitoringServiceStdAsync
-    extends MonitoringServiceAsync<ClientConfigurations> {
-    // should not have any methods, all methods should go to MonitoringServiceAsync
+public interface AlertsServiceAsync
+    extends BasicMonitoringRefreshServiceAsync<RefreshAlertsRequest, RefreshAlertsResponse> {
+
+    void stopAlerts(boolean enable, AsyncCallback<Boolean> callback);
 }

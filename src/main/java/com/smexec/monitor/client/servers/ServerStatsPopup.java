@@ -23,6 +23,7 @@ import java.util.List;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -42,14 +43,14 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwt.charts.client.ColumnType;
-import com.smexec.monitor.client.MonitoringServiceAsync;
+import com.smexec.monitor.client.ServerWidgetService;
+import com.smexec.monitor.client.ServerWidgetServiceAsync;
 import com.smexec.monitor.client.utils.ClientStringFormatter;
 import com.smexec.monitor.client.widgets.DynamicLine;
 import com.smexec.monitor.client.widgets.ILineType;
 import com.smexec.monitor.client.widgets.MonitoringDynamicLinesChart;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
 import com.smexec.monitor.shared.ChartFeed;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.config.Colors;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
@@ -57,11 +58,12 @@ import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
+import com.smexec.monitor.shared.servers.ConnectedServer;
 
 public class ServerStatsPopup<CC extends ClientConfigurations>
     extends DialogBox {
 
-    private final MonitoringServiceAsync<CC> service;
+    private final ServerWidgetServiceAsync service = GWT.create(ServerWidgetService.class);
 
     private MonitoringLineChart<Double, Long> cpuChart = new MonitoringLineChart<Double, Long>(new ILineType[] {ServersLineType.CPU},
                                                                                                "CPU%",
@@ -92,10 +94,8 @@ public class ServerStatsPopup<CC extends ClientConfigurations>
     private boolean refresh = true;
     private LinkedList<MemoryUsage> memoryUsages;// local copy for fast refresh
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public ServerStatsPopup(MonitoringServiceAsync service, final Integer serverCode) {
+    public ServerStatsPopup(final Integer serverCode) {
         this.serverCode = serverCode;
-        this.service = service;
         setAnimationEnabled(true);
         setModal(true);
         setSize("760px", "450px");
@@ -495,8 +495,4 @@ public class ServerStatsPopup<CC extends ClientConfigurations>
         return serverCode;
     }
 
-    @SuppressWarnings("rawtypes")
-    public MonitoringServiceAsync getService() {
-        return service;
-    }
 }

@@ -40,33 +40,33 @@ import com.smexec.monitor.server.tasks.impl.StateUpdaterThread;
 import com.smexec.monitor.server.utils.IJMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
-import com.smexec.monitor.shared.ConnectedServer;
 
-public class MonitoringModule<SS extends ServerStatus, CS extends ConnectedServer>
+public class MonitoringModule
     extends AbstractModule {
 
     @Override
     protected void configure() {
+        installSpecialServices();
         bind(SmartExecutor.class).toProvider(SmartExecutorProvider.class).in(Singleton.class);
-
-        bind(new TypeLiteral<IConfigurationService<ServersConfig>>() {}).toInstance(ConfigurationService.getInstance());
 
         install(new MongoDbModule());
 
-        bind(new TypeLiteral<IConnectedServersState<ServerStatus, DatabaseServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
+        bind(JMXThreadDumpUtils.class).in(Singleton.class);
+    }
 
+    public void installSpecialServices() {
+        bind(new TypeLiteral<IConfigurationService<ServersConfig>>() {}).toInstance(ConfigurationService.getInstance());
         bind(new TypeLiteral<IMailService<ServerStatus>>() {}).to(StandardMailService.class).in(Singleton.class);
 
         bind(new TypeLiteral<IAlertService<ServerStatus>>() {}).to(StandardAlertService.class).in(Singleton.class);
 
         bind(new TypeLiteral<IJMXGeneralStats<ServerStatus>>() {}).to(JMXGeneralStats.class).in(Singleton.class);
 
+        bind(new TypeLiteral<IConnectedServersState<ServerStatus, DatabaseServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
+
         bind(IJMXConnectorThread.class).to(ServersConnectorThread.class).in(Singleton.class);
         bind(IStateUpdaterThread.class).to(StateUpdaterThread.class).in(Singleton.class);
         bind(IPeriodicalUpdater.class).to(PeriodicalUpdater.class).in(Singleton.class);
-
-        bind(JMXThreadDumpUtils.class).in(Singleton.class);
-
     }
 
 }

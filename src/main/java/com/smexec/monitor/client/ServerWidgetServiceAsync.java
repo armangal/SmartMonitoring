@@ -18,46 +18,27 @@ package com.smexec.monitor.client;
 import java.util.LinkedList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smexec.monitor.shared.ConnectedServer;
-import com.smexec.monitor.shared.ServerTimeResult;
-import com.smexec.monitor.shared.ServerWidgetRefresh;
-import com.smexec.monitor.shared.alert.Alert;
-import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
 import com.smexec.monitor.shared.runtime.ThreadDump;
+import com.smexec.monitor.shared.servers.ConnectedServer;
+import com.smexec.monitor.shared.servers.ServersRefreshRequest;
+import com.smexec.monitor.shared.servers.ServersRefreshResponse;
 
-public interface MonitoringServiceAsync<CC extends ClientConfigurations> {
-
-    void getServerWidgetRefresh(AsyncCallback<ServerWidgetRefresh> callback);
+public interface ServerWidgetServiceAsync
+    extends BasicMonitoringRefreshServiceAsync<ServersRefreshRequest, ServersRefreshResponse> {
 
     void getConnectedServer(Integer serverCode, AsyncCallback<ConnectedServer> callback);
-
-    void refresh(AsyncCallback<ServerTimeResult> callback);
 
     void getThreadDump(Integer serverCode, AsyncCallback<ThreadDump> callback);
 
     void getGCHistory(Integer serverCode, AsyncCallback<String> callback);
 
-    void authenticate(String userName, String password, AsyncCallback<Boolean> callback);
-
     void getMemoryStats(Integer serverCode, Integer chunks, AsyncCallback<LinkedList<MemoryUsage>> callback);
 
     void getCpuUsageHistory(Integer serverCode, Integer chunks, AsyncCallback<LinkedList<CpuUtilizationChunk>> callback);
 
-    void getClientConfigurations(AsyncCallback<CC> callback);
-
     void getRuntimeInfo(Integer serverCode, AsyncCallback<RuntimeInfo> callback);
-
-    void getSettingsXML(AsyncCallback<String> callback);
-
-    void saveSettingsXML(String xml, AsyncCallback<Boolean> callback);
-
-    void stopAlerts(boolean enable, AsyncCallback<Boolean> callback);
-
-    void getAlerts(final int lastAlertId, AsyncCallback<LinkedList<Alert>> callback);
-
-    void logout(AsyncCallback<Void> callback);
 
 }

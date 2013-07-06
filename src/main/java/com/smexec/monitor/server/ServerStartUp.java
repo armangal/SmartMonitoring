@@ -16,9 +16,6 @@
 package com.smexec.monitor.server;
 
 import java.io.InputStream;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContextEvent;
@@ -30,15 +27,14 @@ import org.smexec.SmartExecutor;
 import org.smexec.TaskMetadata;
 
 import com.google.inject.Inject;
+import com.smexec.monitor.server.constants.SmartPoolsMonitoring;
 import com.smexec.monitor.server.guice.GuiceUtils;
 import com.smexec.monitor.server.guice.MonitoringModule;
-import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.MailUpdaterConfig;
 import com.smexec.monitor.server.services.config.ConfigurationService;
 import com.smexec.monitor.server.tasks.IJMXConnectorThread;
 import com.smexec.monitor.server.tasks.IPeriodicalUpdater;
 import com.smexec.monitor.server.tasks.IStateUpdaterThread;
-import com.smexec.monitor.shared.ConnectedServer;
 import com.smexec.monitor.shared.config.Version;
 
 public class ServerStartUp
@@ -62,7 +58,7 @@ public class ServerStartUp
      * for extensions to override and initilize other module
      */
     public void initGuice() {
-        GuiceUtils.init(new MonitoringModule<ServerStatus, ConnectedServer>());
+        GuiceUtils.init(new MonitoringModule());
     }
 
     public void loadServerConfig() {

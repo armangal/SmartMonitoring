@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.smexec.monitor.server.model.config.MongoConfig.HostAddress;
-import com.smexec.monitor.shared.DatabaseType;
+import com.smexec.monitor.shared.servers.DatabaseType;
 
 //@XmlRootElement(name = "ServersConfig", namespace = "")
 @XmlAccessorType(XmlAccessType.FIELD)

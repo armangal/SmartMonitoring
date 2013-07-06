@@ -15,15 +15,9 @@
  */
 package com.smexec.monitor.client;
 
-import com.allen_sauer.gwt.log.client.Log;
-import com.smexec.monitor.shared.config.ClientConfigurations;
+import com.google.gwt.user.client.rpc.RemoteService;
 
-public class Smartmonitoring
-    extends AbstractEntryPoint<ClientConfigurations> {
+public interface BasicMonitoringService
+    extends RemoteService {
 
-    @SuppressWarnings("unchecked")
-    public Smartmonitoring() {
-        super(GeneralService.class);
-        Log.debug("Smartmonitoring created");
-    }
 }
