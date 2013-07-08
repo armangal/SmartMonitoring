@@ -28,6 +28,7 @@ import com.smexec.monitor.server.model.IConnectedServersState;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.server.services.config.IConfigurationService;
+import com.smexec.monitor.shared.errors.AuthenticationException;
 
 /**
  * The server side implementation of the monitoring RPC service.
@@ -53,23 +54,24 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, SC exte
 
     /**
      * @param admin - check if the user is admin
+     * @throws AuthenticationException 
      */
-    protected void checkAuthenticated(boolean admin) {
+    protected void checkAuthenticated(boolean admin) throws AuthenticationException {
         HttpSession session = getThreadLocalRequest().getSession();
         String auth = session.getAttribute(AUTHENTICATED).toString();
         if (auth == null || (!auth.equals("1") && !auth.equals("2"))) {
             logger.info("Session is not authenticated");
-            throw new SecurityException("Session not authenticated, please refresh the browser.");
+            throw new AuthenticationException("Session not authenticated, please refresh the browser.");
         }
 
         if (admin && !auth.equals("1")) {
             logger.info("Session is authenticated but not admin");
-            throw new SecurityException("Session is authenticated but not admin");
+            throw new AuthenticationException("Session is authenticated but not admin");
         }
 
         if (!admin && (!auth.equals("1") && !auth.equals("2"))) {
             logger.info("Session is authenticated but not admin");
-            throw new SecurityException("Session is authenticated but not admin");
+            throw new AuthenticationException("Session is authenticated but not admin");
         }
 
     }

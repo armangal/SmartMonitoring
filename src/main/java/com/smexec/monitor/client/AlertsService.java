@@ -18,6 +18,7 @@ package com.smexec.monitor.client;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.smexec.monitor.shared.alert.RefreshAlertsRequest;
 import com.smexec.monitor.shared.alert.RefreshAlertsResponse;
+import com.smexec.monitor.shared.errors.AuthenticationException;
 
 /**
  * The client side stub for the RPC service.
@@ -26,6 +27,6 @@ import com.smexec.monitor.shared.alert.RefreshAlertsResponse;
 public interface AlertsService
     extends BasicMonitoringRefreshService<RefreshAlertsRequest, RefreshAlertsResponse> {
 
-    Boolean stopAlerts(boolean enable);
+    Boolean stopAlerts(boolean enable) throws AuthenticationException;
 
 }

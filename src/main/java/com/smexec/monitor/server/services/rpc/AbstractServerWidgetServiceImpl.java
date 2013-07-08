@@ -29,6 +29,7 @@ import com.smexec.monitor.server.model.config.DatabaseConfig;
 import com.smexec.monitor.server.utils.IJMXGeneralStats;
 import com.smexec.monitor.server.utils.JMXThreadDumpUtils;
 import com.smexec.monitor.server.utils.ListUtils;
+import com.smexec.monitor.shared.errors.AuthenticationException;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
@@ -53,7 +54,7 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
     @Inject
     private IJMXGeneralStats<SS> jmxGeneralStats;
 
-    public ConnectedServer getConnectedServer(Integer serverCode) {
+    public ConnectedServer getConnectedServer(Integer serverCode) throws AuthenticationException {
         checkAuthenticated(false);
         ConnectedServer cs = getConnectedServersState().getConnectedServer(serverCode);
         if (cs == null) {
@@ -79,7 +80,7 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         return new ServersRefreshResponse(new Date().toString(), getConnectedServersState().getServers(), getDatabases());
     }
 
-    public ThreadDump getThreadDump(Integer serverCode) {
+    public ThreadDump getThreadDump(Integer serverCode) throws AuthenticationException {
         checkAuthenticated(true);
         SS ss = getConnectedServersState().getServerStataus(serverCode);
         if (ss == null || !ss.isConnected()) {
@@ -91,7 +92,7 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         }
     }
 
-    public String getGCHistory(Integer serverCode) {
+    public String getGCHistory(Integer serverCode) throws AuthenticationException {
         checkAuthenticated(false);
         SS serverStataus = getConnectedServersState().getServerStataus(serverCode);
         if (serverStataus != null) {
@@ -101,7 +102,7 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         }
     }
 
-    public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks) {
+    public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks) throws AuthenticationException {
         checkAuthenticated(false);
         SS serverStataus = getConnectedServersState().getServerStataus(serverCode);
         if (serverStataus != null) {
@@ -113,7 +114,7 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         return null;
     }
 
-    public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks) {
+    public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks) throws AuthenticationException {
         checkAuthenticated(false);
         SS serverStataus = getConnectedServersState().getServerStataus(serverCode);
         if (serverStataus != null) {
@@ -124,7 +125,7 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         return null;
     }
 
-    public RuntimeInfo getRuntimeInfo(Integer serverCode) {
+    public RuntimeInfo getRuntimeInfo(Integer serverCode) throws AuthenticationException {
         checkAuthenticated(false);
         SS serverStataus = getConnectedServersState().getServerStataus(serverCode);
         if (serverStataus != null && serverStataus.isConnected()) {

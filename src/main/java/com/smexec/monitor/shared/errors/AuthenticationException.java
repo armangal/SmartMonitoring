@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smexec.monitor.client;
+package com.smexec.monitor.shared.errors;
 
-import com.smexec.monitor.shared.errors.AuthenticationException;
+import java.io.Serializable;
 
-public interface BasicMonitoringRefreshService<RQ extends AbstractRefreshRequest, RS extends AbstractRefreshResponse>
-    extends BasicMonitoringService {
+public class AuthenticationException
+    extends Exception
+    implements Serializable {
 
-    /**
-     * All widgets should work with build in refresh mechanism, this interface should provide fresh data from
-     * server.
-     * 
-     * @param request
-     * @return
-     */
-    RS refresh(RQ request)
-        throws AuthenticationException;
+    private static final long serialVersionUID = 1L;
+
+    public AuthenticationException() {}
+
+    public AuthenticationException(String message) {
+        super(message);
+    }
 
 }

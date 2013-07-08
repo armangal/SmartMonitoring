@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.FontWeight;
@@ -120,7 +121,7 @@ public class ServersWidget<CC extends ClientConfigurations>
     private Label serversLabel = new Label("Servers");
 
     public ServersWidget() {
-        super("Servers", 20000, ServerWidgetService.class);
+        super("Servers", 20000, (ServerWidgetServiceAsync) GWT.create(ServerWidgetService.class));
 
         addStyleName("serversWidget");
         serversList.setStyleName("serversWidgetInternal");

@@ -18,6 +18,7 @@ package com.smexec.monitor.client;
 import java.util.LinkedList;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.smexec.monitor.shared.errors.AuthenticationException;
 import com.smexec.monitor.shared.runtime.CpuUtilizationChunk;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.RuntimeInfo;
@@ -33,16 +34,22 @@ import com.smexec.monitor.shared.servers.ServersRefreshResponse;
 public interface ServerWidgetService
     extends BasicMonitoringRefreshService<ServersRefreshRequest, ServersRefreshResponse> {
 
-    ConnectedServer getConnectedServer(Integer serverCode);
+    ConnectedServer getConnectedServer(Integer serverCode)
+        throws AuthenticationException;
 
-    ThreadDump getThreadDump(Integer serverCode);
+    ThreadDump getThreadDump(Integer serverCode)
+        throws AuthenticationException;
 
-    String getGCHistory(Integer serverCode);
+    String getGCHistory(Integer serverCode)
+        throws AuthenticationException;
 
-    LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks);
+    LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks)
+        throws AuthenticationException;
 
-    LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks);
+    LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks)
+        throws AuthenticationException;
 
-    RuntimeInfo getRuntimeInfo(Integer serverCode);
+    RuntimeInfo getRuntimeInfo(Integer serverCode)
+        throws AuthenticationException;
 
 }

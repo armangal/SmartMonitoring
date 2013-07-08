@@ -17,6 +17,7 @@ package com.smexec.monitor.client;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.smexec.monitor.shared.ServerTimeResult;
+import com.smexec.monitor.shared.errors.AuthenticationException;
 
 /**
  * The client side stub for the RPC service.
@@ -25,13 +26,16 @@ import com.smexec.monitor.shared.ServerTimeResult;
 public interface GeneralService
     extends BasicMonitoringService {
 
-    ServerTimeResult refresh();
+    ServerTimeResult refresh()
+        throws AuthenticationException;
 
     Boolean authenticate(String userName, String password);
 
-    String getSettingsXML();
+    String getSettingsXML()
+        throws AuthenticationException;
 
-    Boolean saveSettingsXML(String xml);
+    Boolean saveSettingsXML(String xml)
+        throws AuthenticationException;
 
     void logout();
 }

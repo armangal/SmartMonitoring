@@ -63,6 +63,7 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
     final FlowPanel mainPanel = new FlowPanel();
 
     private CC clientConfigurations;
+    private String loggedInUser;
 
     final Image refreshImg = new Image(resources.stopRefresh());
     final Image alertImg = new Image(resources.stopAlerts());
@@ -120,7 +121,7 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
             Log.debug("Server time:" + fullResult.toString());
 
             mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime()
-                                    + ")</h1>");
+                                    + "), User:"+ loggedInUser +"</h1>");
             // mainHeader.add(mainHeaderLabel);
 
         }
@@ -175,9 +176,10 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
         this.loginWidget.registerCallBack(new LoggedInCallBack<CC>() {
 
             @Override
-            public void loggedIn(CC cc) {
+            public void loggedIn(final CC cc, final String loggedInUser) {
                 try {
-                    clientConfigurations = cc;
+                    AbstractEntryPoint.this.clientConfigurations = cc;
+                    AbstractEntryPoint.this.loggedInUser = loggedInUser;
 
                     registerWidgets();
 

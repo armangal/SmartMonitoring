@@ -24,6 +24,7 @@ import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.shared.ServerTimeResult;
+import com.smexec.monitor.shared.errors.AuthenticationException;
 
 /**
  * The server side implementation of the monitoring RPC service.
@@ -33,7 +34,7 @@ public abstract class AbstractGeneralServiceImpl<SS extends ServerStatus, SC ext
     extends AbstractMonitoringService<SS, SC, DS>
     implements GeneralService {
 
-    public ServerTimeResult refresh() {
+    public ServerTimeResult refresh() throws AuthenticationException {
         checkAuthenticated(false);
 
         return new ServerTimeResult();
@@ -78,7 +79,7 @@ public abstract class AbstractGeneralServiceImpl<SS extends ServerStatus, SC ext
         }
     }
 
-    public Boolean saveSettingsXML(String xml) {
+    public Boolean saveSettingsXML(String xml) throws AuthenticationException {
         try {
             checkAuthenticated(true);
             logger.info("About to save xml:{}", xml);

@@ -27,6 +27,7 @@ import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.RefreshAlertsRequest;
 import com.smexec.monitor.shared.alert.RefreshAlertsResponse;
+import com.smexec.monitor.shared.errors.AuthenticationException;
 
 /**
  * The server side implementation of the monitoring RPC service.
@@ -40,7 +41,8 @@ public abstract class AbstractAlertsServiceImpl<SS extends ServerStatus, SC exte
     private IAlertService<SS> alertService;
 
     @Override
-    public RefreshAlertsResponse refresh(RefreshAlertsRequest request) {
+    public RefreshAlertsResponse refresh(RefreshAlertsRequest request)
+        throws AuthenticationException {
         checkAuthenticated(false);
         logger.info("GetAlerts Request: alertId:{}", request);
         LinkedList<Alert> alertsAfter = getAlertService().getAlertsAfter(request.getLastAlertId(), 1000);
@@ -52,7 +54,8 @@ public abstract class AbstractAlertsServiceImpl<SS extends ServerStatus, SC exte
         return alertService;
     }
 
-    public Boolean stopAlerts(boolean enable) {
+    public Boolean stopAlerts(boolean enable)
+        throws AuthenticationException {
         checkAuthenticated(true);
         return getConfigurationService().stopAlerts(enable);
     }

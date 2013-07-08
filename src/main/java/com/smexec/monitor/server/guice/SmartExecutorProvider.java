@@ -34,6 +34,6 @@ public class SmartExecutorProvider
     }
 
     public String getSmartExecutorConfFileLocation() {
-        return "/com/smexec/monitor/SmartExecutor-monitoring.xml";
+        return "com/smexec/monitor/SmartExecutor-monitoring.xml";
     }
 }

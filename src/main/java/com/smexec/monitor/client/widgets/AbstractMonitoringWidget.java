@@ -18,7 +18,6 @@ package com.smexec.monitor.client.widgets;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -32,7 +31,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.AbstractRefreshRequest;
 import com.smexec.monitor.client.AbstractRefreshResponse;
-import com.smexec.monitor.client.BasicMonitoringRefreshService;
 import com.smexec.monitor.client.BasicMonitoringRefreshServiceAsync;
 
 public abstract class AbstractMonitoringWidget<RQ extends AbstractRefreshRequest, RS extends AbstractRefreshResponse, SR extends BasicMonitoringRefreshServiceAsync<RQ, RS>>
@@ -134,9 +132,9 @@ public abstract class AbstractMonitoringWidget<RQ extends AbstractRefreshRequest
      * @param name - the name of the widget
      * @param refreshDelay - referesh rate in ms.
      */
-    public <T extends BasicMonitoringRefreshService<RQ, RS>> AbstractMonitoringWidget(final String name, final int refreshDelay, Class<T> serviceClass) {
+    public AbstractMonitoringWidget(final String name, final int refreshDelay, SR service) {
         this.name = name;
-        this.service = GWT.create(serviceClass);
+        this.service = service;
         header.setStyleName("header");
         Image img = new Image();
         img.setUrl("img/header-icon.png");

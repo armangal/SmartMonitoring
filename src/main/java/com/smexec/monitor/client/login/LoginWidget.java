@@ -51,7 +51,7 @@ public class LoginWidget<CC extends ClientConfigurations>
 
     public interface LoggedInCallBack<CC> {
 
-        void loggedIn(CC cc);
+        void loggedIn(final CC cc, final String loggedInUser);
     }
 
     private final GeneralServiceAsync service = GWT.create(GeneralService.class);
@@ -168,7 +168,7 @@ public class LoginWidget<CC extends ClientConfigurations>
                         Cookies.removeCookie(SSIU);
                         Cookies.removeCookie(SSICH);
                     }
-                    callBack.loggedIn(cc);
+                    callBack.loggedIn(cc, userName.getText().trim());
                 } else {
                     errorMsg.setText("Can't login, try again.");
                 }

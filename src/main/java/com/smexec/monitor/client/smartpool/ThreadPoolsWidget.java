@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -78,7 +79,7 @@ public class ThreadPoolsWidget
      * 
      */
     public ThreadPoolsWidget() {
-        super("Thread Pools", 20000, SmartExecutorService.class);
+        super("Thread Pools", 20000, (SmartExecutorServiceAsync) GWT.create(SmartExecutorService.class));
         addStyleName("threadPoolsWidget");
         getDataPanel().add(fp);
         fp.add(poolWidget);

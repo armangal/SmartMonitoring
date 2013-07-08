@@ -58,7 +58,7 @@ public class AlertsWidget<CC extends ClientConfigurations>
     private LinkedList<Alert> alerts = new LinkedList<Alert>();
 
     public AlertsWidget(IAlertType[]... types) {
-        super("Alerts:", 20000, AlertsService.class);
+        super("Alerts:", 20000, (AlertsServiceAsync) GWT.create(AlertsService.class));
         for (IAlertType[] arr : types) {
             for (IAlertType at : arr) {
                 alertTypesList.add(at);
