@@ -17,6 +17,7 @@ package com.smexec.monitor.server.services.config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
 
@@ -40,6 +41,8 @@ public interface IConfigurationService<SC extends AbstractServersConfig> {
     void loadServersConfig(boolean toStopServer);
 
     Boolean stopAlerts(boolean enable);
+    
+    Date getStopAlertsStartDate();
     
     int authenticate(final String userName, final String password);
 

@@ -90,14 +90,7 @@ public abstract class AlertService<SS extends ServerStatus, SC extends AbstractS
         return alerts;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * com.smexec.monitor.server.services.alert.IAlertService#addAlert(com.smexec.monitor.shared.alert.Alert,
-     * SS)
-     */
-    @Override
-    public void addAlert(Alert alert, SS ss) {
+    private void addAlert(Alert alert, SS ss) {
         try {
             alert.setId(alertCounter.getAndIncrement());
             boolean mailSent = false;
@@ -124,9 +117,11 @@ public abstract class AlertService<SS extends ServerStatus, SC extends AbstractS
      * java.lang.String, int, java.lang.String, long, com.smexec.monitor.shared.alert.IAlertType)
      */
     @Override
-    public Alert createAlert(String message, String details, int serverCode, String serverName, long alertTime, IAlertType alertType) {
+    public Alert createAndAddAlert(String message, String details, int serverCode, String serverName, long alertTime, IAlertType alertType, SS serverStatus) {
         SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return new Alert(message, details, serverCode, serverName, alertTime, DATE_FORMAT.format(new Date(alertTime)), alertType);
+        Alert alert = new Alert(message, details, serverCode, serverName, alertTime, DATE_FORMAT.format(new Date(alertTime)), alertType);
+        addAlert(alert, serverStatus);
+        return alert;
 
     }
 

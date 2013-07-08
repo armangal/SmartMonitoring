@@ -56,7 +56,6 @@ import com.smexec.monitor.server.dao.entities.ServerStatsEntity;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.services.alert.IAlertService;
 import com.smexec.monitor.server.services.persistence.IPersistenceService;
-import com.smexec.monitor.shared.alert.Alert;
 import com.smexec.monitor.shared.alert.AlertType;
 import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryState;
@@ -170,37 +169,37 @@ public abstract class AbstractJMXGeneralStats<SS extends ServerStatus>
             if ((usage > serverStataus.getServerGroup().getNotHeapMemorySpaceUsage() && !ms.isHeap())
                 || (usage > serverStataus.getServerGroup().getHeapMemorySpaceUsage() && ms.isHeap())) {
 
-                Alert alert = alertService.createAlert("MemorySpace: " + ms.getName() + " usage:" + DECIMAL_FORMAT.format(usage) + "%",
-                                                       ms.toString(),
-                                                       serverStataus.getServerConfig().getServerCode(),
-                                                       serverStataus.getServerConfig().getName(),
-                                                       new Date().getTime(),
-                                                       AlertType.MEMORY_SPACE);
-                alertService.addAlert(alert, serverStataus);
+                alertService.createAndAddAlert("MemorySpace: " + ms.getName() + " usage:" + DECIMAL_FORMAT.format(usage) + "%",
+                                               ms.toString(),
+                                               serverStataus.getServerConfig().getServerCode(),
+                                               serverStataus.getServerConfig().getName(),
+                                               new Date().getTime(),
+                                               AlertType.MEMORY_SPACE,
+                                               serverStataus);
             }
         }
         // check the groups settings
         if (mu.getPercentage() > serverStataus.getServerGroup().getMemoryUsage()) {
-            Alert alert = alertService.createAlert("Memory Usage: " + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
-                                                   mu.toString(),
-                                                   serverStataus.getServerConfig().getServerCode(),
-                                                   serverStataus.getServerConfig().getName(),
-                                                   new Date().getTime(),
-                                                   AlertType.MEMORY);
-            alertService.addAlert(alert, serverStataus);
+            alertService.createAndAddAlert("Memory Usage: " + DECIMAL_FORMAT.format(mu.getPercentage()) + "%",
+                                           mu.toString(),
+                                           serverStataus.getServerConfig().getServerCode(),
+                                           serverStataus.getServerConfig().getName(),
+                                           new Date().getTime(),
+                                           AlertType.MEMORY,
+                                           serverStataus);
         }
 
         List<GCHistory> gcHistoryList = getGcHistory(gcmbeans);
         for (GCHistory gch : gcHistoryList) {
             long lastColleactionTime = serverStataus.updateGCHistory(gch);
             if (lastColleactionTime > serverStataus.getServerGroup().getGcTime()) {
-                Alert alert = alertService.createAlert("GC took tool long: " + lastColleactionTime + " ms",
-                                                       "",
-                                                       serverStataus.getServerConfig().getServerCode(),
-                                                       serverStataus.getServerConfig().getName(),
-                                                       new Date().getTime(),
-                                                       AlertType.GC);
-                alertService.addAlert(alert, serverStataus);
+                alertService.createAndAddAlert("GC took tool long: " + lastColleactionTime + " ms",
+                                               "",
+                                               serverStataus.getServerConfig().getServerCode(),
+                                               serverStataus.getServerConfig().getName(),
+                                               new Date().getTime(),
+                                               AlertType.GC,
+                                               serverStataus);
             }
         }
 
@@ -213,13 +212,13 @@ public abstract class AbstractJMXGeneralStats<SS extends ServerStatus>
 
         // check the groups settings
         if (load > serverStataus.getServerGroup().getCpuLoad()) {
-            Alert alert = alertService.createAlert("CPU Alert:" + DECIMAL_FORMAT.format(load) + "%",
-                                                   "",
-                                                   serverStataus.getServerConfig().getServerCode(),
-                                                   serverStataus.getServerConfig().getName(),
-                                                   new Date().getTime(),
-                                                   AlertType.CPU);
-            alertService.addAlert(alert, serverStataus);
+            alertService.createAndAddAlert("CPU Alert:" + DECIMAL_FORMAT.format(load) + "%",
+                                           "",
+                                           serverStataus.getServerConfig().getServerCode(),
+                                           serverStataus.getServerConfig().getName(),
+                                           new Date().getTime(),
+                                           AlertType.CPU,
+                                           serverStataus);
         }
 
         persistenceService.saveServerStat(new ServerStatsEntity(executionDate.getTime(),

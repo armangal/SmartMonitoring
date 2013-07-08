@@ -24,20 +24,39 @@ public class ServerTimeResult
     private static final long serialVersionUID = 1L;
 
     private String serverTime;
+    private boolean alertsEnabled;
+    private int timeLeftForAutoEnable;
 
-    public ServerTimeResult() {
+    public ServerTimeResult() {}
+
+    public ServerTimeResult(boolean alertsEnabled, int timeLeftForAutoEnable) {
         this.serverTime = new Date().toString();
-
+        this.alertsEnabled = alertsEnabled;
+        this.timeLeftForAutoEnable = timeLeftForAutoEnable;
     }
 
     public String getServerTime() {
         return serverTime;
     }
 
+    public int getTimeLeftForAutoEnable() {
+        return timeLeftForAutoEnable;
+    }
+
+    public boolean isAlertsEnabled() {
+        return alertsEnabled;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("[ServerTime [serverTime:").append(serverTime).append("]");
+        builder.append("ServerTimeResult [serverTime=")
+               .append(serverTime)
+               .append(", alertsEnabled=")
+               .append(alertsEnabled)
+               .append(", timeLeftForAutoEnable=")
+               .append(timeLeftForAutoEnable)
+               .append("]");
         return builder.toString();
     }
 

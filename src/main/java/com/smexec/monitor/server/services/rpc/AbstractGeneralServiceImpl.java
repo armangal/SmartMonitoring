@@ -34,10 +34,16 @@ public abstract class AbstractGeneralServiceImpl<SS extends ServerStatus, SC ext
     extends AbstractMonitoringService<SS, SC, DS>
     implements GeneralService {
 
-    public ServerTimeResult refresh() throws AuthenticationException {
+    public ServerTimeResult refresh()
+        throws AuthenticationException {
         checkAuthenticated(false);
 
-        return new ServerTimeResult();
+        int tillAutoEnable = 0;
+        Boolean enabled = getConfigurationService().getServersConfig().getAlertsConfig().isEnabled();
+        if (getConfigurationService().getStopAlertsStartDate() != null && !enabled) {
+            tillAutoEnable = (int) ((System.currentTimeMillis() - getConfigurationService().getStopAlertsStartDate().getTime()) / 1000 / 60);
+        }
+        return new ServerTimeResult(enabled, tillAutoEnable);
     }
 
     public Boolean authenticate(String userName, String password) {
@@ -79,7 +85,8 @@ public abstract class AbstractGeneralServiceImpl<SS extends ServerStatus, SC ext
         }
     }
 
-    public Boolean saveSettingsXML(String xml) throws AuthenticationException {
+    public Boolean saveSettingsXML(String xml)
+        throws AuthenticationException {
         try {
             checkAuthenticated(true);
             logger.info("About to save xml:{}", xml);

@@ -90,20 +90,6 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
         }
     };
 
-    private RepeatingCommand alertBlick = new RepeatingCommand() {
-
-        @Override
-        public boolean execute() {
-            if ("2".equals(alertImg.getElement().getAttribute("state"))) {
-                Style style = alertImg.getElement().getStyle();
-                style.setColor(style.getColor().equals("red") ? "blue" : "red");
-                return true;
-            } else {
-                return false;
-            }
-        }
-    };
-
     private AsyncCallback<ServerTimeResult> refreshCallback = new AsyncCallback<ServerTimeResult>() {
 
         int errorCount = 0;
@@ -121,8 +107,11 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
             Log.debug("Server time:" + fullResult.toString());
 
             mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + " (" + fullResult.getServerTime()
-                                    + "), User:"+ loggedInUser +"</h1>");
+                                    + "), User:" + loggedInUser + "</h1>");
             // mainHeader.add(mainHeaderLabel);
+
+            alertImg.getElement().setAttribute("state", fullResult.isAlertsEnabled() ? "2" : "1");
+            alertButtonClicked(fullResult.isAlertsEnabled() ? "2" : "1", fullResult.getTimeLeftForAutoEnable());
 
         }
 
@@ -195,7 +184,7 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
                     Scheduler.get().scheduleFixedDelay(refreshCommand, GWT.isProdMode() ? 60000 : 20000);
 
                     alertImg.getElement().setAttribute("state", cc.isAlertsEnabled() ? "2" : "1");
-                    alertButtonClicked(cc.isAlertsEnabled() ? "2" : "1");
+                    alertButtonClicked(cc.isAlertsEnabled() ? "2" : "1", 0);
 
                     mainHeaderLabel.setHTML("<h1>" + clientConfigurations.getTitle() + ", v:" + clientConfigurations.getVersion() + "</h1>");
 
@@ -274,7 +263,7 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
             @Override
             public void onClick(ClickEvent event) {
                 String attribute = alertImg.getElement().getAttribute("state");
-                alertButtonClicked(attribute);
+                alertButtonClicked(attribute, 0);
                 alertsService.stopAlerts("2".equals(attribute), new AsyncCallback<Boolean>() {
 
                     @Override
@@ -359,15 +348,14 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
         return refreshCallback;
     }
 
-    private void alertButtonClicked(String attribute) {
+    private void alertButtonClicked(String attribute, int timeLeft) {
         Style style = alertImg.getElement().getStyle();
         if ("1".equals(attribute)) {
             alertImg.getElement().setAttribute("state", "2");
             style.setColor("red");
             style.setFontWeight(FontWeight.BOLDER);
-            alertImg.setTitle("Continue Alerts");
+            alertImg.setTitle("Continue Alerts, time left for auto-enable: " + timeLeft + " min.");
             alertImg.setResource(resources.continueAlerts());
-            Scheduler.get().scheduleFixedDelay(alertBlick, 1500);
         } else {
             alertImg.getElement().setAttribute("state", "1");
             style.setColor("black");

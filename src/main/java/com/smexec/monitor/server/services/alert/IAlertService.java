@@ -37,12 +37,8 @@ public interface IAlertService<SS extends ServerStatus> {
      * Use it to add alert message to local storage. <br>
      * Message will be communicated later to client. <br>
      * Email alerts are sent as well if applicable.
-     * 
-     * @param alert
      */
-    void addAlert(Alert alert, SS ss);
-
-    Alert createAlert(String message, String details, int serverCode, String serverName, long alertTime, IAlertType alertType);
+    Alert createAndAddAlert(String message, String details, int serverCode, String serverName, long alertTime, IAlertType alertType, SS serverStatus);
 
     LinkedList<Alert> getAlertsList();
 

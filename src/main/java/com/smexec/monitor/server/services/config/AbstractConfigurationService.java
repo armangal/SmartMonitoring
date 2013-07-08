@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -46,6 +47,11 @@ public abstract class AbstractConfigurationService<SC extends AbstractServersCon
      * reference to current most up-to-date configurations
      */
     private static AbstractServersConfig serversConfig;
+
+    /**
+     * when last time alert was disables
+     */
+    private Date stopAlertsStartDate;
 
     public AbstractConfigurationService() {
 
@@ -159,7 +165,15 @@ public abstract class AbstractConfigurationService<SC extends AbstractServersCon
     @Override
     public Boolean stopAlerts(boolean enable) {
         serversConfig.getAlertsConfig().setEnabled(enable);
+        if (!enable) {
+            stopAlertsStartDate = new Date();
+        }
         return serversConfig.getAlertsConfig().isEnabled();
+    }
+    
+    
+    public Date getStopAlertsStartDate() {
+        return stopAlertsStartDate;
     }
 
     @Override

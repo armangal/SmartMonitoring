@@ -17,9 +17,16 @@ package com.smexec.monitor.server.services.rpc;
 
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.smexec.SmartExecutor;
+import org.smexec.TaskMetadata;
 
 import com.google.inject.Inject;
 import com.smexec.monitor.client.AlertsService;
+import com.smexec.monitor.server.constants.SmartPoolsMonitoring;
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.model.ServerStatus;
 import com.smexec.monitor.server.model.config.AbstractServersConfig;
@@ -37,8 +44,13 @@ public abstract class AbstractAlertsServiceImpl<SS extends ServerStatus, SC exte
     extends AbstractMonitoringService<SS, SC, DS>
     implements AlertsService {
 
+    private static ScheduledFuture<Boolean> alertEnablerFuture;
+
     @Inject
     private IAlertService<SS> alertService;
+
+    @Inject
+    private SmartExecutor smartExecutor;
 
     @Override
     public RefreshAlertsResponse refresh(RefreshAlertsRequest request)
@@ -56,8 +68,37 @@ public abstract class AbstractAlertsServiceImpl<SS extends ServerStatus, SC exte
 
     public Boolean stopAlerts(boolean enable)
         throws AuthenticationException {
+
         checkAuthenticated(true);
+        if (getConfigurationService().getServersConfig().getAlertsConfig().isEnabled() && !enable) {
+            // not enabled and we want to turn it off, schedule time for next 30 min that will re-enable the
+            // alerts
+            if (alertEnablerFuture != null) {
+                alertEnablerFuture.cancel(true);
+            }
+            alertEnablerFuture = smartExecutor.schedule(new AlertEnabler(),
+                                                        30,
+                                                        TimeUnit.MINUTES,
+                                                        TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "ALRT_ENB", "ALRT_ENB"));
+        }
+        if (!getConfigurationService().getServersConfig().getAlertsConfig().isEnabled() && enable) {
+            if (alertEnablerFuture != null) {
+                alertEnablerFuture.cancel(true);
+            }
+        }
         return getConfigurationService().stopAlerts(enable);
+    }
+
+    class AlertEnabler
+        implements Callable<Boolean> {
+
+        @Override
+        public Boolean call()
+            throws Exception {
+            logger.info("Re-Enabling alerts");
+            getConfigurationService().stopAlerts(true);
+            return true;
+        }
     }
 
 }
