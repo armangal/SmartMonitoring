@@ -15,9 +15,7 @@
  */
 package com.smexec.monitor.server.tasks.impl;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
@@ -35,15 +33,8 @@ public class DbRefresher<DS extends DatabaseServer>
 
     private DS ds;
 
-    private PreparedStatement ps;
-
     public DbRefresher(DS ds) {
         this.ds = ds;
-        try {
-            ps = ds.getConnection().prepareStatement(ds.getDatabaseConfig().getPingStatement());
-        } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
-        }
     }
 
     @Override
@@ -76,18 +67,18 @@ public class DbRefresher<DS extends DatabaseServer>
         try {
             long pingTime = System.currentTimeMillis();
 
-            ResultSet rs = ps.executeQuery();
+            ResultSet rs = ds.getPingPs().executeQuery();
             try {
                 rs.next();
                 pingTime = (System.currentTimeMillis() - pingTime);
                 logger.info("DB_Ping date:{} time:{}", rs.getDate(1), pingTime);
             } finally {
-                SQLUtils.closeStatement(ps);
                 SQLUtils.closeResultSet(rs);
             }
             ds.addPing(pingTime);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            ds.closePingPs();
         }
     }
 

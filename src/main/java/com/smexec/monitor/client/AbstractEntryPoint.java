@@ -53,7 +53,7 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
     /**
      * Create a remote service proxy to talk to the server-side service.
      */
-    private final GeneralServiceAsync service;
+    private GeneralServiceAsync service;
     private final AlertsServiceAsync alertsService = GWT.create(AlertsService.class);
 
     private final LoginWidget<CC> loginWidget;
@@ -166,8 +166,11 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
         return GWT.create(ConfigurationService.class);
     }
 
-    public <T extends GeneralService> AbstractEntryPoint(Class<T> serviceClass) {
-        this.service = GWT.create(serviceClass);
+    public void setService(GeneralServiceAsync service) {
+        this.service = service;
+    }
+
+    public AbstractEntryPoint() {
         this.loginWidget = new LoginWidget<CC>(getConfigurationService());
         this.loginWidget.registerCallBack(new LoggedInCallBack<CC>() {
 

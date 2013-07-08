@@ -16,6 +16,7 @@
 package com.smexec.monitor.server.model;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.smexec.monitor.server.model.config.DatabaseConfig;
 import com.smexec.monitor.server.utils.DateUtils;
+import com.smexec.monitor.server.utils.SQLUtils;
 import com.smexec.monitor.shared.servers.DbPingChunk;
 
 public class DatabaseServer {
@@ -33,6 +35,7 @@ public class DatabaseServer {
 
     private DatabaseConfig databaseConfig;
     private Connection connection;
+    private PreparedStatement pingPs;
 
     private LinkedList<DbPingChunk> pings = new LinkedList<DbPingChunk>();
 
@@ -84,5 +87,21 @@ public class DatabaseServer {
         if (pings.size() > 3 * 60 * 24) {
             pings.remove();
         }
+    }
+
+    public PreparedStatement getPingPs() {
+        try {
+            if (pingPs == null) {
+                pingPs = getConnection().prepareStatement(getDatabaseConfig().getPingStatement());
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return pingPs;
+    }
+
+    public void closePingPs() {
+        SQLUtils.closeStatement(pingPs);
+        pingPs = null;
     }
 }

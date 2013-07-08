@@ -16,14 +16,17 @@
 package com.smexec.monitor.client;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.core.client.GWT;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 
 public class Smartmonitoring
     extends AbstractEntryPoint<ClientConfigurations> {
 
-    @SuppressWarnings("unchecked")
     public Smartmonitoring() {
-        super(GeneralService.class);
+        super();
+        GeneralServiceAsync service = GWT.create(GeneralService.class);
+        setService(service);
+
         Log.debug("Smartmonitoring created");
     }
 }
