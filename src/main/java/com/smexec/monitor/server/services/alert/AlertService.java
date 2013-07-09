@@ -101,7 +101,7 @@ public abstract class AlertService<SS extends ServerStatus, SC extends AbstractS
             logger.warn("Alert added:{}", alert);
             synchronized (alertsList) {
                 alertsList.add(alert);
-                if (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {
+                while (alertsList.size() > configurationService.getMaxInMemoryAlerts()) {
                     alertsList.remove();
                 }
                 persistenceService.saveAlert(alert, mailSent);

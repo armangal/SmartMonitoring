@@ -45,12 +45,12 @@ public class DateUtils {
         return sec;
     }
 
-    
     public void test() {
         for (int i = 0; i < 60; i++) {
             System.out.println("i=" + i + ", r=" + roundSec(i));
         }
-        
-        System.out.println(new Date(1364300594874L +70926603L ));
+
+        System.out.println(new Date(1364300594874L + 70926603L));
     }
+
 }

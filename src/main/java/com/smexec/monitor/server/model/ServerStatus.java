@@ -149,7 +149,7 @@ public class ServerStatus {
         MemoryUsage mu = new MemoryUsage(init, used, committed, max, DateUtils.roundDate(new Date()), memoryState);
         this.memoryState = memoryState.toString();
         memoryUsage.add(mu);
-        if (memoryUsage.size() > systemHistoryToKeep) {
+        while (memoryUsage.size() > systemHistoryToKeep) {
             memoryUsage.remove();
         }
         return mu;

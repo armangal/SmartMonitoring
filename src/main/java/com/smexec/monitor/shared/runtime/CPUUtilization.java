@@ -49,7 +49,7 @@ public class CPUUtilization
         this.lastMeasurement = lastMeasurementAfter;
         this.lastMeasureTime = lastMeasureTimeAfter;
         list.add(new CpuUtilizationChunk(percent, systemLoadAverage, DateUtils.roundDate(new Date())));
-        if (list.size() > systemHistoryToKeep) {
+        while (list.size() > systemHistoryToKeep) {
             list.remove();
         }
 

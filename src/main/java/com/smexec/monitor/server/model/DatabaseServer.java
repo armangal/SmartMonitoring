@@ -84,7 +84,7 @@ public class DatabaseServer {
     public void addPing(long pingTime) {
         pings.add(new DbPingChunk(pingTime, DateUtils.roundDate(new Date())));
 
-        if (pings.size() > 3 * 60 * 24) {
+        while (pings.size() > 3 * 60 * 24) {
             pings.remove();
         }
     }
