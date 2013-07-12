@@ -19,10 +19,9 @@ import org.smexec.IPoolName;
 
 public enum SmartPoolsMonitoring implements IPoolName {
 
-    DEFAULT("default"),//
+    GENERAL("GENERAL"),//
     CONNECTOR("CONNECTOR"),//
-    CACHED("Cached"),//
-    REFERSHER("Refresher");
+    REFERSHER("REFRESHER");
 
     private String name;
 

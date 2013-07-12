@@ -168,28 +168,31 @@ public abstract class AbstractServersConnectorThread<SS extends ServerStatus, SC
                         }
                     }
                     // reconnect or make first connection attempt
+                    logger.info("Configured server:{} was found disconnected, scheduling reconnection attempt.", sc);
                     smartExecutor.execute(new Connector(sc),
-                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CACHED, "CONN_" + sc.getName(), "CC_" + sc.getName()));
+                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "CONN_" + sc.getName(), "CC_" + sc.getName()));
                 }
             }
 
-            logger.info("JMX Connection loop finished, Starting database");
+            logger.info("JMX Connection watchdog loop finished, Starting database check.");
 
             for (DatabaseConfig dc : serversConfig.getDatabases()) {
                 DS ds = connectedServersState.getDatabaseServer(dc.getName());
                 if (ds == null || !ds.isConnected()) {
                     // connect
+                    logger.info("DB server: {} was found disconnected, scheduling reconnection task", dc);
                     smartExecutor.execute(new DbConnector(dc),
-                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CACHED, "CONN_DB_" + dc.getName(), "DC_" + dc.getName()));
+                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "CONN_DB_" + dc.getName(), "DC_" + dc.getName()));
                 } else if (!ds.getDatabaseConfig().getUser().equals(dc.getUser())) {
                     // settings changed username, reconnect
                     try {
+                        logger.info("User name for DB:{} chenaged, reconnecting.", dc);
                         ds.getConnection().close();
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }
                     smartExecutor.execute(new DbConnector(dc),
-                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CACHED, "CONN_DB_" + dc.getName(), "DC_" + dc.getName()));
+                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "CONN_DB_" + dc.getName(), "DC_" + dc.getName()));
                 }
             }
 

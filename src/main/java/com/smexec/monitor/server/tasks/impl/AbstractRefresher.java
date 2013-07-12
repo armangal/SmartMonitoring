@@ -35,10 +35,10 @@ import com.smexec.monitor.server.utils.JMXSmartExecutorStats;
  * 
  * @author armang
  */
-public class Refresher<SS extends ServerStatus>
+public abstract class AbstractRefresher<SS extends ServerStatus>
     implements Callable<SS>, ITaskIdentification, IThreadNameSuffixAware {
 
-    private static Logger logger = LoggerFactory.getLogger("Refresher");
+    private static Logger logger = LoggerFactory.getLogger("AbstractRefresher");
 
     @Inject
     private IJMXGeneralStats<SS> jmxGeneralStats;
@@ -49,7 +49,7 @@ public class Refresher<SS extends ServerStatus>
     private Date executionDate;
     private int excutionNumber;
 
-    public Refresher(SS ss, Date executionDate, int excutionNumber) {
+    public AbstractRefresher(SS ss, Date executionDate, int excutionNumber) {
         this.ss = ss;
         this.excutionNumber = excutionNumber;
         this.executionDate = executionDate;

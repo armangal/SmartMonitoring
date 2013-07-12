@@ -49,24 +49,25 @@ public class MonitoringModule
         installSpecialServices();
         bind(SmartExecutor.class).toProvider(SmartExecutorProvider.class).in(Singleton.class);
 
-        install(new MongoDbModule());
-
         bind(JMXThreadDumpUtils.class).in(Singleton.class);
     }
 
     public void installSpecialServices() {
         bind(new TypeLiteral<IConfigurationService<ServersConfig>>() {}).toInstance(ConfigurationService.getInstance());
+
+        bind(new TypeLiteral<IConnectedServersState<ServerStatus, DatabaseServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
+        
         bind(new TypeLiteral<IMailService<ServerStatus>>() {}).to(StandardMailService.class).in(Singleton.class);
 
         bind(new TypeLiteral<IAlertService<ServerStatus>>() {}).to(StandardAlertService.class).in(Singleton.class);
 
         bind(new TypeLiteral<IJMXGeneralStats<ServerStatus>>() {}).to(JMXGeneralStats.class).in(Singleton.class);
 
-        bind(new TypeLiteral<IConnectedServersState<ServerStatus, DatabaseServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
 
         bind(IJMXConnectorThread.class).to(ServersConnectorThread.class).in(Singleton.class);
         bind(IStateUpdaterThread.class).to(StateUpdaterThread.class).in(Singleton.class);
         bind(IPeriodicalUpdater.class).to(PeriodicalUpdater.class).in(Singleton.class);
+        install(new MongoDbModule<ServersConfig>(ConfigurationService.getInstance()));
     }
 
 }

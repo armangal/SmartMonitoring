@@ -22,11 +22,15 @@ import com.smexec.monitor.server.services.rpc.AbstractConfigurationServiceImpl;
 import com.smexec.monitor.shared.config.ClientConfigurations;
 import com.smexec.monitor.shared.config.Version;
 
+@SuppressWarnings("serial")
 public class ConfigurationServiceImpl
     extends AbstractConfigurationServiceImpl<ClientConfigurations, ServerStatus, ServersConfig, DatabaseServer> {
 
-    private static final long serialVersionUID = 1L;
-
+    public ConfigurationServiceImpl() {
+        super();
+        logger.info("init ConfigurationServiceImpl");
+    }
+    
     @Override
     public ClientConfigurations getClientConfigurations() {
         ClientConfigurations clientConfigurations = new ClientConfigurations(Version.getEnvName(),

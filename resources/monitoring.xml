@@ -81,6 +81,16 @@
 			<password>password</password>
 		</server>
 
-
+		<server>
+			<serverCode>2</serverCode>
+			<name>Local (2)</name>
+			<serverGroup>special</serverGroup>
+			<ip>127.0.0.1</ip>
+			<jmxPort>9020</jmxPort>
+			<authenticate>false</authenticate>
+			<username>admin</username>
+			<password>password</password>
+		</server>
+		
 	</servers>
 </ServersConfig>

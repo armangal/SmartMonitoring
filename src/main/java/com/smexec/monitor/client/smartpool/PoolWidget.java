@@ -15,6 +15,8 @@
  */
 package com.smexec.monitor.client.smartpool;
 
+import java.util.LinkedList;
+
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
@@ -23,18 +25,25 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.smexec.monitor.client.widgets.ILineType;
 import com.smexec.monitor.client.widgets.MonitoringLineChart;
+import com.smexec.monitor.shared.ChartFeed;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
+import com.smexec.monitor.shared.smartpool.TaskExecutionChunk;
 
 public class PoolWidget
     extends Composite {
 
     private NumberFormat formatLong = NumberFormat.getDecimalFormat();
 
-    private MonitoringLineChart<Long, Long> timeChart = new MonitoringLineChart<Long, Long>(new ILineType[] {ExecutionTimeLineType.MAX, ExecutionTimeLineType.AVG,
-                                                                                     ExecutionTimeLineType.MIN}, "Milis", "Time", "Execution Time");
+    private MonitoringLineChart<Long, Long> timeChart = new MonitoringLineChart<Long, Long>(new ILineType[] {ExecutionTimeLineType.MAX,
+                                                                                                             ExecutionTimeLineType.AVG,
+                                                                                                             ExecutionTimeLineType.MIN},
+                                                                                            "Milis",
+                                                                                            "Time",
+                                                                                            "Execution Time");
 
-    private MonitoringLineChart<Long, Long> tasksChart = new MonitoringLineChart<Long, Long>(new ILineType[] {TasksLineType.SUBMITED, TasksLineType.EXECUTED, TasksLineType.COMPLETED,
-                                                                                      TasksLineType.FAILED, TasksLineType.REJECTED}, "Tasks", "Time", "Tasks");
+    private MonitoringLineChart<Long, Long> tasksChart = new MonitoringLineChart<Long, Long>(new ILineType[] {TasksLineType.SUBMITED, TasksLineType.EXECUTED,
+                                                                                                              TasksLineType.COMPLETED, TasksLineType.FAILED,
+                                                                                                              TasksLineType.REJECTED}, "Tasks", "Time", "Tasks");
     private FlexTable tasksTable = new FlexTable();
     private FlexTable timesTable = new FlexTable();
 
@@ -128,28 +137,48 @@ public class PoolWidget
     public void refresh(PoolsFeed pf) {
         this.pn = pf.getPoolName();
 
-        Log.debug("TimeChart:" + pf.getTimeChartFeeds());
-        timeChart.updateChart(pf.getTimeChartFeeds(), true);
+        Log.debug("updating SE charts:");
 
-        Log.debug("TasksChart:" + pf.getTasksChartFeeds());
-        tasksChart.updateChart(pf.getTasksChartFeeds(), true);
+        TaskExecutionChunk last = pf.getChunks().getLast();
 
-        tasksTable.setText(1, 1, formatLong.format(pf.getSubmitted()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.SUBMITED.getIndex()) + ")");
-        tasksTable.setText(2, 1, formatLong.format(pf.getExecuted()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.EXECUTED.getIndex()) + ")");
-        tasksTable.setText(3, 1, formatLong.format(pf.getCompleted()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.COMPLETED.getIndex()) + ")");
-        tasksTable.setText(4, 1, formatLong.format(pf.getRejected()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.REJECTED.getIndex()) + ")");
-        tasksTable.setText(5, 1, formatLong.format(pf.getFailed()) + " (" + pf.getTasksChartFeeds().getLastValues(TasksLineType.FAILED.getIndex()) + ")");
+        tasksTable.setText(1, 1, formatLong.format(pf.getSubmitted()) + " (" + last.getGlobalStats().getSubmitted() + ")");
+        tasksTable.setText(2, 1, formatLong.format(pf.getExecuted()) + " (" + last.getGlobalStats().getExecuted() + ")");
+        tasksTable.setText(3, 1, formatLong.format(pf.getCompleted()) + " (" + last.getGlobalStats().getCompleted() + ")");
+        tasksTable.setText(4, 1, formatLong.format(pf.getRejected()) + " (" + last.getGlobalStats().getRejected() + ")");
+        tasksTable.setText(5, 1, formatLong.format(pf.getFailed()) + " (" + last.getGlobalStats().getFailed() + ")");
 
-        timesTable.setText(1, 1, formatLong.format(pf.getMaxGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.MAX.getIndex())
-                                 + ")");
-        timesTable.setText(2, 1, formatLong.format(pf.getAvgGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.AVG.getIndex())
-                                 + ")");
-        timesTable.setText(3, 1, formatLong.format(pf.getMinGenTime()) + " (" + pf.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.MIN.getIndex())
-                                 + ")");
+        timesTable.setText(1, 1, formatLong.format(pf.getMaxGenTime()) + " (" + last.getGlobalStats().getMax() + ")");
+        timesTable.setText(2, 1, formatLong.format(pf.getAvgGenTime()) + " (" + last.getGlobalStats().getAvgTime() + ")");
+        timesTable.setText(3, 1, formatLong.format(pf.getMinGenTime()) + " (" + last.getGlobalStats().getMin() + ")");
         timesTable.setText(4, 1, formatLong.format(pf.getTotoalGenTime()));
 
         poolNameWidget.setHTML(this.pn + " | " + formatLong.format(pf.getActiveThreads()) + " | " + formatLong.format(pf.getPoolSize()) + " | "
                                + formatLong.format(pf.getLargestPoolSize()) + " | Hosts:" + formatLong.format(pf.getHosts()));
 
+        LinkedList<TaskExecutionChunk> chunks = pf.getChunks();
+        ChartFeed<Long, Long> timeFeed = new ChartFeed<Long, Long>(new Long[3][chunks.size()], new Long[chunks.size()]);
+        for (int j = 0; j < chunks.size(); j++) {
+            TaskExecutionChunk tec = chunks.get(j);
+            timeFeed.getValues()[0][j] = tec.getGlobalStats().getMax();
+            timeFeed.getValues()[1][j] = tec.getGlobalStats().getAvgTime();
+            timeFeed.getValues()[2][j] = tec.getGlobalStats().getMin();
+            timeFeed.getXLineValues()[j] = tec.getEndTime();
+        }
+
+        timeChart.updateChart(timeFeed, true);
+        
+        ChartFeed<Long, Long> taskFeed = new ChartFeed<Long, Long>(new Long[5][chunks.size()], new Long[chunks.size()]);
+        for (int j = 0; j < chunks.size(); j++) {
+            TaskExecutionChunk tec = chunks.get(j);
+            taskFeed.getValues()[0][j] = tec.getGlobalStats().getSubmitted();
+            taskFeed.getValues()[1][j] = tec.getGlobalStats().getExecuted();
+            taskFeed.getValues()[2][j] = tec.getGlobalStats().getCompleted();
+            taskFeed.getValues()[3][j] = tec.getGlobalStats().getFailed();
+            taskFeed.getValues()[4][j] = tec.getGlobalStats().getRejected();
+            taskFeed.getXLineValues()[j] = tec.getEndTime();
+        }
+
+        
+        tasksChart.updateChart(taskFeed, true);
     }
 }

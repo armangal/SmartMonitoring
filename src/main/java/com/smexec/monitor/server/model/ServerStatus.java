@@ -37,7 +37,7 @@ import com.smexec.monitor.shared.runtime.CPUUtilization;
 import com.smexec.monitor.shared.runtime.GCHistory;
 import com.smexec.monitor.shared.runtime.MemoryState;
 import com.smexec.monitor.shared.runtime.MemoryUsage;
-import com.smexec.monitor.shared.smartpool.PoolsFeed;
+import com.smexec.monitor.shared.smartpool.SmartExecutorDataHolder;
 
 /**
  * Class represents a current state of connected server with some historical data about memory, GC cycles and
@@ -68,10 +68,7 @@ public class ServerStatus {
      */
     private HashMap<String, LinkedHashMap<Long, GCHistory>> gcHistoryMap = new HashMap<String, LinkedHashMap<Long, GCHistory>>(0);
 
-    /**
-     * Key - thread pool name Value - statistics about the thread pool, current state and historical data
-     */
-    private Map<String, PoolsFeed> poolFeedMap = new HashMap<String, PoolsFeed>(0);
+    private SmartExecutorDataHolder smartExecutorDataHolder;
 
     private long upTime;
 
@@ -100,12 +97,15 @@ public class ServerStatus {
         this.gcHistoryToKeep = gcHistoryToKeep;
     }
 
-    public void setPoolFeedMap(Map<String, PoolsFeed> poolFeedMap) {
-        this.poolFeedMap = poolFeedMap;
+    public SmartExecutorDataHolder getSmartExecutorDataHolder() {
+        if (smartExecutorDataHolder == null) {
+            smartExecutorDataHolder = new SmartExecutorDataHolder();
+        }
+        return smartExecutorDataHolder;
     }
 
-    public Map<String, PoolsFeed> getPoolFeedMap() {
-        return poolFeedMap;
+    public boolean hasSmartExecutorData() {
+        return smartExecutorDataHolder != null;
     }
 
     @SuppressWarnings("serial")

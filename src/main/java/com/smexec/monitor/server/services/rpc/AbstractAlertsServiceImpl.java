@@ -79,7 +79,7 @@ public abstract class AbstractAlertsServiceImpl<SS extends ServerStatus, SC exte
             alertEnablerFuture = smartExecutor.schedule(new AlertEnabler(),
                                                         30,
                                                         TimeUnit.MINUTES,
-                                                        TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "ALRT_ENB", "ALRT_ENB"));
+                                                        TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "ALRT_ENB", "ALRT_ENB"));
         }
         if (!getConfigurationService().getServersConfig().getAlertsConfig().isEnabled() && enable) {
             if (alertEnablerFuture != null) {

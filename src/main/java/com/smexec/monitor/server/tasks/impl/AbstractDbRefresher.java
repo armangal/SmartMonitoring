@@ -26,14 +26,14 @@ import org.smexec.IThreadNameSuffixAware;
 import com.smexec.monitor.server.model.DatabaseServer;
 import com.smexec.monitor.server.utils.SQLUtils;
 
-public class DbRefresher<DS extends DatabaseServer>
+public abstract class AbstractDbRefresher<DS extends DatabaseServer>
     implements Callable<DS>, ITaskIdentification, IThreadNameSuffixAware {
 
-    private static Logger logger = LoggerFactory.getLogger("DbRefresher");
+    private static Logger logger = LoggerFactory.getLogger("AbstractDbRefresher");
 
     private DS ds;
 
-    public DbRefresher(DS ds) {
+    public AbstractDbRefresher(DS ds) {
         this.ds = ds;
     }
 

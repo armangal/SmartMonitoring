@@ -31,6 +31,9 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.smexec.monitor.client.SmartExecutorService;
 import com.smexec.monitor.client.SmartExecutorServiceAsync;
@@ -39,10 +42,15 @@ import com.smexec.monitor.client.widgets.IMonitoringWidget;
 import com.smexec.monitor.shared.smartpool.PoolsFeed;
 import com.smexec.monitor.shared.smartpool.SmartExecutorRefreshRequest;
 import com.smexec.monitor.shared.smartpool.SmartExecutorRefreshResponse;
+import com.smexec.monitor.shared.smartpool.TaskExecutionChunk;
 
 public class ThreadPoolsWidget
     extends AbstractMonitoringWidget<SmartExecutorRefreshRequest, SmartExecutorRefreshResponse, SmartExecutorServiceAsync>
     implements IMonitoringWidget {
+
+    private HorizontalPanel title = new HorizontalPanel();
+
+    private ListBox smartExecutorsList = new ListBox(false);
 
     private PoolWidget poolWidget = new PoolWidget();
 
@@ -50,7 +58,7 @@ public class ThreadPoolsWidget
 
     private FlexTable poolsTable = new FlexTable();
 
-    private HashMap<String, PoolsFeed> lastUpdate = new HashMap<String, PoolsFeed>(0);
+    private SmartExecutorRefreshResponse lastUpdate;
 
     private MouseOverHandler handCursor = new MouseOverHandler() {
 
@@ -67,7 +75,7 @@ public class ThreadPoolsWidget
         public void onClick(ClickEvent event) {
             poolNameToShow = ((HTML) event.getSource()).getElement().getAttribute("name");
 
-            PoolsFeed pf = lastUpdate.get(poolNameToShow);
+            PoolsFeed pf = lastUpdate.getSmartExecutorsMap().get(smartExecutorsList.getItemText(smartExecutorsList.getSelectedIndex())).get(poolNameToShow);
             if (pf != null) {
                 poolWidget.refresh(pf);
             }
@@ -79,12 +87,25 @@ public class ThreadPoolsWidget
      * 
      */
     public ThreadPoolsWidget() {
-        super("Thread Pools", 20000, (SmartExecutorServiceAsync) GWT.create(SmartExecutorService.class));
+        super("Thread Pools", 20000, ((SmartExecutorServiceAsync) GWT.create(SmartExecutorService.class)));
         addStyleName("threadPoolsWidget");
         getDataPanel().add(fp);
         fp.add(poolWidget);
         fp.add(poolsTable);
 
+        title.setStyleName("serversHeader");
+        setTitleWidget(title);
+        title.add(new Label("Smart Executor, availible:"));
+        title.add(smartExecutorsList);
+        title.add(getRefProg());
+
+        smartExecutorsList.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                update();
+            }
+        });
 
     }
 
@@ -108,8 +129,28 @@ public class ThreadPoolsWidget
     @Override
     public void refresh(SmartExecutorRefreshResponse refershResponse) {
 
-        HashMap<String, PoolsFeed> map = new HashMap<String, PoolsFeed>();// fullResult.getPoolFeedMap();
-        this.lastUpdate = map;
+        this.lastUpdate = refershResponse;
+        String selected = null;
+        if (smartExecutorsList.getSelectedIndex() >= 0) {
+            selected = smartExecutorsList.getItemText(smartExecutorsList.getSelectedIndex());
+        }
+        smartExecutorsList.clear();
+        int sel = 0, toSel = 0;
+        for (String exName : refershResponse.getSmartExecutorsMap().keySet()) {
+            smartExecutorsList.addItem(exName);
+            if (exName.equals(selected)) {
+                toSel = sel;
+            }
+            sel++;
+        }
+        smartExecutorsList.setSelectedIndex(toSel);
+
+        update();
+
+    }
+
+    private void update() {
+        HashMap<String, PoolsFeed> map = lastUpdate.getSmartExecutorsMap().get(smartExecutorsList.getItemText(smartExecutorsList.getSelectedIndex()));
         fp.remove(poolsTable);
 
         if (map.size() == 0) {
@@ -169,18 +210,18 @@ public class ThreadPoolsWidget
             name.getElement().setAttribute("name", feed.getPoolName());
             name.addClickHandler(setDefaultPoolClickHandler);
             poolsTable.setWidget(i, j++, name);
-            poolsTable.setText(i, j++, "" + feed.getSubmitted() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.SUBMITED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getExecuted() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.EXECUTED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getCompleted() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.COMPLETED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getRejected() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.REJECTED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getFailed() + " (" + feed.getTasksChartFeeds().getLastValues(TasksLineType.FAILED.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getMaxGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.MAX.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getAvgGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.AVG.getIndex()) + ")");
-            poolsTable.setText(i, j++, "" + feed.getMinGenTime() + " (" + feed.getTimeChartFeeds().getLastValues(ExecutionTimeLineType.MIN.getIndex()) + ")");
+            TaskExecutionChunk last = feed.getChunks().getLast();
+            poolsTable.setText(i, j++, "" + feed.getSubmitted() + " (" + last.getGlobalStats().getSubmitted() + ")");
+            poolsTable.setText(i, j++, "" + feed.getExecuted() + " (" + last.getGlobalStats().getExecuted() + ")");
+            poolsTable.setText(i, j++, "" + feed.getCompleted() + " (" + last.getGlobalStats().getCompleted() + ")");
+            poolsTable.setText(i, j++, "" + feed.getRejected() + " (" + last.getGlobalStats().getRejected() + ")");
+            poolsTable.setText(i, j++, "" + feed.getFailed() + " (" + last.getGlobalStats().getFailed() + ")");
+            poolsTable.setText(i, j++, "" + feed.getMaxGenTime() + " (" + last.getGlobalStats().getMax() + ")");
+            poolsTable.setText(i, j++, "" + feed.getAvgGenTime() + " (" + last.getGlobalStats().getAvgTime() + ")");
+            poolsTable.setText(i, j++, "" + feed.getMinGenTime() + " (" + last.getGlobalStats().getMin() + ")");
             poolsTable.setText(i, j++, "" + feed.getTotoalGenTime() / 1000 + "sec");
             poolsTable.setText(i, j++, "" + feed.getHosts());
             i++;
         }
-
     }
 }

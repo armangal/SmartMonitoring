@@ -24,10 +24,10 @@ import com.smexec.monitor.shared.config.ClientConfigurations;
 @SuppressWarnings("serial")
 public abstract class AbstractConfigurationServiceImpl<CC extends ClientConfigurations, SS extends ServerStatus, SC extends AbstractServersConfig, DS extends DatabaseServer>
     extends AbstractMonitoringService<SS, SC, DS>
-    implements ConfigurationService<ClientConfigurations> {
+    implements ConfigurationService<CC> {
 
-    public AbstractConfigurationServiceImpl() {}
-
-    public abstract CC getClientConfigurations();
-
+    
+    public AbstractConfigurationServiceImpl() {
+        super();
+    }
 }

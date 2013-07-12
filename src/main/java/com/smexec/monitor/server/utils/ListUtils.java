@@ -33,6 +33,7 @@ public class ListUtils {
      * @param maxItems - max items to have in the returned collection
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static <T extends AbstractMergeableChunkStats, L extends List<T>> L blur(final L list, final int maxItems, final L resultList) {
         if (list == null || list.size() <= maxItems) {
             return list;

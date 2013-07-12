@@ -18,24 +18,24 @@ package com.smexec.monitor.server.guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.matcher.Matchers;
+import com.smexec.monitor.server.model.config.AbstractServersConfig;
 import com.smexec.monitor.server.model.config.MongoConfig;
 import com.smexec.monitor.server.mongodb.MongoSessionFactory;
-import com.smexec.monitor.server.services.config.ConfigurationService;
+import com.smexec.monitor.server.services.config.IConfigurationService;
 import com.smexec.monitor.server.services.persistence.IPersistenceService;
 import com.smexec.monitor.server.services.persistence.MongoDbPersitenceService;
 
-public class MongoDbModule
+public class MongoDbModule<SC extends AbstractServersConfig>
     extends AbstractModule {
 
     private MongoConfig mongoConfig;
 
-    public MongoDbModule() {
-        mongoConfig = ConfigurationService.getInstance().getMongoConfig();
+    public MongoDbModule(IConfigurationService<SC> configurationService) {
+        mongoConfig = configurationService.getServersConfig().getMongoConfig();
     }
 
     @Override
     protected void configure() {
-
         bindInterceptor(Matchers.subclassesOf(IPersistenceService.class), Matchers.any(), new PersistenceInterceptor(mongoConfig));
 
         bind(IPersistenceService.class).to(MongoDbPersitenceService.class).in(Singleton.class);

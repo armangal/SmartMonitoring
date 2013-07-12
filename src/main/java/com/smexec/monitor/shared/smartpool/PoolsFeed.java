@@ -16,8 +16,9 @@
 package com.smexec.monitor.shared.smartpool;
 
 import java.io.Serializable;
-
-import com.smexec.monitor.shared.ChartFeed;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PoolsFeed
     implements Serializable {
@@ -25,9 +26,7 @@ public class PoolsFeed
     private static final long serialVersionUID = 1L;
 
     private String poolName;
-    private ChartFeed<Long, Long> timeChartFeeds;
-    private ChartFeed<Long, Long> tasksChartFeeds;
-    private long avgGenTime;
+    private String smartExecutorName;
     private long maxGenTime;
     private long minGenTime;
     private long executed;
@@ -41,12 +40,20 @@ public class PoolsFeed
     private long poolSize;
     private int hosts = 1; // monitoring X servers at the same time
 
-    public long getAvgGenTime() {
-        return avgGenTime;
+    private LinkedList<TaskExecutionChunk> chunks = new LinkedList<TaskExecutionChunk>();
+
+    private HashSet<String> taskNames = new HashSet<String>();
+
+    PoolsFeed() {}
+
+    public PoolsFeed(String poolName, String smartExecutorName) {
+        super();
+        this.poolName = poolName;
+        this.smartExecutorName = smartExecutorName;
     }
 
-    public void setAvgGenTime(long avgGenTime) {
-        this.avgGenTime = avgGenTime;
+    public String getSmartExecutorName() {
+        return smartExecutorName;
     }
 
     public long getMaxGenTime() {
@@ -55,6 +62,11 @@ public class PoolsFeed
 
     public void setMaxGenTime(long maxGenTime) {
         this.maxGenTime = maxGenTime;
+    }
+
+    public long getAvgGenTime() {
+        long totTask = completed + failed;
+        return totoalGenTime / (totTask > 0 ? totTask : 1);
     }
 
     public long getMinGenTime() {
@@ -137,72 +149,56 @@ public class PoolsFeed
         this.poolSize = poolSize;
     }
 
-    public PoolsFeed() {}
-
     public String getPoolName() {
         return poolName;
-    }
-
-    public void setPoolName(String poolName) {
-        this.poolName = poolName;
-    }
-
-    public ChartFeed<Long, Long> getTimeChartFeeds() {
-        return timeChartFeeds;
-    }
-
-    public void setTimeChartFeeds(ChartFeed<Long, Long> timeChartFeeds) {
-        this.timeChartFeeds = timeChartFeeds;
-    }
-
-    public ChartFeed<Long, Long> getTasksChartFeeds() {
-        return tasksChartFeeds;
-    }
-
-    public void setTasksChartFeeds(ChartFeed<Long, Long> tasksChartFeeds) {
-        this.tasksChartFeeds = tasksChartFeeds;
     }
 
     public int getHosts() {
         return hosts;
     }
 
+    public HashSet<String> getTaskNames() {
+        return taskNames;
+    }
+
+    public void addTaskNames(String[] taskNames) {
+        for (String name : taskNames) {
+            this.taskNames.add(name);
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("PoolsFeed [poolName=");
-        builder.append(poolName);
-        builder.append(", timeChartFeeds=");
-        builder.append(timeChartFeeds);
-        builder.append(", tasksChartFeeds=");
-        builder.append(tasksChartFeeds);
-        builder.append(", avgGenTime=");
-        builder.append(avgGenTime);
-        builder.append(", maxGenTime=");
-        builder.append(maxGenTime);
-        builder.append(", minGenTime=");
-        builder.append(minGenTime);
-        builder.append(", executed=");
-        builder.append(executed);
-        builder.append(", submitted=");
-        builder.append(submitted);
-        builder.append(", rejected=");
-        builder.append(rejected);
-        builder.append(", completed=");
-        builder.append(completed);
-        builder.append(", failed=");
-        builder.append(failed);
-        builder.append(", totoalGenTime=");
-        builder.append(totoalGenTime);
-        builder.append(", activeThreads=");
-        builder.append(activeThreads);
-        builder.append(", largestPoolSize=");
-        builder.append(largestPoolSize);
-        builder.append(", poolSize=");
-        builder.append(poolSize);
-        builder.append(", hosts=");
-        builder.append(hosts);
-        builder.append("]");
+        builder.append("PoolsFeed [poolName=")
+               .append(poolName)
+               .append(", smartExecutorName=")
+               .append(smartExecutorName)
+               .append(", maxGenTime=")
+               .append(maxGenTime)
+               .append(", minGenTime=")
+               .append(minGenTime)
+               .append(", executed=")
+               .append(executed)
+               .append(", submitted=")
+               .append(submitted)
+               .append(", rejected=")
+               .append(rejected)
+               .append(", completed=")
+               .append(completed)
+               .append(", failed=")
+               .append(failed)
+               .append(", totoalGenTime=")
+               .append(totoalGenTime)
+               .append(", activeThreads=")
+               .append(activeThreads)
+               .append(", largestPoolSize=")
+               .append(largestPoolSize)
+               .append(", poolSize=")
+               .append(poolSize)
+               .append(", hosts=")
+               .append(hosts)
+               .append("]");
         return builder.toString();
     }
 
@@ -211,6 +207,7 @@ public class PoolsFeed
         final int prime = 31;
         int result = 1;
         result = prime * result + ((poolName == null) ? 0 : poolName.hashCode());
+        result = prime * result + ((smartExecutorName == null) ? 0 : smartExecutorName.hashCode());
         return result;
     }
 
@@ -228,11 +225,15 @@ public class PoolsFeed
                 return false;
         } else if (!poolName.equals(other.poolName))
             return false;
+        if (smartExecutorName == null) {
+            if (other.smartExecutorName != null)
+                return false;
+        } else if (!smartExecutorName.equals(other.smartExecutorName))
+            return false;
         return true;
     }
 
     public void merge(PoolsFeed pf) {
-        this.avgGenTime = (this.avgGenTime * this.hosts + pf.getAvgGenTime()) / (this.hosts + 1);
         this.maxGenTime = this.maxGenTime > pf.getMaxGenTime() ? this.maxGenTime : pf.getMaxGenTime();
         this.minGenTime = this.minGenTime < pf.getMinGenTime() ? this.minGenTime : pf.getMinGenTime();
         this.totoalGenTime += pf.getTotoalGenTime();
@@ -248,5 +249,37 @@ public class PoolsFeed
         this.poolSize = this.poolSize > pf.getPoolSize() ? this.poolSize : pf.getPoolSize();
 
         this.hosts++;
+    }
+
+    public void updateMe(final PoolsFeed pf) {
+        this.maxGenTime = pf.maxGenTime;
+        this.minGenTime = pf.minGenTime;
+        this.executed = pf.executed;
+        this.submitted = pf.submitted;
+        this.rejected = pf.rejected;
+        this.completed = pf.completed;
+        this.failed = pf.failed;
+        this.totoalGenTime = pf.totoalGenTime;
+        this.activeThreads = pf.activeThreads;
+        this.largestPoolSize = pf.largestPoolSize;
+        this.poolSize = pf.poolSize;
+    }
+
+    public LinkedList<TaskExecutionChunk> getChunks() {
+        return chunks;
+    }
+
+    public void addChunk(List<TaskExecutionChunk> chunks) {
+        this.chunks.addAll(chunks);
+        while (this.chunks.size() > 100) {
+            this.chunks.remove();
+        }
+    }
+
+    public long getLastChunkTime() {
+        if (chunks.size() > 0) {
+            return chunks.getLast().getFullEndTime();
+        }
+        return 0;
     }
 }

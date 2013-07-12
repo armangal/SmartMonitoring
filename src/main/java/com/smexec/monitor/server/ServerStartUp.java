@@ -86,14 +86,14 @@ public class ServerStartUp
         logger.info("Version:{}", Version.getVersion());
 
         logger.info("Starting AbstractJMXConnectorThread");
-        smartExecutor.scheduleAtFixedRate(jmxConnectorThread, 5, 60, TimeUnit.SECONDS, TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "CONNECTOR"));
+        smartExecutor.scheduleWithFixedDelay(jmxConnectorThread, 5, 60, TimeUnit.SECONDS, TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "CONNECTOR"));
 
         logger.info("Starting StateUpdaterThread");
-        smartExecutor.scheduleAtFixedRate(stateUpdaterThread,
-                                          20,
+        smartExecutor.scheduleWithFixedDelay(stateUpdaterThread,
+                                          15,
                                           20,
                                           TimeUnit.SECONDS,
-                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "FULL_REFRESH"));
+                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "FULL_REFRESH"));
 
         if (getMailUpdaterConfig().isEnabled()) {
             logger.info("Starting Periodicat Updater");
@@ -101,7 +101,7 @@ public class ServerStartUp
                                               getMailUpdaterConfig().getPeriod() / 2,
                                               getMailUpdaterConfig().getPeriod(),
                                               TimeUnit.SECONDS,
-                                              TaskMetadata.newMetadata(SmartPoolsMonitoring.CONNECTOR, "MAIL_UPD"));
+                                              TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "MAIL_UPD"));
         }
 
     }

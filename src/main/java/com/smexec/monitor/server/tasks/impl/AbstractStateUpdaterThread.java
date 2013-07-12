@@ -44,7 +44,7 @@ import com.smexec.monitor.shared.runtime.MemoryUsage;
 import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 import com.smexec.monitor.shared.servers.ConnectedServer;
 
-public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R extends Refresher<SS>, DS extends DatabaseServer>
+public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R extends AbstractRefresher<SS>, DS extends DatabaseServer>
     implements IStateUpdaterThread {
 
     private static Logger logger = LoggerFactory.getLogger("StateUpdaterThread");
@@ -67,7 +67,7 @@ public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R exte
             logger.info("Refreshing stats for all servers.");
             ArrayList<ConnectedServer> serversList = new ArrayList<ConnectedServer>(0);
 
-            CompletionService<SS> compService = new ExecutorCompletionService<SS>(smartExecutor.getThreadPool(SmartPoolsMonitoring.REFERSHER));
+            CompletionService<SS> compService = smartExecutor.getCompletionService(SmartPoolsMonitoring.REFERSHER);
 
             Collection<SS> values = connectedServersState.getAllServers();
 
@@ -158,7 +158,7 @@ public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R exte
 
     }
 
-    public abstract DbRefresher<DS> getDbRefresher(DS ds);
+    public abstract AbstractDbRefresher<DS> getDbRefresher(DS ds);
 
     public void finishedRefresh() {
         // Nothing for now

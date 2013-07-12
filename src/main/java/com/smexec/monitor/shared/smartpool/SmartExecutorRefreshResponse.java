@@ -28,13 +28,18 @@ public class SmartExecutorRefreshResponse
     /**
      * a map of aggregated thread pools statistic, ready to be presented by client
      */
-    private HashMap<String, PoolsFeed> poolFeedMap;
+    private HashMap<String, HashMap<String, PoolsFeed>> smartExecutorsMap;
 
     public SmartExecutorRefreshResponse() {
         super(new Date().toString());
     }
 
-    public HashMap<String, PoolsFeed> getPoolFeedMap() {
-        return poolFeedMap;
+    public SmartExecutorRefreshResponse(HashMap<String, HashMap<String, PoolsFeed>> smartExecutorsMap) {
+        this();
+        this.smartExecutorsMap = smartExecutorsMap;
+    }
+
+    public HashMap<String, HashMap<String, PoolsFeed>> getSmartExecutorsMap() {
+        return smartExecutorsMap;
     }
 }

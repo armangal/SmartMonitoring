@@ -69,14 +69,14 @@ public abstract class AbstractConnectedServersState<SS extends ServerStatus, DS 
         logger.info("Merging stats");
         for (SS ss : connectedServersMap.values()) {
             if (ss.isConnected()) {
-                for (PoolsFeed pf : ss.getPoolFeedMap().values()) {
-                    // go over all pools in each server
-                    if (poolFeedMap.containsKey(pf.getPoolName())) {
-                        poolFeedMap.get(pf.getPoolName()).merge(pf);
-                    } else {
-                        poolFeedMap.put(pf.getPoolName(), pf);
-                    }
-                }
+                // for (PoolsFeed pf : ss.getPoolFeedMap().values()) {
+                // // go over all pools in each server
+                // if (poolFeedMap.containsKey(pf.getPoolName())) {
+                // poolFeedMap.get(pf.getPoolName()).merge(pf);
+                // } else {
+                // poolFeedMap.put(pf.getPoolName(), pf);
+                // }
+                // }
 
                 mergeExtraData(ss);
             }

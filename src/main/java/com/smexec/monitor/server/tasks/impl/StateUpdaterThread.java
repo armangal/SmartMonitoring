@@ -24,16 +24,16 @@ import com.smexec.monitor.shared.runtime.MemoryUsageLight;
 import com.smexec.monitor.shared.servers.ConnectedServer;
 
 public class StateUpdaterThread
-    extends AbstractStateUpdaterThread<ServerStatus, Refresher<ServerStatus>, DatabaseServer> {
+    extends AbstractStateUpdaterThread<ServerStatus, AbstractRefresher<ServerStatus>, DatabaseServer> {
 
     @Override
-    public Refresher<ServerStatus> getRefresher(ServerStatus ss, Date executionDate, int excutionNumber) {
-        return new Refresher<ServerStatus>(ss, executionDate, excutionNumber);
+    public AbstractRefresher<ServerStatus> getRefresher(ServerStatus ss, Date executionDate, int excutionNumber) {
+        return new StandardRefresher(ss, executionDate, excutionNumber);
     }
 
     @Override
-    public DbRefresher<DatabaseServer> getDbRefresher(DatabaseServer ds) {
-        return new DbRefresher<DatabaseServer>(ds);
+    public AbstractDbRefresher<DatabaseServer> getDbRefresher(DatabaseServer ds) {
+        return new StandardDbRefresher(ds);
     }
 
     @Override

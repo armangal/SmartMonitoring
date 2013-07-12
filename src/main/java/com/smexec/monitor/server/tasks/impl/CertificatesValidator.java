@@ -18,12 +18,6 @@ package com.smexec.monitor.server.tasks.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Inject;
-import com.smexec.monitor.server.model.IConnectedServersState;
-import com.smexec.monitor.server.services.alert.IAlertService;
-import com.smexec.monitor.server.services.config.IConfigurationService;
-import com.smexec.monitor.server.services.mail.IMailService;
-
 
 public class CertificatesValidator {
     public static Logger logger = LoggerFactory.getLogger("PeriodicalUpdater");

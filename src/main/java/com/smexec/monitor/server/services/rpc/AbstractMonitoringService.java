@@ -49,6 +49,7 @@ public abstract class AbstractMonitoringService<SS extends ServerStatus, SC exte
 
     public AbstractMonitoringService() {
         logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+        logger.info("About to inject fields.");
         GuiceUtils.getInjector().injectMembers(this);
     }
 
