@@ -18,7 +18,10 @@ package com.smexec.monitor.client.widgets;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
+import com.google.gwt.dom.client.Style.Float;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -128,6 +131,18 @@ public abstract class AbstractMonitoringWidget<RQ extends AbstractRefreshRequest
         return service;
     }
 
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        Style style = getElement().getStyle();
+        if (getAbsoluteLeft() < 200) {
+            style.setFloat(Float.LEFT);
+        } else {
+            style.setWidth(50, Unit.PCT);
+            style.setFloat(Float.RIGHT);
+        }
+        
+    }
     /**
      * @param name - the name of the widget
      * @param refreshDelay - referesh rate in ms.

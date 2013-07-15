@@ -42,6 +42,7 @@ public class PoolsFeed
 
     private LinkedList<TaskExecutionChunk> chunks = new LinkedList<TaskExecutionChunk>();
 
+    // TODO get the full stats about tasks
     private HashSet<String> taskNames = new HashSet<String>();
 
     PoolsFeed() {}
@@ -157,6 +158,10 @@ public class PoolsFeed
         return hosts;
     }
 
+    public void setTaskNames(HashSet<String> taskNames) {
+        this.taskNames = taskNames;
+    }
+
     public HashSet<String> getTaskNames() {
         return taskNames;
     }
@@ -198,6 +203,8 @@ public class PoolsFeed
                .append(poolSize)
                .append(", hosts=")
                .append(hosts)
+               .append(", tasks=")
+               .append(taskNames.toString())
                .append("]");
         return builder.toString();
     }

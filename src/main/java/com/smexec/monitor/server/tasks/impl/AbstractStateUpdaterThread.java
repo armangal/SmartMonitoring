@@ -158,7 +158,7 @@ public abstract class AbstractStateUpdaterThread<SS extends ServerStatus, R exte
 
     }
 
-    public abstract AbstractDbRefresher<DS> getDbRefresher(DS ds);
+    public abstract Callable<DS> getDbRefresher(DS ds);
 
     public void finishedRefresh() {
         // Nothing for now

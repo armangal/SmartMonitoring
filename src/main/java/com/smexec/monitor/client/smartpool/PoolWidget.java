@@ -152,7 +152,7 @@ public class PoolWidget
         timesTable.setText(3, 1, formatLong.format(pf.getMinGenTime()) + " (" + last.getGlobalStats().getMin() + ")");
         timesTable.setText(4, 1, formatLong.format(pf.getTotoalGenTime()));
 
-        poolNameWidget.setHTML(this.pn + " | " + formatLong.format(pf.getActiveThreads()) + " | " + formatLong.format(pf.getPoolSize()) + " | "
+        poolNameWidget.setHTML("Pool Name: " + this.pn + " | Active:" + formatLong.format(pf.getActiveThreads()) + " | Size:" + formatLong.format(pf.getPoolSize()) + " | Max:"
                                + formatLong.format(pf.getLargestPoolSize()) + " | Hosts:" + formatLong.format(pf.getHosts()));
 
         LinkedList<TaskExecutionChunk> chunks = pf.getChunks();
@@ -166,7 +166,7 @@ public class PoolWidget
         }
 
         timeChart.updateChart(timeFeed, true);
-        
+
         ChartFeed<Long, Long> taskFeed = new ChartFeed<Long, Long>(new Long[5][chunks.size()], new Long[chunks.size()]);
         for (int j = 0; j < chunks.size(); j++) {
             TaskExecutionChunk tec = chunks.get(j);
@@ -178,7 +178,6 @@ public class PoolWidget
             taskFeed.getXLineValues()[j] = tec.getEndTime();
         }
 
-        
         tasksChart.updateChart(taskFeed, true);
     }
 }

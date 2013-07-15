@@ -58,6 +58,8 @@ public abstract class AbstractServersConfig {
 
     private MongoConfig mongoConfig = new MongoConfig();
 
+    private SmartExecutorMonConfig smartExecutorConf = new SmartExecutorMonConfig();
+
     private MailUpdaterConfig mailUpdaterConfig = new MailUpdaterConfig();
 
     @XmlElement(name = "database")
@@ -132,6 +134,10 @@ public abstract class AbstractServersConfig {
         this.mongoConfig = mongoConfig;
     }
 
+    public SmartExecutorMonConfig getSmartExecutorConf() {
+        return smartExecutorConf;
+    }
+
     public MailUpdaterConfig getMailUpdaterConfig() {
         return mailUpdaterConfig;
     }
@@ -189,6 +195,8 @@ public abstract class AbstractServersConfig {
         builder.append(alertsConfig);
         builder.append(",\nmongoConfig=");
         builder.append(mongoConfig);
+        builder.append(",\nsmartExecutorConf=");
+        builder.append(smartExecutorConf);
         builder.append(",\nMailUpdaterConfig=");
         builder.append(mailUpdaterConfig);
         builder.append("]");

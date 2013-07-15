@@ -24,6 +24,7 @@ import java.util.List;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -73,12 +74,20 @@ public class ThreadPoolsWidget
 
         @Override
         public void onClick(ClickEvent event) {
-            poolNameToShow = ((HTML) event.getSource()).getElement().getAttribute("name");
+            HTML source = (HTML) event.getSource();
+            poolNameToShow = source.getElement().getAttribute("name");
+            int row = Integer.valueOf(source.getElement().getAttribute("row"));
 
-            PoolsFeed pf = lastUpdate.getSmartExecutorsMap().get(smartExecutorsList.getItemText(smartExecutorsList.getSelectedIndex())).get(poolNameToShow);
+            String selectedSmartExecutor = smartExecutorsList.getItemText(smartExecutorsList.getSelectedIndex());
+            PoolsFeed pf = lastUpdate.getSmartExecutorsMap().get(selectedSmartExecutor).get(poolNameToShow);
             if (pf != null) {
                 poolWidget.refresh(pf);
             }
+
+            for (int i = 1; i < poolsTable.getRowCount(); i++) {
+                poolsTable.getFlexCellFormatter().getElement(i, 0).getStyle().setBackgroundColor("");
+            }
+            poolsTable.getFlexCellFormatter().getElement(row, 0).getStyle().setBackgroundColor("#A4DDED");
 
         }
     };
@@ -91,14 +100,23 @@ public class ThreadPoolsWidget
         addStyleName("threadPoolsWidget");
         getDataPanel().add(fp);
         fp.add(poolWidget);
+
         fp.add(poolsTable);
+        poolsTable.getElement().setId("infoTable");
+        poolsTable.setStyleName("poolsList");
+        poolsTable.setCellPadding(0);
+        poolsTable.setCellSpacing(0);
 
         title.setStyleName("serversHeader");
         setTitleWidget(title);
-        title.add(new Label("Smart Executor, availible:"));
-        title.add(smartExecutorsList);
+        HorizontalPanel hp = new HorizontalPanel();
+        hp.add(new Label("Smart Executor, availible:"));
+        hp.add(smartExecutorsList);
+        title.add(hp);
         title.add(getRefProg());
 
+        smartExecutorsList.getElement().getStyle().setMargin(0, Unit.PX);
+        smartExecutorsList.getElement().getStyle().setPadding(0, Unit.PX);
         smartExecutorsList.addClickHandler(new ClickHandler() {
 
             @Override
@@ -130,6 +148,7 @@ public class ThreadPoolsWidget
     public void refresh(SmartExecutorRefreshResponse refershResponse) {
 
         this.lastUpdate = refershResponse;
+        // keeping last selected smart executor if possible
         String selected = null;
         if (smartExecutorsList.getSelectedIndex() >= 0) {
             selected = smartExecutorsList.getItemText(smartExecutorsList.getSelectedIndex());
@@ -143,15 +162,21 @@ public class ThreadPoolsWidget
             }
             sel++;
         }
-        smartExecutorsList.setSelectedIndex(toSel);
+
+        // returning the previously selected if possible
+        if (smartExecutorsList.getItemCount() >= toSel) {
+            smartExecutorsList.setSelectedIndex(toSel);
+        }
 
         update();
 
     }
 
+    /**
+     * updates the charts and table of stats
+     */
     private void update() {
         HashMap<String, PoolsFeed> map = lastUpdate.getSmartExecutorsMap().get(smartExecutorsList.getItemText(smartExecutorsList.getSelectedIndex()));
-        fp.remove(poolsTable);
 
         if (map.size() == 0) {
             poolNameToShow = null;
@@ -180,12 +205,7 @@ public class ThreadPoolsWidget
 
         poolWidget.refresh(pf);
 
-        poolsTable = new FlexTable();
-        poolsTable.getElement().setId("infoTable");
-        poolsTable.setStyleName("poolsList");
-        fp.add(poolsTable);
-        poolsTable.setCellPadding(0);
-        poolsTable.setCellSpacing(0);
+        poolsTable.removeAllRows();
 
         int i = 0;
         int j = 0;
@@ -208,8 +228,13 @@ public class ThreadPoolsWidget
             final HTML name = new HTML("<a>" + feed.getPoolName() + "</a>");
             name.addMouseOverHandler(handCursor);
             name.getElement().setAttribute("name", feed.getPoolName());
+            name.getElement().setAttribute("row", "" + i);
             name.addClickHandler(setDefaultPoolClickHandler);
             poolsTable.setWidget(i, j++, name);
+            if (feed.getPoolName().equalsIgnoreCase(poolNameToShow)) {
+                poolsTable.getFlexCellFormatter().getElement(i, 0).getStyle().setBackgroundColor("#A4DDED");
+            }
+            name.setTitle(feed.getTaskNames().toString());
             TaskExecutionChunk last = feed.getChunks().getLast();
             poolsTable.setText(i, j++, "" + feed.getSubmitted() + " (" + last.getGlobalStats().getSubmitted() + ")");
             poolsTable.setText(i, j++, "" + feed.getExecuted() + " (" + last.getGlobalStats().getExecuted() + ")");

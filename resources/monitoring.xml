@@ -10,7 +10,11 @@
 	<name>Demo Monitoring</name>
 	<password>pass</password>
 	<guestPassword>pass</guestPassword>
-
+	
+	<smartExecutorConf>
+		<enabled>true</enabled>
+	</smartExecutorConf>
+	
 	<alertsConfig>
 		<enabled>true</enabled>
 		<fromAddress>test@test.com</fromAddress>

@@ -35,10 +35,15 @@ body {
 }
 
 .footer {
-	position: relative;
-	width: 1250px;
-	margin: 0 auto;
+position: fixed;
+width: 1258px;
+margin-left: 45px;
+height: 18px;
+z-index: 10000;
+bottom: 0;
+background-color: rgba(255, 112, 0, 0.57);;
 }
+
 .footer span {
 	color: #12c;
 	bottom: 4px;

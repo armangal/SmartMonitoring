@@ -28,13 +28,16 @@ public class ClientConfigurations
 
     private Boolean alertsEnabled;
 
+    private Boolean smartPoolMonEnabled;
+
     public ClientConfigurations() {}
 
-    public ClientConfigurations(String title, String version, Boolean alertsEnabled) {
+    public ClientConfigurations(final String title, final String version, final Boolean alertsEnabled, final Boolean smartPoolMonEnabled) {
         super();
         this.title = title;
         this.version = version;
         this.alertsEnabled = alertsEnabled;
+        this.smartPoolMonEnabled = smartPoolMonEnabled;
     }
 
     public String getVersion() {
@@ -49,14 +52,22 @@ public class ClientConfigurations
         return alertsEnabled;
     }
 
+    public Boolean isSmartPoolMonEnabled() {
+        return smartPoolMonEnabled;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ClientConfigurations [title=");
-        builder.append(title);
-        builder.append(", version=");
-        builder.append(version);
-        builder.append("]");
+        builder.append("ClientConfigurations [title=")
+               .append(title)
+               .append(", version=")
+               .append(version)
+               .append(", alertsEnabled=")
+               .append(alertsEnabled)
+               .append(", smartPoolMonEnabled=")
+               .append(smartPoolMonEnabled)
+               .append("]");
         return builder.toString();
     }
 

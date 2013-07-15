@@ -35,7 +35,8 @@ public class ConfigurationServiceImpl
     public ClientConfigurations getClientConfigurations() {
         ClientConfigurations clientConfigurations = new ClientConfigurations(Version.getEnvName(),
                                                                              Version.getVersion(),
-                                                                             getConfigurationService().getServersConfig().getAlertsConfig().isEnabled());
+                                                                             getConfigurationService().getServersConfig().getAlertsConfig().isEnabled(),
+                                                                             getConfigurationService().getServersConfig().getSmartExecutorConf().isEnabled());
         logger.info("returning basic configurations:{}", clientConfigurations);
         return clientConfigurations;
 

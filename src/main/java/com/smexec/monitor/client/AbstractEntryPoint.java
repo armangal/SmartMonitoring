@@ -332,10 +332,16 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
      * should be overridden by extension project, the order is matters
      */
     public void registerWidgets() {
-        addMonitoringWidget(new ThreadPoolsWidget());
+        addSmartExecutorMonitoring();
         addMonitoringWidget(new ServersWidget<CC>());
         alertsWidget = new AlertsWidget<CC>(AlertType.values());
         addMonitoringWidget(alertsWidget);
+    }
+
+    void addSmartExecutorMonitoring() {
+        if (getClientConfigurations().isSmartPoolMonEnabled()) {
+            addMonitoringWidget(new ThreadPoolsWidget());
+        }
     }
 
     private void addMainWidgets() {

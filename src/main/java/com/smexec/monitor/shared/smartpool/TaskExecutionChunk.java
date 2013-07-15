@@ -24,7 +24,14 @@ public class TaskExecutionChunk
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * global stats about current chunk
+     */
     private TaskExecutionStats globalStats;
+
+    /**
+     * detailed stats per task name about current chunk
+     */
     private HashMap<String, TaskExecutionStats> taskStatsMap;
 
     public TaskExecutionChunk() {}

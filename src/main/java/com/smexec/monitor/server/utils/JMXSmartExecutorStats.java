@@ -77,6 +77,7 @@ public class JMXSmartExecutorStats {
             pf.setRejected(JMXUtils.getLong(mbsc, objectName, "Rejected"));
             pf.setSubmitted(JMXUtils.getLong(mbsc, objectName, "Submitted"));
             pf.setTotoalGenTime(JMXUtils.getLong(mbsc, objectName, "TotalTime"));
+            pf.addTaskNames((String[]) mbsc.getAttribute(objectName, "TaskNames"));
 
             long lastStatsTime = smartExecutorDataHolder.getLastStatsTime(poolName, sEName);
             CompositeData[] tasks;
