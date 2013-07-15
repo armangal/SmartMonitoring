@@ -7,6 +7,7 @@
 	<version>1.0.35</version>
 	<name>Smart Monitoring, open-source JMX monitoring server with HTML (GWT) UI</name>
 	<description>Smart Monitoring</description>
+	<packaging>war</packaging>
 
 	<url>http://github.com/armangal/SmartMonitoring</url>
 
@@ -644,5 +645,4 @@
 		</plugins>
 	</reporting>
 
-	<packaging>war</packaging>
 </project>
