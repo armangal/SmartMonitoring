@@ -2,12 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.smexec</groupId>
+	<groupId>org.clevermore</groupId>
 	<artifactId>smartmonitoring</artifactId>
 	<version>1.0.35</version>
 	<name>Smart Monitoring, open-source JMX monitoring server with HTML (GWT) UI</name>
 	<description>Smart Monitoring</description>
-	<packaging>war</packaging>
 
 	<url>http://github.com/armangal/SmartMonitoring</url>
 
@@ -178,7 +177,7 @@
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.smexec</groupId>
+				<groupId>org.clevermore</groupId>
 				<artifactId>smartexecutor</artifactId>
 				<version>${smartexecutor.version}</version>
 			</dependency>
@@ -280,7 +279,7 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.smexec</groupId>
+			<groupId>org.clevermore</groupId>
 			<artifactId>smartexecutor</artifactId>
 			<scope>compile</scope>
 		</dependency>
@@ -311,7 +310,7 @@
 				<executions>
 					<execution>
 						<configuration>
-							<module>com.smexec.monitor.Smartmonitoring</module>
+							<module>org.clevermore.monitor.Smartmonitoring</module>
 							<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
 							<warSourceDirectory>war</warSourceDirectory>
 						</configuration>

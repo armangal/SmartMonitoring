@@ -15,7 +15,7 @@
 	<!--Alerts -->
 	<servlet>
 		<servlet-name>alertsService</servlet-name>
-		<servlet-class>com.smexec.monitor.server.services.rpc.impl.AlertsServiceImpl</servlet-class>
+		<servlet-class>org.clevermore.monitor.server.services.rpc.impl.AlertsServiceImpl</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -26,7 +26,7 @@
 	<!--Configuration -->
 	<servlet>
 		<servlet-name>configurationService</servlet-name>
-		<servlet-class>com.smexec.monitor.server.services.rpc.impl.ConfigurationServiceImpl</servlet-class>
+		<servlet-class>org.clevermore.monitor.server.services.rpc.impl.ConfigurationServiceImpl</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -37,7 +37,7 @@
 	<!--General -->
 	<servlet>
 		<servlet-name>generalService</servlet-name>
-		<servlet-class>com.smexec.monitor.server.services.rpc.impl.GeneralServiceImpl</servlet-class>
+		<servlet-class>org.clevermore.monitor.server.services.rpc.impl.GeneralServiceImpl</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -48,7 +48,7 @@
 	<!--Servers Widget -->
 	<servlet>
 		<servlet-name>serverWidgetService</servlet-name>
-		<servlet-class>com.smexec.monitor.server.services.rpc.impl.ServerWidgetServiceImpl</servlet-class>
+		<servlet-class>org.clevermore.monitor.server.services.rpc.impl.ServerWidgetServiceImpl</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -59,7 +59,7 @@
 	<!--Smart Executor -->
 	<servlet>
 		<servlet-name>smartExecutorService</servlet-name>
-		<servlet-class>com.smexec.monitor.server.services.rpc.impl.SmartExecutorServiceImpl</servlet-class>
+		<servlet-class>org.clevermore.monitor.server.services.rpc.impl.SmartExecutorServiceImpl</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -70,7 +70,7 @@
 	<!-- -->
 	<servlet>
 		<servlet-name>alertsExporter</servlet-name>
-		<servlet-class>com.smexec.monitor.server.servlets.AlertsExporter</servlet-class>
+		<servlet-class>org.clevermore.monitor.server.servlets.AlertsExporter</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -83,7 +83,7 @@
 	</welcome-file-list>
 
 	<listener>
-		<listener-class>com.smexec.monitor.server.ServerStartUp</listener-class>
+		<listener-class>org.clevermore.monitor.server.ServerStartUp</listener-class>
 	</listener>
 
 
