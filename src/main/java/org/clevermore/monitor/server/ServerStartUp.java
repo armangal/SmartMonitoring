@@ -40,7 +40,7 @@ import com.google.inject.Inject;
 public class ServerStartUp
     implements ServletContextListener {
 
-    private static Logger logger = LoggerFactory.getLogger(ServerStartUp.class);
+    public static Logger logger = LoggerFactory.getLogger(ServerStartUp.class);
 
     @Inject
     private SmartExecutor smartExecutor;
@@ -86,14 +86,14 @@ public class ServerStartUp
         logger.info("Version:{}", Version.getVersion());
 
         logger.info("Starting AbstractJMXConnectorThread");
-        smartExecutor.scheduleWithFixedDelay(jmxConnectorThread, 5, 60, TimeUnit.SECONDS, TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "CONNECTOR"));
+        smartExecutor.scheduleWithFixedDelay(jmxConnectorThread, 5, 60, TimeUnit.SECONDS, TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "CONNECTOR", "jmxConnector"));
 
         logger.info("Starting StateUpdaterThread");
         smartExecutor.scheduleWithFixedDelay(stateUpdaterThread,
                                           15,
                                           20,
                                           TimeUnit.SECONDS,
-                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "FULL_REFRESH"));
+                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "FULL_REFRESH","stateUpdater"));
 
         if (getMailUpdaterConfig().isEnabled()) {
             logger.info("Starting Periodicat Updater");
@@ -101,7 +101,7 @@ public class ServerStartUp
                                               getMailUpdaterConfig().getPeriod() / 2,
                                               getMailUpdaterConfig().getPeriod(),
                                               TimeUnit.SECONDS,
-                                              TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "MAIL_UPD"));
+                                              TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "MAIL_UPD","periodicalUpdater"));
         }
 
     }

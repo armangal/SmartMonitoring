@@ -15,22 +15,23 @@
  */
 package org.clevermore.monitor.client.alerts;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 import org.clevermore.monitor.client.AlertsService;
 import org.clevermore.monitor.client.AlertsServiceAsync;
 import org.clevermore.monitor.client.widgets.AbstractMonitoringWidget;
 import org.clevermore.monitor.client.widgets.IMonitoringWidget;
 import org.clevermore.monitor.shared.alert.Alert;
+import org.clevermore.monitor.shared.alert.AlertType;
 import org.clevermore.monitor.shared.alert.IAlertType;
 import org.clevermore.monitor.shared.alert.RefreshAlertsRequest;
 import org.clevermore.monitor.shared.alert.RefreshAlertsResponse;
-import org.clevermore.monitor.shared.config.ClientConfigurations;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
@@ -45,48 +46,97 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
-public class AlertsWidget<CC extends ClientConfigurations>
+/**
+ * Alert Widget is responsible to show the most up to date alerts coming from server. The widget takes care
+ * for refreshing the list of last alerts. Only last 1000 are shown to user. <br>
+ * Two features are present on the widget:<br>
+ * - Filtering on client side by alert type <br>
+ * - Exporting all alerts to excel file
+ * 
+ * @author Arman Gal
+ */
+public class AlertsWidget
     extends AbstractMonitoringWidget<RefreshAlertsRequest, RefreshAlertsResponse, AlertsServiceAsync>
     implements IMonitoringWidget {
 
-    private ScrollPanel sp = new ScrollPanel();
+    /**
+     * actual html table that holds last 1000 alerts
+     */
     private FlexTable alertsTable = new FlexTable();
-    private HorizontalPanel title = new HorizontalPanel();
+
+    /**
+     * listbox with available alert types for filtering
+     */
     private ListBox typesListBox;
 
+    /**
+     * last alert id received by the widget. it's important to keep this one up-to-date caz it's used in
+     * refresh request
+     */
     private int lastAlertId = -1;
-    private List<IAlertType> alertTypesList = new ArrayList<IAlertType>();
+
+    /**
+     * locally stored last 1000 alerts, we need it in order to filter the alerts locally faster
+     */
     private LinkedList<Alert> alerts = new LinkedList<Alert>();
 
+    /**
+     * Constructs alert widget with default alert type available for filtering
+     */
+    public AlertsWidget() {
+        this(new IAlertType[] {});
+    }
+
+    /**
+     * Constructs alert widget with default and additionally provided alert type available for filtering.<br>
+     * Usually should be used by projects that have extended the Alerts
+     * 
+     * @param types - additional alert types
+     */
     public AlertsWidget(IAlertType[]... types) {
         super("Alerts:", 20000, (AlertsServiceAsync) GWT.create(AlertsService.class));
+
+        Set<IAlertType> alertTypesSet = new HashSet<IAlertType>();
+
+        // default alert types
+        alertTypesSet.addAll(new HashSet<IAlertType>(Arrays.asList(AlertType.values())));
+
+        // all the custom alert types
         for (IAlertType[] arr : types) {
-            for (IAlertType at : arr) {
-                alertTypesList.add(at);
-            }
+            alertTypesSet.addAll(new HashSet<IAlertType>(Arrays.asList(arr)));
         }
 
         addStyleName("alertsWidget");
+        ScrollPanel sp = new ScrollPanel();
         sp.setStyleName("alertsWidgetData");
         getDataPanel().add(sp);
         sp.add(alertsTable);
 
+        // creating title
+        HorizontalPanel title = new HorizontalPanel();
         title.setStyleName("serversHeader");
         title.add(new HTML("Alerts:&nbsp;"));
         title.add(new HTML("Filter:"));
-        typesListBox = getTypesListBox();
+        typesListBox = getTypesListBox(alertTypesSet);
         title.add(typesListBox);
         title.add(getExportButton());
         title.add(getRefProg());
 
         setTitleWidget(title);
+
         initAlertTable();
     }
 
-    private ListBox getTypesListBox() {
+    /**
+     * creates the filter listbox from available aret types
+     * 
+     * @param alertTypesSet
+     * @return
+     */
+    private ListBox getTypesListBox(Set<IAlertType> alertTypesSet) {
         ListBox listBox = new ListBox();
         listBox.addItem("All", "-1");
-        for (IAlertType at : alertTypesList) {
+        for (IAlertType at : alertTypesSet) {
             listBox.addItem(at.getName(), "" + at.getId());
         }
         listBox.getElement().getStyle().setFontSize(10, Unit.PX);
@@ -100,6 +150,11 @@ public class AlertsWidget<CC extends ClientConfigurations>
         return listBox;
     }
 
+    /**
+     * creates the export to excel file button
+     * 
+     * @return
+     */
     private Button getExportButton() {
         Button export = new Button("Exp.CSV");
         export.addClickHandler(new ClickHandler() {
@@ -115,6 +170,9 @@ public class AlertsWidget<CC extends ClientConfigurations>
         return export;
     }
 
+    /**
+     * Initializes the html table what will hold last alert messages
+     */
     private void initAlertTable() {
         alertsTable.removeAllRows();
         alertsTable.getElement().setId("infoTable");
@@ -129,6 +187,10 @@ public class AlertsWidget<CC extends ClientConfigurations>
 
     }
 
+    /**
+     * recreates the content of HTML table that holds last alert messages, here the selected filter is
+     * considered and messages are filtered
+     */
     private void redrawTable() {
         Iterator<Alert> it = alerts.iterator();
         initAlertTable();
@@ -161,13 +223,9 @@ public class AlertsWidget<CC extends ClientConfigurations>
         initAlertTable();
     }
 
-    private int getLastAlertId() {
-        return lastAlertId;
-    }
-
     @Override
     public RefreshAlertsRequest createRefreshRequest() {
-        return new RefreshAlertsRequest(getLastAlertId());
+        return new RefreshAlertsRequest(lastAlertId);
     }
 
     @Override
@@ -181,10 +239,13 @@ public class AlertsWidget<CC extends ClientConfigurations>
 
         try {
             for (Alert a : refershResponse.getAlerts()) {
+                // take only alerts with higher ID number than already received
                 if (a.getId() > lastAlertId) {
                     alerts.add(a);
                 }
             }
+
+            // sort in descending order
             Collections.sort(alerts, new Comparator<Alert>() {
 
                 @Override
@@ -193,11 +254,10 @@ public class AlertsWidget<CC extends ClientConfigurations>
                 }
             });
 
-            if (alerts.size() > 1000) {
-                for (int i = 0; i < alerts.size() - 1000; i++) {
-                    Alert remove = alerts.remove();
-                    Log.debug("Alert widget, removing alert from memory:" + remove);
-                }
+            // shrink the local list to 1000 elements
+            while (alerts.size() > 1000) {
+                Alert remove = alerts.remove();
+                Log.debug("Alert widget, removing alert from memory:" + remove);
             }
 
             redrawTable();

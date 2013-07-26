@@ -177,6 +177,13 @@ public class ThreadPoolsWidget
      * updates the charts and table of stats
      */
     private void update() {
+        if (smartExecutorsList.getItemCount() <= 0) {
+            Log.debug("TPW, not updating, emoty list");
+            return;
+        }
+        if (smartExecutorsList.getSelectedIndex() < 0) {
+            smartExecutorsList.setSelectedIndex(0);
+        }
         HashMap<String, PoolsFeed> map = lastUpdate.getSmartExecutorsMap().get(smartExecutorsList.getItemText(smartExecutorsList.getSelectedIndex()));
 
         if (map.size() == 0) {

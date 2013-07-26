@@ -20,14 +20,12 @@ import java.util.LinkedList;
 import org.clevermore.monitor.client.alerts.AlertsWidget;
 import org.clevermore.monitor.client.login.LoginWidget;
 import org.clevermore.monitor.client.login.LoginWidget.LoggedInCallBack;
-import org.clevermore.monitor.client.servers.ServersWidget;
 import org.clevermore.monitor.client.settings.SettingsPopup;
 import org.clevermore.monitor.client.smartpool.ThreadPoolsWidget;
 import org.clevermore.monitor.client.utils.MonitoringResources;
 import org.clevermore.monitor.client.widgets.IMonitoringWidget;
 import org.clevermore.monitor.client.widgets.ProgressLabel;
 import org.clevermore.monitor.shared.ServerTimeResult;
-import org.clevermore.monitor.shared.alert.AlertType;
 import org.clevermore.monitor.shared.config.ClientConfigurations;
 
 import com.allen_sauer.gwt.log.client.Log;
@@ -45,6 +43,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -74,9 +73,8 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
     private FlowPanel mainHeader = new FlowPanel();
     private HTML mainHeaderLabel = new HTML("--------------------------");
     private ProgressLabel refProg = new ProgressLabel();
-    private HTML footer = new HTML("<ul><li><img title=\"Feedback\" src=\"img/oo_icon.gif\"><span>&nbsp;&nbsp;Created by </span><a target='blank' href=\"https://twitter.com/armangal\">@armangal</a><span>, based on </span><a href='https://github.com/armangal/SmartMonitoring' target='blank'>SmartMonitoring</a><span> project.</span></span></li></ul>");
-
-    private AlertsWidget<CC> alertsWidget;
+    private HorizontalPanel footer = new HorizontalPanel();
+    AlertsWidget alertsWidget;
 
     private RepeatingCommand refreshCommand = new RepeatingCommand() {
 
@@ -133,19 +131,14 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
         widgets.clear();
         RootPanel.get().add(loginWidget);
 
-        // reset last IDs
-        resetLastIDs();
         for (IMonitoringWidget widget : widgets) {
+            // will reset last IDs, it's up it each widget to implement it
             widget.clear();
             widget.setRefresh(false);
             widget.asWidget().removeFromParent();
         }
         mainPanel.clear();
         mainPanel.add(mainHeader);
-    }
-
-    public void resetLastIDs() {
-        alertsWidget.clear();
     }
 
     /**
@@ -177,8 +170,12 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
                     RootPanel.get().clear();
                     addMainWidgets();
                     RootPanel.get().add(mainPanel);
+
+                    HTML footerText = new HTML("<span>&nbsp;&nbsp;Created by </span><a target='blank' href=\"https://twitter.com/armangal\">@armangal</a><span>, based on </span><a href='https://github.com/armangal/SmartMonitoring' target='blank'>SmartMonitoring</a><span> project.</span></span>");
                     footer.setStyleName("footer");
-                    RootPanel.get().add(footer);
+                    footer.add(new Image("img/oo_icon.gif"));
+                    footer.add(footerText);
+                    mainPanel.add(footer);
 
                     refresh = true;
                     refresh();
@@ -332,12 +329,7 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
     /**
      * should be overridden by extension project, the order is matters
      */
-    public void registerWidgets() {
-        addSmartExecutorMonitoring();
-        addMonitoringWidget(new ServersWidget<CC>());
-        alertsWidget = new AlertsWidget<CC>(AlertType.values());
-        addMonitoringWidget(alertsWidget);
-    }
+    public abstract void registerWidgets();
 
     protected void addSmartExecutorMonitoring() {
         if (getClientConfigurations().isSmartPoolMonEnabled()) {

@@ -15,6 +15,8 @@
  */
 package org.clevermore.monitor.client;
 
+import org.clevermore.monitor.client.alerts.AlertsWidget;
+import org.clevermore.monitor.client.servers.ServersWidget;
 import org.clevermore.monitor.shared.config.ClientConfigurations;
 
 import com.allen_sauer.gwt.log.client.Log;
@@ -29,5 +31,13 @@ public class Smartmonitoring
         setService(service);
 
         Log.debug("Smartmonitoring created");
+    }
+
+    @Override
+    public void registerWidgets() {
+        addSmartExecutorMonitoring();
+        addMonitoringWidget(new ServersWidget<ClientConfigurations>());
+        alertsWidget = new AlertsWidget();
+        addMonitoringWidget(alertsWidget);
     }
 }
