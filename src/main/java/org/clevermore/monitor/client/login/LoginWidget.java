@@ -111,6 +111,7 @@ public class LoginWidget<CC extends ClientConfigurations>
 
             @Override
             public void onClick(ClickEvent event) {
+                login.setEnabled(false);
                 login();
             }
 
@@ -157,27 +158,33 @@ public class LoginWidget<CC extends ClientConfigurations>
 
             @Override
             public void onSuccess(Boolean result) {
-                if (result.booleanValue() == true) {
-                    if (staySignedIn.getValue()) {
-                        Log.debug("Store cookie");
-                        Cookies.setCookie(SSICH, "on", new Date(Long.MAX_VALUE));
-                        Cookies.setCookie(SSIU, StringFormatter.Base64Encode(userName.getText().trim()), new Date(Long.MAX_VALUE));
-                        Cookies.setCookie(SSIP, StringFormatter.Base64Encode(password.getText().trim()), new Date(Long.MAX_VALUE));
+                try {
+                    if (result.booleanValue() == true) {
+                        if (staySignedIn.getValue()) {
+                            Log.debug("Store cookie");
+                            Cookies.setCookie(SSICH, "on", new Date(Long.MAX_VALUE));
+                            Cookies.setCookie(SSIU, StringFormatter.Base64Encode(userName.getText().trim()), new Date(Long.MAX_VALUE));
+                            Cookies.setCookie(SSIP, StringFormatter.Base64Encode(password.getText().trim()), new Date(Long.MAX_VALUE));
+                        } else {
+                            Log.debug("Cleaning cookie");
+                            Cookies.removeCookie(SSIP);
+                            Cookies.removeCookie(SSIU);
+                            Cookies.removeCookie(SSICH);
+                        }
+                        callBack.loggedIn(cc, userName.getText().trim());
                     } else {
-                        Log.debug("Cleaning cookie");
-                        Cookies.removeCookie(SSIP);
-                        Cookies.removeCookie(SSIU);
-                        Cookies.removeCookie(SSICH);
+                        errorMsg.setText("Can't login, try again.");
                     }
-                    callBack.loggedIn(cc, userName.getText().trim());
-                } else {
-                    errorMsg.setText("Can't login, try again.");
+                } finally {
+                    login.setEnabled(true);
                 }
+
             }
 
             @Override
             public void onFailure(Throwable caught) {
                 errorMsg.setText("Error loging-in:" + caught.getMessage());
+                login.setEnabled(true);
             }
         });
     }

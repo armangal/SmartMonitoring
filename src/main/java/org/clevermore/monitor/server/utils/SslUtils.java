@@ -40,7 +40,7 @@ public class SslUtils {
     public static void main(String[] args) {
         try {
              
-            System.out.println(getCertificatesValidTill("channel1.demo.playtech.com", 4457));
+            System.out.println(getCertificatesValidTill("channel4.ipokerfr.com", 4437));
             System.out.println(getCertificatesValidTill("hhrcashier.ipoker.com", 443));
             System.out.println(getCertificatesValidTill("66.212.242.123", 443));
             System.out.println(getCertificatesValidTill("66.212.242.115", 5007));

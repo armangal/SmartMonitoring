@@ -10,11 +10,11 @@
 	<name>Demo Monitoring</name>
 	<password>pass</password>
 	<guestPassword>pass</guestPassword>
-	
+
 	<smartExecutorConf>
 		<enabled>true</enabled>
 	</smartExecutorConf>
-	
+
 	<alertsConfig>
 		<enabled>true</enabled>
 		<fromAddress>test@test.com</fromAddress>
@@ -30,6 +30,84 @@
 		<authenticate>false</authenticate>
 		<userName>user</userName>
 		<password>pass</password>
+		<alerts>
+			<alert>
+				<!-- unique ID -->
+				<id>1</id>
+
+				<!-- enum name for quick location -->
+				<enumName>MEMORY</enumName>
+
+				<!-- will be used for alerts UI and mails -->
+				<description>Memory</description>
+
+				<!-- group of alerts the current alert belongs to -->
+				<alertGroup>SYSTEM</alertGroup>
+
+				<!-- if to send mail when alert occurs -->
+				<sendMail>true</sendMail>
+
+				<!--Prevents sending mail when threshold is reached ALWAYS, NEVER or 
+					120:5 (first number it's seconds to aggregate, second is the amount of occurrences -->
+				<aggregation>120:5</aggregation>
+
+				<!-- actual threshold that should be reached in order to trigger alert, 
+					it's decimal number, might not be used but other configurations will provide 
+					it like in case of server groups -->
+				<threshold>90</threshold>
+			</alert>
+			<alert>
+				<id>2</id>
+				<enumName>CPU</enumName>
+				<description>Cpu</description>
+				<alertGroup>SYSTEM</alertGroup>
+				<sendMail>true</sendMail>
+				<aggregation>120:5</aggregation>
+				<threshold>95</threshold>
+			</alert>
+			<alert>
+				<id>3</id>
+				<enumName>SERVER_COMM_FAILED</enumName>
+				<description>Connection Failed</description>
+				<alertGroup>SYSTEM</alertGroup>
+				<sendMail>true</sendMail>
+				<aggregation>ALWAYS</aggregation>
+			</alert>
+			<alert>
+				<id>4</id>
+				<enumName>SERVER_DISCONNECTED</enumName>
+				<description>Disconnection</description>
+				<alertGroup>SYSTEM</alertGroup>
+				<sendMail>true</sendMail>
+				<aggregation>ALWAYS</aggregation>
+			</alert>
+			<alert>
+				<id>5</id>
+				<enumName>SERVER_CONNECTED</enumName>
+				<description>Re-Connectoin</description>
+				<alertGroup>SYSTEM</alertGroup>
+				<sendMail>true</sendMail>
+				<aggregation>ALWAYS</aggregation>
+			</alert>
+			<alert>
+				<id>6</id>
+				<enumName>GC</enumName>
+				<description>GC</description>
+				<alertGroup>SYSTEM</alertGroup>
+				<sendMail>true</sendMail>
+				<aggregation>ALWAYS</aggregation>
+				<threshold>2500</threshold>
+			</alert>
+			<alert>
+				<id>7</id>
+				<enumName>MEMORY_SPACE</enumName>
+				<description>Memory Space</description>
+				<alertGroup>SYSTEM</alertGroup>
+				<sendMail>true</sendMail>
+				<aggregation>120:5</aggregation>
+				<threshold>98</threshold>
+			</alert>
+		</alerts>
 	</alertsConfig>
 
 	<mongoConfig>
@@ -95,6 +173,6 @@
 			<username>admin</username>
 			<password>password</password>
 		</server>
-		
+
 	</servers>
 </ServersConfig>
