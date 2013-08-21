@@ -4,7 +4,7 @@
 
 	<groupId>org.clevermore</groupId>
 	<artifactId>smartmonitoring</artifactId>
-	<version>1.0.36</version>
+	<version>1.0.37</version>
 	<name>Smart Monitoring, open-source JMX monitoring server with HTML (GWT) UI</name>
 	<description>Smart Monitoring</description>
 
@@ -55,9 +55,9 @@
 		<javax.mail.version>1.4</javax.mail.version>
 		<commons-io.version>2.4</commons-io.version>
 		<oracle.jdbc.version>11.2.0.3</oracle.jdbc.version>
-		<smartexecutor.version>1.0.8</smartexecutor.version>
+		<smartexecutor.version>1.0.9</smartexecutor.version>
 
-		<gwt.version>2.5.0</gwt.version>
+		<gwt.version>2.5.1</gwt.version>
 		<gin.version>2.0.0</gin.version>
 		<gwt-charts.version>0.9.9</gwt-charts.version>
 		<gwt-log.version>3.1.8</gwt-log.version>
@@ -480,6 +480,7 @@
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
+				<version>0.6</version>
 				<configuration>
 					<message>Creating site for ${project.version}</message>
 				</configuration>
