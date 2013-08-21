@@ -15,6 +15,14 @@
  */
 package org.clevermore.monitor.client.servers;
 
+import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -23,10 +31,24 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TextArea;
 
 public class GcHistoryPopup
-    extends DialogBox {
+    extends DialogBox
+    implements KeyPressHandler {
 
     private FlowPanel flowPanel = new FlowPanel();
     private TextArea textArea = new TextArea();
+
+    NativePreviewHandler globalKeyHandler = new NativePreviewHandler() {
+
+        @Override
+        public void onPreviewNativeEvent(NativePreviewEvent event) {
+            NativeEvent ne = event.getNativeEvent();
+            if (ne.getKeyCode() == 27) {
+                hide();
+            }
+        }
+    };
+
+    HandlerRegistration nativePreviewHandler = Event.addNativePreviewHandler(globalKeyHandler);
 
     public GcHistoryPopup() {
         setAnimationEnabled(true);
@@ -41,11 +63,23 @@ public class GcHistoryPopup
         flowPanel.add(new Image("http://2.bp.blogspot.com/-dDa_norhVcQ/TqYUmSirZaI/AAAAAAAAAUE/AtKyC9ftA0A/s1600/verboseGC_OldGen_detail.png"));
         flowPanel.add(new Image("http://3.bp.blogspot.com/-C-09CuwRAec/TqYUxQX53oI/AAAAAAAAAUM/Cl7wJn2k66k/s1600/verboseGC_PermGen_detail.png"));
         flowPanel.add(new Image("http://4.bp.blogspot.com/-U4NiGRW-Sq0/TqYU8jkx0uI/AAAAAAAAAUU/rNoNBQJbhpQ/s1600/verboseGC_Java7_Heap_breakdown_detail.png"));
+
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+        nativePreviewHandler.removeHandler();
     }
 
     public void setText(String text) {
         textArea.setText(text);
         int left = (Window.getClientWidth() - getOffsetWidth()) >> 1;
         setPopupPosition(Math.max(Window.getScrollLeft() + left, 0), 26);
+    }
+
+    @Override
+    public void onKeyPress(KeyPressEvent event) {
+        Log.debug("key" + event.getUnicodeCharCode());
     }
 }

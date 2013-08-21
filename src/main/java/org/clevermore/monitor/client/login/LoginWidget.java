@@ -15,11 +15,10 @@
  */
 package org.clevermore.monitor.client.login;
 
-import java.util.Date;
-
 import org.clevermore.monitor.client.ConfigurationServiceAsync;
 import org.clevermore.monitor.client.GeneralService;
 import org.clevermore.monitor.client.GeneralServiceAsync;
+import org.clevermore.monitor.client.utils.LocalStorage;
 import org.clevermore.monitor.shared.config.ClientConfigurations;
 import org.clevermore.monitor.shared.utils.StringFormatter;
 
@@ -31,7 +30,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -46,9 +44,9 @@ import com.google.gwt.user.client.ui.TextBox;
 public class LoginWidget<CC extends ClientConfigurations>
     extends Composite {
 
-    private static final String SSIP = "ssip";
-    private static final String SSIU = "ssiu";
-    private static final String SSICH = "ssich";
+    private static final String SSIP = "auth.ssip";
+    private static final String SSIU = "auth.ssiu";
+    private static final String SSICH = "auth.ssich";
 
     public interface LoggedInCallBack<CC> {
 
@@ -128,9 +126,9 @@ public class LoginWidget<CC extends ClientConfigurations>
                 Window.setTitle(result.getTitle() + ", v:" + result.getVersion());
                 cc = result;
 
-                staySignedIn.setValue(Cookies.getCookie(SSICH) != null && Cookies.getCookie(SSICH).equals("on"));
-                String user = StringFormatter.Base64Decode(Cookies.getCookie(SSIU));
-                String pass = StringFormatter.Base64Decode(Cookies.getCookie(SSIP));
+                staySignedIn.setValue(LocalStorage.readStoredItem(SSICH) != null && LocalStorage.readStoredItem(SSICH).equals("on"));
+                String user = StringFormatter.Base64Decode(LocalStorage.readStoredItem(SSIU));
+                String pass = StringFormatter.Base64Decode(LocalStorage.readStoredItem(SSIP));
                 if (staySignedIn.getValue() && user != null && pass != null) {
                     userName.setText(user);
                     password.setText(pass);
@@ -162,14 +160,14 @@ public class LoginWidget<CC extends ClientConfigurations>
                     if (result.booleanValue() == true) {
                         if (staySignedIn.getValue()) {
                             Log.debug("Store cookie");
-                            Cookies.setCookie(SSICH, "on", new Date(Long.MAX_VALUE));
-                            Cookies.setCookie(SSIU, StringFormatter.Base64Encode(userName.getText().trim()), new Date(Long.MAX_VALUE));
-                            Cookies.setCookie(SSIP, StringFormatter.Base64Encode(password.getText().trim()), new Date(Long.MAX_VALUE));
+                            LocalStorage.storeItem(SSICH, "on");
+                            LocalStorage.storeItem(SSIU, StringFormatter.Base64Encode(userName.getText().trim()));
+                            LocalStorage.storeItem(SSIP, StringFormatter.Base64Encode(password.getText().trim()));
                         } else {
                             Log.debug("Cleaning cookie");
-                            Cookies.removeCookie(SSIP);
-                            Cookies.removeCookie(SSIU);
-                            Cookies.removeCookie(SSICH);
+                            LocalStorage.removeItem(SSIP);
+                            LocalStorage.removeItem(SSIU);
+                            LocalStorage.removeItem(SSICH);
                         }
                         callBack.loggedIn(cc, userName.getText().trim());
                     } else {

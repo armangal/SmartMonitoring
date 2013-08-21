@@ -24,6 +24,7 @@ import java.util.Map;
 import org.clevermore.monitor.client.ServerWidgetService;
 import org.clevermore.monitor.client.ServerWidgetServiceAsync;
 import org.clevermore.monitor.client.utils.ClientStringFormatter;
+import org.clevermore.monitor.client.utils.LocalStorage;
 import org.clevermore.monitor.client.widgets.AbstractMonitoringWidget;
 import org.clevermore.monitor.client.widgets.IMonitoringWidget;
 import org.clevermore.monitor.shared.config.ClientConfigurations;
@@ -44,7 +45,6 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -139,7 +139,7 @@ public class ServersWidget<CC extends ClientConfigurations>
         title.add(new Label("Filter:"));
         title.add(filter);
         title.add(getRefProg());
-        String filterText = Cookies.getCookie(SERVERS_FILTER);
+        String filterText = LocalStorage.readStoredItem(SERVERS_FILTER);
         if (filterText != null) {
             filter.setText(filterText.trim().toLowerCase());
         }
@@ -155,7 +155,7 @@ public class ServersWidget<CC extends ClientConfigurations>
             }
         });
 
-        String showOff = Cookies.getCookie(SERVERS_SHOW_OFF);
+        String showOff = LocalStorage.readStoredItem(SERVERS_SHOW_OFF);
         if (showOff != null && (showOff.equals("1") || showOff.equals("0"))) {
             chkShowOffline.setValue(showOff.equals("1"));
             showOffline = showOff.equals("1");
@@ -166,7 +166,7 @@ public class ServersWidget<CC extends ClientConfigurations>
             @Override
             public void onClick(ClickEvent event) {
                 showOffline = chkShowOffline.getValue();
-                Cookies.setCookie(SERVERS_SHOW_OFF, showOffline ? "1" : "0");
+                LocalStorage.storeItem(SERVERS_SHOW_OFF, showOffline ? "1" : "0");
             }
         });
 
@@ -352,7 +352,7 @@ public class ServersWidget<CC extends ClientConfigurations>
         filter.setText(filter.getText().trim().toLowerCase().replace(",", " "));
         if (filter.getText().length() > 0) {
             // filter
-            Cookies.setCookie(SERVERS_FILTER, filter.getText());
+            LocalStorage.storeItem(SERVERS_FILTER, filter.getText());
             filter.getElement().getStyle().setBackgroundColor("#66FF00");
 
             String[] fil = filter.getText().split(" ");
@@ -366,7 +366,7 @@ public class ServersWidget<CC extends ClientConfigurations>
 
         } else {
             filter.getElement().getStyle().setBackgroundColor("white");
-            Cookies.removeCookie(SERVERS_FILTER);
+            LocalStorage.removeItem(SERVERS_FILTER);
 
             return true;
         }

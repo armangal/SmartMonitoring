@@ -31,6 +31,7 @@ import org.clevermore.monitor.shared.config.ClientConfigurations;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.dom.client.Style;
@@ -155,6 +156,13 @@ public abstract class AbstractEntryPoint<CC extends ClientConfigurations>
     }
 
     public AbstractEntryPoint() {
+        GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+            
+            public void onUncaughtException(Throwable e) {
+                Log.fatal("UncaughtException:" + e.getMessage(), e);
+            }
+        });
+        
         this.loginWidget = new LoginWidget<CC>(getConfigurationService());
         this.loginWidget.registerCallBack(new LoggedInCallBack<CC>() {
 

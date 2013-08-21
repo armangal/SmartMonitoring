@@ -107,8 +107,9 @@ public abstract class AbstractJMXGeneralStats<SS extends ServerStatus>
 
     /*
      * (non-Javadoc)
-     * @see org.clevermore.monitor.server.utils.IJMXGeneralStats#getMemoryStats(org.clevermore.monitor.server.model.
-     * ServerStatus, java.util.Date)
+     * @see
+     * org.clevermore.monitor.server.utils.IJMXGeneralStats#getMemoryStats(org.clevermore.monitor.server.model
+     * . ServerStatus, java.util.Date)
      */
     @Override
     public void getMemoryStats(SS serverStataus, Date executionDate)
@@ -160,14 +161,16 @@ public abstract class AbstractJMXGeneralStats<SS extends ServerStatus>
         serverStataus.setUptime(rmbean.getUptime());
 
         org.clevermore.monitor.shared.runtime.MemoryUsage mu = serverStataus.updateMemoryUsage(heapMemoryUsage.getInit(),
-                                                                                           heapMemoryUsage.getUsed(),
-                                                                                           heapMemoryUsage.getCommitted(),
-                                                                                           heapMemoryUsage.getMax(),
-                                                                                           memoryState);
+                                                                                               heapMemoryUsage.getUsed(),
+                                                                                               heapMemoryUsage.getCommitted(),
+                                                                                               heapMemoryUsage.getMax(),
+                                                                                               memoryState);
         for (MemoryState ms : memoryState) {
-            double usage = (double) ms.getUsed() * 100d / (double) ms.getMax();
-            if ((usage > serverStataus.getServerGroup().getNotHeapMemorySpaceUsage() && !ms.isHeap())
-                || (usage > serverStataus.getServerGroup().getHeapMemorySpaceUsage() && ms.isHeap())) {
+            double max = (double) ms.getMax();
+            double usage = (double) ms.getUsed() * 100d / max;
+            if (max != 0
+                && ((usage > serverStataus.getServerGroup().getNotHeapMemorySpaceUsage() && !ms.isHeap()) || (usage > serverStataus.getServerGroup()
+                                                                                                                                   .getHeapMemorySpaceUsage() && ms.isHeap()))) {
 
                 alertService.createAndAddAlert("MemorySpace: " + ms.getName() + " usage:" + DECIMAL_FORMAT.format(usage) + "%",
                                                ms.toString(),
@@ -193,7 +196,7 @@ public abstract class AbstractJMXGeneralStats<SS extends ServerStatus>
         for (GCHistory gch : gcHistoryList) {
             long lastColleactionTime = serverStataus.updateGCHistory(gch);
             if (lastColleactionTime > serverStataus.getServerGroup().getGcTime()) {
-                alertService.createAndAddAlert("GC took tool long: " + lastColleactionTime + " ms",
+                alertService.createAndAddAlert("GC too long: " + lastColleactionTime + " ms",
                                                "",
                                                serverStataus.getServerConfig().getServerCode(),
                                                serverStataus.getServerConfig().getName(),
@@ -237,8 +240,9 @@ public abstract class AbstractJMXGeneralStats<SS extends ServerStatus>
 
     /*
      * (non-Javadoc)
-     * @see org.clevermore.monitor.server.utils.IJMXGeneralStats#getRuntimeInfo(org.clevermore.monitor.server.model.
-     * ServerStatus)
+     * @see
+     * org.clevermore.monitor.server.utils.IJMXGeneralStats#getRuntimeInfo(org.clevermore.monitor.server.model
+     * . ServerStatus)
      */
     @Override
     public RuntimeInfo getRuntimeInfo(SS serverStataus)

@@ -41,12 +41,17 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.HasDirection.Direction;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -94,6 +99,19 @@ public class ServerStatsPopup<CC extends ClientConfigurations>
     private boolean showHeap = true;
     private boolean refresh = true;
     private LinkedList<MemoryUsage> memoryUsages;// local copy for fast refresh
+    
+    NativePreviewHandler globalKeyHandler = new NativePreviewHandler() {
+        @Override
+        public void onPreviewNativeEvent(NativePreviewEvent event) {
+            NativeEvent ne = event.getNativeEvent();
+            if (ne.getKeyCode() == 27) {//on Esc
+                hide();
+            }
+        }
+    };
+
+    HandlerRegistration nativePreviewHandler = Event.addNativePreviewHandler(globalKeyHandler);
+    
 
     public ServerStatsPopup(final Integer serverCode) {
         this.serverCode = serverCode;
@@ -303,6 +321,7 @@ public class ServerStatsPopup<CC extends ClientConfigurations>
     public void hide() {
         super.hide();
         refresh = false;
+        nativePreviewHandler.removeHandler();
     }
 
     private void getCpuStats(int chunks) {
