@@ -17,7 +17,6 @@ package org.clevermore.monitor.server.utils;
 
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,10 +26,13 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.clevermore.monitor.shared.certificate.Certificate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A utility class that is retrieving ssl certificate information for monitoring tool.
+ * 
  * @author Denys Mostovliuk
  */
 public class SslUtils {
@@ -39,9 +41,10 @@ public class SslUtils {
 
     public static void main(String[] args) {
         try {
-             
+
             System.out.println(getCertificatesValidTill("channel4.ipokerfr.com", 4437));
-            System.out.println(getCertificatesValidTill("hhrcashier.ipoker.com", 443));
+            System.out.println(getCertificatesValidTill("channel.ipokerfr.com", 443));
+            System.out.println(getCertificatesValidTill("channel1.ipoker.com", 4407));
             System.out.println(getCertificatesValidTill("66.212.242.123", 443));
             System.out.println(getCertificatesValidTill("66.212.242.115", 5007));
             System.out.println(getCertificatesValidTill("67.211.103.37", 7204));
@@ -50,7 +53,7 @@ public class SslUtils {
         }
     }
 
-    private static Map<BigInteger, Date> getCertificatesValidTill(String host, int port) {
+    public static Map<BigInteger, Certificate> getCertificatesValidTill(String host, int port) {
         LOGGER.info("Validating certificate for:>> {}:{}", host, port);
         TrustManager[] trustAll = new TrustManager[] {new X509TrustManager() {
 
@@ -64,7 +67,7 @@ public class SslUtils {
         }};
 
         SSLSocket sslsocket = null;
-        Map<BigInteger, Date> result = new HashMap<BigInteger, Date>(1);
+        Map<BigInteger, Certificate> result = new HashMap<BigInteger, Certificate>(1);
         try {
             SSLContext context = SSLContext.getInstance("SSL");
             context.init(null, trustAll, null);
@@ -78,7 +81,11 @@ public class SslUtils {
                     if (cert instanceof X509Certificate) {
                         X509Certificate cer = (X509Certificate) cert;
                         LOGGER.info("X509Certificate:{}", cer);
-                        result.put(cer.getSerialNumber(), cer.getNotAfter());
+                        Certificate certificate = new Certificate(cer.getType(), cer.getNotBefore(), cer.getNotAfter(), cer.getSerialNumber().toString());
+                        certificate.setIssuer(cer.getIssuerDN().getName());
+                        certificate.setCommonName("");
+
+                        result.put(cer.getSerialNumber(), certificate);
                     }
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
