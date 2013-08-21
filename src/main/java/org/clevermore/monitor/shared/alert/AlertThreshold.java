@@ -41,7 +41,7 @@ public class AlertThreshold
     /**
      * Example: <br>
      * <p>
-     * <b>new AlertThreshold(2 * 60 * 1000L, 5)</b = send main_alert after we had 5 times alert during last 2
+     * <b>new AlertThreshold(2 * 60 * 1000L, 5)</b> = send main_alert after we had 5 times alert during last 2
      * minutes
      * </p>
      * <p>
