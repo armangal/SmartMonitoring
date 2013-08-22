@@ -13,27 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.clevermore.monitor.server.tasks.impl;
+package org.clevermore.monitor.server.tasks;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public interface ICertificateScanner
+    extends Runnable {
 
-
-public class CertificatesValidator {
-    public static Logger logger = LoggerFactory.getLogger("PeriodicalUpdater");
-
-//    @Inject
-//    private IConnectedServersState<SS, CS, DS> connectedServersState;
-//
-//    @Inject
-//    private IConfigurationService<SC> configurationService;
-//
-//    @Inject
-//    private IAlertService<SS> alertService;
-//    
-//    
-//    public CertificatesValidator() {
-//        // TODO Auto-generated constructor stub
-//    }
-//    
 }

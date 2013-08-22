@@ -16,6 +16,7 @@
 package org.clevermore.monitor.server.tasks.impl;
 
 import org.clevermore.monitor.server.model.DatabaseServer;
+import org.clevermore.monitor.server.tasks.AbstractDbRefresher;
 
 public class StandardDbRefresher
     extends AbstractDbRefresher<DatabaseServer> {

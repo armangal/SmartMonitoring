@@ -28,10 +28,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.clevermore.monitor.server.model.config.AbstractServersConfig;
 import org.clevermore.monitor.server.model.config.MongoConfig;
+import org.clevermore.monitor.server.model.config.ValidateCertificates;
 import org.clevermore.monitor.shared.config.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public abstract class AbstractConfigurationService<SC extends AbstractServersConfig>
     implements IConfigurationService<SC> {
@@ -77,6 +77,10 @@ public abstract class AbstractConfigurationService<SC extends AbstractServersCon
         return serversConfig.getMongoConfig();
     }
 
+    public ValidateCertificates getValidateCertificates() {
+        return serversConfig.getValidateCertificates();
+    }
+
     @Override
     public String getServersConfigXML()
         throws FileNotFoundException, IOException {
@@ -88,7 +92,8 @@ public abstract class AbstractConfigurationService<SC extends AbstractServersCon
     /*
      * (non-Javadoc)
      * @see
-     * org.clevermore.monitor.server.services.config.IConfigurationService#saveServersConfigXML(java.lang.String)
+     * org.clevermore.monitor.server.services.config.IConfigurationService#saveServersConfigXML(java.lang.
+     * String)
      */
     @Override
     public void saveServersConfigXML(final String xml)
@@ -170,8 +175,7 @@ public abstract class AbstractConfigurationService<SC extends AbstractServersCon
         }
         return serversConfig.getAlertsConfig().isEnabled();
     }
-    
-    
+
     public Date getStopAlertsStartDate() {
         return stopAlertsStartDate;
     }

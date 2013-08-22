@@ -28,7 +28,6 @@ public class Certificate
 
     private String type; // server or chain
     private String commonName;
-    private String SANs;
     private Date validFrom;
     private Date validTo;
     private String serialNumber;
@@ -36,6 +35,7 @@ public class Certificate
     private String issuer;
     private String organization;
     private String location;
+    private boolean alertRaised;
 
     Certificate() {}
 
@@ -51,6 +51,14 @@ public class Certificate
         return type;
     }
 
+    public boolean isAlertRaised() {
+        return alertRaised;
+    }
+
+    public void setAlertRaised(boolean alertRaised) {
+        this.alertRaised = alertRaised;
+    }
+
     public void setType(String type) {
         this.type = type;
     }
@@ -61,14 +69,6 @@ public class Certificate
 
     public void setCommonName(String commonName) {
         this.commonName = commonName;
-    }
-
-    public String getSANs() {
-        return SANs;
-    }
-
-    public void setSANs(String sANs) {
-        SANs = sANs;
     }
 
     public Date getValidFrom() {
@@ -134,8 +134,6 @@ public class Certificate
                .append(type)
                .append(", commonName=")
                .append(commonName)
-               .append(", SANs=")
-               .append(SANs)
                .append(", validFrom=")
                .append(validFrom)
                .append(", validTo=")
@@ -152,6 +150,82 @@ public class Certificate
                .append(location)
                .append("]");
         return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (alertRaised ? 1231 : 1237);
+        result = prime * result + ((commonName == null) ? 0 : commonName.hashCode());
+        result = prime * result + ((issuer == null) ? 0 : issuer.hashCode());
+        result = prime * result + ((location == null) ? 0 : location.hashCode());
+        result = prime * result + ((organization == null) ? 0 : organization.hashCode());
+        result = prime * result + ((serialNumber == null) ? 0 : serialNumber.hashCode());
+        result = prime * result + ((signatureAlgorithm == null) ? 0 : signatureAlgorithm.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((validFrom == null) ? 0 : validFrom.hashCode());
+        result = prime * result + ((validTo == null) ? 0 : validTo.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Certificate other = (Certificate) obj;
+        if (alertRaised != other.alertRaised)
+            return false;
+        if (commonName == null) {
+            if (other.commonName != null)
+                return false;
+        } else if (!commonName.equals(other.commonName))
+            return false;
+        if (issuer == null) {
+            if (other.issuer != null)
+                return false;
+        } else if (!issuer.equals(other.issuer))
+            return false;
+        if (location == null) {
+            if (other.location != null)
+                return false;
+        } else if (!location.equals(other.location))
+            return false;
+        if (organization == null) {
+            if (other.organization != null)
+                return false;
+        } else if (!organization.equals(other.organization))
+            return false;
+        if (serialNumber == null) {
+            if (other.serialNumber != null)
+                return false;
+        } else if (!serialNumber.equals(other.serialNumber))
+            return false;
+        if (signatureAlgorithm == null) {
+            if (other.signatureAlgorithm != null)
+                return false;
+        } else if (!signatureAlgorithm.equals(other.signatureAlgorithm))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        if (validFrom == null) {
+            if (other.validFrom != null)
+                return false;
+        } else if (!validFrom.equals(other.validFrom))
+            return false;
+        if (validTo == null) {
+            if (other.validTo != null)
+                return false;
+        } else if (!validTo.equals(other.validTo))
+            return false;
+        return true;
     }
 
 }

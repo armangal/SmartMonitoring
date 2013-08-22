@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.clevermore.monitor.server.tasks.impl;
+package org.clevermore.monitor.server.tasks;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -40,8 +40,6 @@ import org.clevermore.monitor.server.model.config.ServerConfig;
 import org.clevermore.monitor.server.model.config.ServerGroup;
 import org.clevermore.monitor.server.services.alert.IAlertService;
 import org.clevermore.monitor.server.services.config.IConfigurationService;
-import org.clevermore.monitor.server.tasks.ConnectionSynch;
-import org.clevermore.monitor.server.tasks.IJMXConnectorThread;
 import org.clevermore.monitor.shared.alert.AlertType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

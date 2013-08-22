@@ -23,6 +23,7 @@ import org.clevermore.monitor.server.model.config.DatabaseConfig;
 import org.clevermore.monitor.server.model.config.ServerConfig;
 import org.clevermore.monitor.server.model.config.ServerGroup;
 import org.clevermore.monitor.server.model.config.ServersConfig;
+import org.clevermore.monitor.server.tasks.AbstractServersConnectorThread;
 
 
 public class ServersConnectorThread

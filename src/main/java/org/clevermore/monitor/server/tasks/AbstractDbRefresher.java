@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.clevermore.monitor.server.tasks.impl;
+package org.clevermore.monitor.server.tasks;
 
 import java.sql.ResultSet;
 import java.util.concurrent.Callable;

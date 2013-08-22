@@ -15,8 +15,11 @@
  */
 package org.clevermore.monitor.client;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
+import org.clevermore.monitor.shared.certificate.Certificate;
 import org.clevermore.monitor.shared.errors.AuthenticationException;
 import org.clevermore.monitor.shared.runtime.CpuUtilizationChunk;
 import org.clevermore.monitor.shared.runtime.MemoryUsage;
@@ -51,6 +54,9 @@ public interface ServerWidgetService
         throws AuthenticationException;
 
     RuntimeInfo getRuntimeInfo(Integer serverCode)
+        throws AuthenticationException;
+
+    HashMap<String, List<Certificate>> getCertificates()
         throws AuthenticationException;
 
 }

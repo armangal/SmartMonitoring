@@ -27,9 +27,11 @@ import org.clevermore.monitor.server.services.config.ConfigurationService;
 import org.clevermore.monitor.server.services.config.IConfigurationService;
 import org.clevermore.monitor.server.services.mail.IMailService;
 import org.clevermore.monitor.server.services.mail.StandardMailService;
+import org.clevermore.monitor.server.tasks.ICertificateScanner;
 import org.clevermore.monitor.server.tasks.IJMXConnectorThread;
 import org.clevermore.monitor.server.tasks.IPeriodicalUpdater;
 import org.clevermore.monitor.server.tasks.IStateUpdaterThread;
+import org.clevermore.monitor.server.tasks.impl.CertificateScanner;
 import org.clevermore.monitor.server.tasks.impl.PeriodicalUpdater;
 import org.clevermore.monitor.server.tasks.impl.ServersConnectorThread;
 import org.clevermore.monitor.server.tasks.impl.StateUpdaterThread;
@@ -56,17 +58,18 @@ public class MonitoringModule
         bind(new TypeLiteral<IConfigurationService<ServersConfig>>() {}).toInstance(ConfigurationService.getInstance());
 
         bind(new TypeLiteral<IConnectedServersState<ServerStatus, DatabaseServer>>() {}).to(ConnectedServersState.class).in(Singleton.class);
-        
+
         bind(new TypeLiteral<IMailService<ServerStatus>>() {}).to(StandardMailService.class).in(Singleton.class);
 
         bind(new TypeLiteral<IAlertService<ServerStatus>>() {}).to(StandardAlertService.class).in(Singleton.class);
 
         bind(new TypeLiteral<IJMXGeneralStats<ServerStatus>>() {}).to(JMXGeneralStats.class).in(Singleton.class);
 
-
         bind(IJMXConnectorThread.class).to(ServersConnectorThread.class).in(Singleton.class);
         bind(IStateUpdaterThread.class).to(StateUpdaterThread.class).in(Singleton.class);
         bind(IPeriodicalUpdater.class).to(PeriodicalUpdater.class).in(Singleton.class);
+        bind(ICertificateScanner.class).to(CertificateScanner.class).in(Singleton.class);
+        
         install(new MongoDbModule<ServersConfig>(ConfigurationService.getInstance()));
     }
 

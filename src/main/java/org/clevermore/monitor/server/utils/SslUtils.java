@@ -17,7 +17,10 @@ package org.clevermore.monitor.server.utils;
 
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
@@ -42,18 +45,18 @@ public class SslUtils {
     public static void main(String[] args) {
         try {
 
-            System.out.println(getCertificatesValidTill("channel4.ipokerfr.com", 4437));
-            System.out.println(getCertificatesValidTill("channel.ipokerfr.com", 443));
-            System.out.println(getCertificatesValidTill("channel1.ipoker.com", 4407));
-            System.out.println(getCertificatesValidTill("66.212.242.123", 443));
-            System.out.println(getCertificatesValidTill("66.212.242.115", 5007));
-            System.out.println(getCertificatesValidTill("67.211.103.37", 7204));
+            System.out.println(getCertificates("channel4.ipokerfr.com", 4437));
+            System.out.println(getCertificates("channel.ipokerfr.com", 443));
+            System.out.println(getCertificates("channel1.ipoker.com", 4407));
+            System.out.println(getCertificates("66.212.242.123", 443));
+            System.out.println(getCertificates("66.212.242.115", 5007));
+            System.out.println(getCertificates("67.211.103.37", 7204));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static Map<BigInteger, Certificate> getCertificatesValidTill(String host, int port) {
+    public static List<Certificate> getCertificates(String host, int port) {
         LOGGER.info("Validating certificate for:>> {}:{}", host, port);
         TrustManager[] trustAll = new TrustManager[] {new X509TrustManager() {
 
@@ -67,7 +70,7 @@ public class SslUtils {
         }};
 
         SSLSocket sslsocket = null;
-        Map<BigInteger, Certificate> result = new HashMap<BigInteger, Certificate>(1);
+        List<Certificate> result = new ArrayList<>(1);
         try {
             SSLContext context = SSLContext.getInstance("SSL");
             context.init(null, trustAll, null);
@@ -75,6 +78,7 @@ public class SslUtils {
             sslsocket = (SSLSocket) sslsocketfactory.createSocket(host, port);
 
             LOGGER.info("SSL Socket session:{}", sslsocket.getSession());
+            boolean server = true;
 
             for (java.security.cert.Certificate cert : sslsocket.getSession().getPeerCertificates()) {
                 try {
@@ -83,9 +87,28 @@ public class SslUtils {
                         LOGGER.info("X509Certificate:{}", cer);
                         Certificate certificate = new Certificate(cer.getType(), cer.getNotBefore(), cer.getNotAfter(), cer.getSerialNumber().toString());
                         certificate.setIssuer(cer.getIssuerDN().getName());
-                        certificate.setCommonName("");
+                        String name = cer.getSubjectDN().getName();
+                        for (String s : name.split(",")) {
+                            if (s.startsWith("CN=")) {
+                                certificate.setCommonName(s.split("=")[1]);
+                            }
+                            if (s.startsWith("L=")) {
+                                certificate.setLocation(s.split("=")[1]);
+                            }
+                            if (s.startsWith("O=")) {
+                                certificate.setOrganization(s.split("=")[1]);
+                            }
+                        }
+                        certificate.setType(server ? "server" : "chain");
+                        certificate.setSerialNumber(cer.getSerialNumber().toString());
+                        certificate.setSignatureAlgorithm(cer.getSigAlgName());
+                        certificate.setValidFrom(cer.getNotBefore());
+                        certificate.setValidTo(cer.getNotAfter());
 
-                        result.put(cer.getSerialNumber(), certificate);
+                        server = false;
+                        certificate.setLocation("");
+
+                        result.add(certificate);
                     }
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);

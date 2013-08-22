@@ -15,8 +15,11 @@
  */
 package org.clevermore.monitor.client;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
+import org.clevermore.monitor.shared.certificate.Certificate;
 import org.clevermore.monitor.shared.runtime.CpuUtilizationChunk;
 import org.clevermore.monitor.shared.runtime.MemoryUsage;
 import org.clevermore.monitor.shared.runtime.RuntimeInfo;
@@ -41,5 +44,7 @@ public interface ServerWidgetServiceAsync
     void getCpuUsageHistory(Integer serverCode, Integer chunks, AsyncCallback<LinkedList<CpuUtilizationChunk>> callback);
 
     void getRuntimeInfo(Integer serverCode, AsyncCallback<RuntimeInfo> callback);
+
+    void getCertificates(AsyncCallback<HashMap<String, List<Certificate>>> callback);
 
 }

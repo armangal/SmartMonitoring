@@ -94,7 +94,7 @@ public abstract class AlertService<SS extends ServerStatus, SC extends AbstractS
         try {
             alert.setId(alertCounter.getAndIncrement());
             boolean mailSent = false;
-            if (alert.getAlertType().sendMail() && ss.canSendAlert(alert.getAlertType())) {
+            if (alert.getAlertType().sendMail() && (ss == null || ss.canSendAlert(alert.getAlertType()))) {
                 mailSent = mailService.sendAlert(alert, ss);
             }
 

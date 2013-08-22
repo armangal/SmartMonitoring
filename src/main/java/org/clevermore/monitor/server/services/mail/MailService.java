@@ -104,8 +104,8 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
     /*
      * (non-Javadoc)
      * @see
-     * org.clevermore.monitor.server.services.mail.IMailService#sendMail(org.clevermore.monitor.server.services.mail
-     * .MailService.MailItem)
+     * org.clevermore.monitor.server.services.mail.IMailService#sendMail(org.clevermore.monitor.server.services
+     * .mail .MailService.MailItem)
      */
     @Override
     public void sendMail(MailItem mailItem) {
@@ -157,8 +157,8 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
     /*
      * (non-Javadoc)
      * @see
-     * org.clevermore.monitor.server.services.mail.IMailService#sendAlert(org.clevermore.monitor.shared.alert.Alert,
-     * SS)
+     * org.clevermore.monitor.server.services.mail.IMailService#sendAlert(org.clevermore.monitor.shared.alert
+     * .Alert, SS)
      */
     @Override
     public boolean sendAlert(Alert alert, SS ss) {
@@ -182,7 +182,7 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
     private String createAlerMailBody(Alert alert, SS ss) {
         try {
             StringBuilder sb = new StringBuilder();
-            if (ss.isConnected() && !ss.isFirstTimeAccess()) {
+            if (ss != null && ss.isConnected() && !ss.isFirstTimeAccess()) {
                 sb.append("<tr><td>Server Up Time: </td><td>").append(ClientStringFormatter.formatMilisecondsToHours(ss.getUpTime())).append(" </td></tr> ");
                 sb.append("<tr><td>CPU: </td><td>").append(ss.getCpuUtilization().getLastPercent().getUsage()).append("% </td></tr> ");
                 sb.append("<tr><td>System Load AVG: </td><td>").append(ss.getCpuUtilization().getLastPercent().getSystemLoadAverage()).append(" </td></tr> ");

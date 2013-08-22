@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.clevermore.monitor.shared.certificate.Certificate;
 import org.clevermore.monitor.shared.servers.ConnectedServer;
 import org.clevermore.monitor.shared.smartpool.PoolsFeed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public abstract class AbstractConnectedServersState<SS extends ServerStatus, DS extends DatabaseServer>
     implements IConnectedServersState<SS, DS> {
@@ -40,6 +40,13 @@ public abstract class AbstractConnectedServersState<SS extends ServerStatus, DS 
 
     private HashMap<String, PoolsFeed> poolFeedMap;
 
+    private HashMap<String, List<Certificate>> certificates = new HashMap<>();
+
+    /**
+     * to be overridden in case of extension project is interested to merge it's data
+     * 
+     * @param ss
+     */
     public void mergeExtraData(SS ss) {}
 
     public SS getServerStataus(final Integer serverCode) {
@@ -114,5 +121,13 @@ public abstract class AbstractConnectedServersState<SS extends ServerStatus, DS 
 
     public String getExtraServerDetails(Integer serverCode) {
         return "---";
+    }
+
+    public HashMap<String, List<Certificate>> getCertificates() {
+        return certificates;
+    }
+
+    public void addCertificate(String domain, List<Certificate> certs) {
+        certificates.put(domain, certs);
     }
 }

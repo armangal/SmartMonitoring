@@ -26,7 +26,9 @@ public enum AlertType implements IAlertType {
     SERVER_DISCONNECTED("Disconnection", 4, AlertGroup.SYSTEM, true, AlertThreshold.ALWAYS), //
     SERVER_CONNECTED("Re-Connectoin", 5, AlertGroup.SYSTEM, true, AlertThreshold.ALWAYS), //
     GC("GC", 6, AlertGroup.SYSTEM, true, AlertThreshold.ALWAYS), //
-    MEMORY_SPACE("Memory Space", 7, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5))//
+    MEMORY_SPACE("Memory Space", 7, AlertGroup.SYSTEM, true, new AlertThreshold(2 * 60 * 1000L, 5)), //
+    CERTIFICATE_EXPIRED("Certificate Expired", 8, AlertGroup.SYSTEM, true, AlertThreshold.ALWAYS), //
+    CERTIFICATE_ABOUT_TO_EXPIRE("Certificate About to expire", 9, AlertGroup.SYSTEM, true, AlertThreshold.ALWAYS)//
     ;
 
     private String name;

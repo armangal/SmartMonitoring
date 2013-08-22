@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.clevermore.monitor.server.tasks.impl;
+package org.clevermore.monitor.server.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,8 +34,6 @@ import org.clevermore.monitor.server.constants.SmartPoolsMonitoring;
 import org.clevermore.monitor.server.model.DatabaseServer;
 import org.clevermore.monitor.server.model.IConnectedServersState;
 import org.clevermore.monitor.server.model.ServerStatus;
-import org.clevermore.monitor.server.tasks.ConnectionSynch;
-import org.clevermore.monitor.server.tasks.IStateUpdaterThread;
 import org.clevermore.monitor.shared.runtime.MemoryUsage;
 import org.clevermore.monitor.shared.runtime.MemoryUsageLight;
 import org.clevermore.monitor.shared.servers.ConnectedServer;

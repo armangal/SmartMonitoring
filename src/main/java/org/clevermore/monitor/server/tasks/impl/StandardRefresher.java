@@ -18,6 +18,7 @@ package org.clevermore.monitor.server.tasks.impl;
 import java.util.Date;
 
 import org.clevermore.monitor.server.model.ServerStatus;
+import org.clevermore.monitor.server.tasks.AbstractRefresher;
 
 
 public class StandardRefresher

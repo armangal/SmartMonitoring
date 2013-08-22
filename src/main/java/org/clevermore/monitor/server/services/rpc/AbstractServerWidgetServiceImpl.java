@@ -18,7 +18,9 @@ package org.clevermore.monitor.server.services.rpc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.clevermore.monitor.client.ServerWidgetService;
 import org.clevermore.monitor.server.model.DatabaseServer;
@@ -28,6 +30,7 @@ import org.clevermore.monitor.server.model.config.DatabaseConfig;
 import org.clevermore.monitor.server.utils.IJMXGeneralStats;
 import org.clevermore.monitor.server.utils.JMXThreadDumpUtils;
 import org.clevermore.monitor.server.utils.ListUtils;
+import org.clevermore.monitor.shared.certificate.Certificate;
 import org.clevermore.monitor.shared.errors.AuthenticationException;
 import org.clevermore.monitor.shared.runtime.CpuUtilizationChunk;
 import org.clevermore.monitor.shared.runtime.MemoryUsage;
@@ -55,7 +58,8 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
     @Inject
     private IJMXGeneralStats<SS> jmxGeneralStats;
 
-    public ConnectedServer getConnectedServer(Integer serverCode) throws AuthenticationException {
+    public ConnectedServer getConnectedServer(Integer serverCode)
+        throws AuthenticationException {
         checkAuthenticated(false);
         ConnectedServer cs = getConnectedServersState().getConnectedServer(serverCode);
         if (cs == null) {
@@ -78,10 +82,21 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
 
     @Override
     public ServersRefreshResponse refresh(ServersRefreshRequest request) {
-        return new ServersRefreshResponse(new Date().toString(), getConnectedServersState().getServers(), getDatabases());
+        boolean certAlert = false;
+        HashMap<String, List<Certificate>> certificates = getConnectedServersState().getCertificates();
+        for (List<Certificate> l : certificates.values()) {
+            for (Certificate c : l) {
+                if (c.isAlertRaised()) {
+                    certAlert = true;
+                    break;
+                }
+            }
+        }
+        return new ServersRefreshResponse(new Date().toString(), getConnectedServersState().getServers(), getDatabases(), certAlert);
     }
 
-    public ThreadDump getThreadDump(Integer serverCode) throws AuthenticationException {
+    public ThreadDump getThreadDump(Integer serverCode)
+        throws AuthenticationException {
         checkAuthenticated(true);
         SS ss = getConnectedServersState().getServerStataus(serverCode);
         if (ss == null || !ss.isConnected()) {
@@ -93,7 +108,8 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         }
     }
 
-    public String getGCHistory(Integer serverCode) throws AuthenticationException {
+    public String getGCHistory(Integer serverCode)
+        throws AuthenticationException {
         checkAuthenticated(false);
         SS serverStataus = getConnectedServersState().getServerStataus(serverCode);
         if (serverStataus != null) {
@@ -103,7 +119,8 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         }
     }
 
-    public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks) throws AuthenticationException {
+    public LinkedList<MemoryUsage> getMemoryStats(Integer serverCode, Integer chunks)
+        throws AuthenticationException {
         checkAuthenticated(false);
         SS serverStataus = getConnectedServersState().getServerStataus(serverCode);
         if (serverStataus != null) {
@@ -115,7 +132,8 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         return null;
     }
 
-    public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks) throws AuthenticationException {
+    public LinkedList<CpuUtilizationChunk> getCpuUsageHistory(Integer serverCode, Integer chunks)
+        throws AuthenticationException {
         checkAuthenticated(false);
         SS serverStataus = getConnectedServersState().getServerStataus(serverCode);
         if (serverStataus != null) {
@@ -126,7 +144,8 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         return null;
     }
 
-    public RuntimeInfo getRuntimeInfo(Integer serverCode) throws AuthenticationException {
+    public RuntimeInfo getRuntimeInfo(Integer serverCode)
+        throws AuthenticationException {
         checkAuthenticated(false);
         SS serverStataus = getConnectedServersState().getServerStataus(serverCode);
         if (serverStataus != null && serverStataus.isConnected()) {
@@ -139,6 +158,16 @@ public abstract class AbstractServerWidgetServiceImpl<SS extends ServerStatus, S
         }
         logger.warn("can't find server with code:{} for cpu stats", serverCode);
         return null;
+    }
+
+    @Override
+    public HashMap<String, List<Certificate>> getCertificates()
+        throws AuthenticationException {
+        checkAuthenticated(false);
+
+        HashMap<String, List<Certificate>> certificates = getConnectedServersState().getCertificates();
+        logger.info("Returning certificates:{}", certificates);
+        return certificates;
     }
 
 }

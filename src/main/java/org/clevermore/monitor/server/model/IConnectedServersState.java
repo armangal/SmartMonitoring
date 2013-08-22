@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.clevermore.monitor.shared.certificate.Certificate;
 import org.clevermore.monitor.shared.servers.ConnectedServer;
 import org.clevermore.monitor.shared.smartpool.PoolsFeed;
-
 
 public interface IConnectedServersState<SS extends ServerStatus, DS extends DatabaseServer> {
 
@@ -48,4 +48,8 @@ public interface IConnectedServersState<SS extends ServerStatus, DS extends Data
     void addDatabaseServer(DS ds);
 
     String getExtraServerDetails(Integer serverCode);
+
+    HashMap<String, List<Certificate>> getCertificates();
+
+    void addCertificate(String domain, List<Certificate> certs);
 }

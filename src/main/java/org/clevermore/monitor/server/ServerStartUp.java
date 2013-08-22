@@ -27,7 +27,9 @@ import org.clevermore.monitor.server.constants.SmartPoolsMonitoring;
 import org.clevermore.monitor.server.guice.GuiceUtils;
 import org.clevermore.monitor.server.guice.MonitoringModule;
 import org.clevermore.monitor.server.model.config.MailUpdaterConfig;
+import org.clevermore.monitor.server.model.config.ValidateCertificates;
 import org.clevermore.monitor.server.services.config.ConfigurationService;
+import org.clevermore.monitor.server.tasks.ICertificateScanner;
 import org.clevermore.monitor.server.tasks.IJMXConnectorThread;
 import org.clevermore.monitor.server.tasks.IPeriodicalUpdater;
 import org.clevermore.monitor.server.tasks.IStateUpdaterThread;
@@ -54,8 +56,11 @@ public class ServerStartUp
     @Inject
     private IPeriodicalUpdater periodicalUpdater;
 
+    @Inject
+    private ICertificateScanner certificateScanner;
+
     /**
-     * for extensions to override and initilize other module
+     * for extensions to override and initialize other module
      */
     public void initGuice() {
         GuiceUtils.init(new MonitoringModule());
@@ -86,14 +91,18 @@ public class ServerStartUp
         logger.info("Version:{}", Version.getVersion());
 
         logger.info("Starting AbstractJMXConnectorThread");
-        smartExecutor.scheduleWithFixedDelay(jmxConnectorThread, 5, 60, TimeUnit.SECONDS, TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "CONNECTOR", "jmxConnector"));
+        smartExecutor.scheduleWithFixedDelay(jmxConnectorThread,
+                                             5,
+                                             60,
+                                             TimeUnit.SECONDS,
+                                             TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "CONNECTOR", "jmxConnector"));
 
         logger.info("Starting StateUpdaterThread");
         smartExecutor.scheduleWithFixedDelay(stateUpdaterThread,
-                                          15,
-                                          20,
-                                          TimeUnit.SECONDS,
-                                          TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "FULL_REFRESH","stateUpdater"));
+                                             15,
+                                             20,
+                                             TimeUnit.SECONDS,
+                                             TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "FULL_REFRESH", "stateUpdater"));
 
         if (getMailUpdaterConfig().isEnabled()) {
             logger.info("Starting Periodicat Updater");
@@ -101,9 +110,18 @@ public class ServerStartUp
                                               getMailUpdaterConfig().getPeriod() / 2,
                                               getMailUpdaterConfig().getPeriod(),
                                               TimeUnit.SECONDS,
-                                              TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "MAIL_UPD","periodicalUpdater"));
+                                              TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "MAIL_UPD", "periodicalUpdater"));
         }
 
+        final ValidateCertificates validateCertificates = ConfigurationService.getInstance().getValidateCertificates();
+        if (validateCertificates.isValide()) {
+            logger.info("Starting Certificates Validation Thread");
+            smartExecutor.scheduleWithFixedDelay(certificateScanner,
+                                                 0,
+                                                 24,
+                                                 TimeUnit.HOURS,
+                                                 TaskMetadata.newMetadata(SmartPoolsMonitoring.GENERAL, "CERT", "certificateChecker"));
+        }
     }
 
     @Override

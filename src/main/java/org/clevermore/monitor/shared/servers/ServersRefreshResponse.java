@@ -20,7 +20,6 @@ import java.util.Date;
 
 import org.clevermore.monitor.client.AbstractRefreshResponse;
 
-
 public class ServersRefreshResponse
     extends AbstractRefreshResponse {
 
@@ -32,14 +31,17 @@ public class ServersRefreshResponse
 
     private ArrayList<ConnectedDB> databases = new ArrayList<ConnectedDB>(0);
 
+    private boolean certificateAlert = false;
+
     public ServersRefreshResponse() {
         super(new Date().toString());
     }
 
-    public ServersRefreshResponse(String serverDate, ArrayList<ConnectedServer> servers, ArrayList<ConnectedDB> databases) {
+    public ServersRefreshResponse(String serverDate, ArrayList<ConnectedServer> servers, ArrayList<ConnectedDB> databases, boolean certificateAlert) {
         super(serverDate);
         this.servers = servers;
         this.databases = databases;
+        this.certificateAlert = certificateAlert;
     }
 
     public ArrayList<ConnectedDB> getDatabases() {
@@ -50,10 +52,21 @@ public class ServersRefreshResponse
         return servers;
     }
 
+    public boolean isCertificateAlert() {
+        return certificateAlert;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ServerWidgetRefresh [servers=").append(servers).append(", databases=").append(databases).append(super.toString()).append("]");
+        builder.append("ServerWidgetRefresh [servers=")
+               .append(servers)
+               .append(", databases=")
+               .append(databases)
+               .append(", certAlert=")
+               .append(certificateAlert)
+               .append(super.toString())
+               .append("]");
         return builder.toString();
     }
 

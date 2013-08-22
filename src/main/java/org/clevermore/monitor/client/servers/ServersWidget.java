@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.clevermore.monitor.client.ServerWidgetService;
@@ -27,6 +28,7 @@ import org.clevermore.monitor.client.utils.ClientStringFormatter;
 import org.clevermore.monitor.client.utils.LocalStorage;
 import org.clevermore.monitor.client.widgets.AbstractMonitoringWidget;
 import org.clevermore.monitor.client.widgets.IMonitoringWidget;
+import org.clevermore.monitor.shared.certificate.Certificate;
 import org.clevermore.monitor.shared.config.ClientConfigurations;
 import org.clevermore.monitor.shared.servers.ConnectedDB;
 import org.clevermore.monitor.shared.servers.ConnectedServer;
@@ -34,10 +36,13 @@ import org.clevermore.monitor.shared.servers.ServersRefreshRequest;
 import org.clevermore.monitor.shared.servers.ServersRefreshResponse;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -47,6 +52,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -67,6 +73,7 @@ public class ServersWidget<CC extends ClientConfigurations>
     private FlowPanel serversList = new FlowPanel();
     private ScrollPanel sp = new ScrollPanel();
     private boolean showOffline = true;
+    private Button certs = new Button("Certificates");
 
     private ClickHandler getThreadDump = new ClickHandler() {
 
@@ -138,7 +145,31 @@ public class ServersWidget<CC extends ClientConfigurations>
         title.add(chkShowOffline);
         title.add(new Label("Filter:"));
         title.add(filter);
+
+        Style style = certs.getElement().getStyle();
+        style.setPadding(0, Unit.PX);
+        title.add(certs);
         title.add(getRefProg());
+
+        certs.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent event) {
+                getService().getCertificates(new AsyncCallback<HashMap<String, List<Certificate>>>() {
+
+                    @Override
+                    public void onSuccess(HashMap<String, List<Certificate>> result) {
+                        new CertificatesPopup(result);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
         String filterText = LocalStorage.readStoredItem(SERVERS_FILTER);
         if (filterText != null) {
             filter.setText(filterText.trim().toLowerCase());
@@ -391,6 +422,39 @@ public class ServersWidget<CC extends ClientConfigurations>
         databases = refershResponse.getDatabases();
         updateServersTable();
         getRefProg().progress();
+
+        if (refershResponse.isCertificateAlert()) {
+            blinkCertButton();
+        } else {
+            stopBlinkCertButton();
+        }
+    }
+
+    private void blinkCertButton() {
+        Boolean blink = Boolean.valueOf(certs.getElement().getAttribute("blink"));
+        if (!blink) {
+            certs.getElement().setAttribute("blink", "true");
+            Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
+
+                @Override
+                public boolean execute() {
+                    Boolean blink = Boolean.valueOf(certs.getElement().getAttribute("blink"));
+                    Style style = certs.getElement().getStyle();
+                    if (blink) {
+                        style.setColor("red".equals(style.getColor()) ?  "green" : "red");
+                        style.setFontWeight(FontWeight.BOLDER);
+                    } else {
+                        style.setColor("black");
+                        style.setFontWeight(FontWeight.NORMAL);
+                    }
+                    return blink;
+                }
+            }, 1000);
+        }
+    }
+
+    private void stopBlinkCertButton() {
+        certs.getElement().setAttribute("blink", "false");
     }
 
 }
