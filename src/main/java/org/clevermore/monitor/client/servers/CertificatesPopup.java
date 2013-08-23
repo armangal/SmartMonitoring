@@ -19,12 +19,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.clevermore.monitor.shared.certificate.Certificate;
+import org.mortbay.log.Log;
 
+import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 
+/**
+ * A popup with all monitored certificates details
+ */
 public class CertificatesPopup
     extends DialogBox {
 
@@ -52,11 +58,13 @@ public class CertificatesPopup
 
         int i = 1;
         for (String key : result.keySet()) {
-
-            ft.setText(i, 0, key);
+            Label l = new Label(key);
+            l.getElement().getStyle().setFontWeight(FontWeight.BOLDER);
+            ft.setWidget(i, 0, l);
             ft.setText(i, 1, "");
             ft.setText(i, 2, "");
             i++;
+            Log.debug("Certificate:" + result.get(key));
             for (Certificate c : result.get(key)) {
                 ft.setText(i, 0, c.getCommonName());
                 ft.setText(i, 1, c.toString());

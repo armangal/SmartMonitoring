@@ -15,13 +15,9 @@
  */
 package org.clevermore.monitor.server.utils;
 
-import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
