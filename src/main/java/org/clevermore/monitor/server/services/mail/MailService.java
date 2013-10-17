@@ -36,6 +36,7 @@ import org.clevermore.monitor.server.model.config.AbstractServersConfig;
 import org.clevermore.monitor.server.model.config.AlertsConfig;
 import org.clevermore.monitor.server.services.config.IConfigurationService;
 import org.clevermore.monitor.shared.alert.Alert;
+import org.clevermore.utils.ConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
     private LinkedBlockingQueue<MailItem> mailQueue = new LinkedBlockingQueue<MailService.MailItem>();
 
     @Inject
-    public MailService() {
+    public MailService(final String templateName) {
         Thread dispatcher = new Thread(new Runnable() {
 
             @Override
@@ -80,7 +81,7 @@ public abstract class MailService<SC extends AbstractServersConfig, SS extends S
         dispatcher.start();
 
         try {
-            InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("AlertTemplate.html");
+            InputStream resourceAsStream = ConfigLoader.getResource(getClass(), templateName);
             byte[] bytes = new byte[resourceAsStream.available()];
             resourceAsStream.read(bytes);
             String temp = new String(bytes);

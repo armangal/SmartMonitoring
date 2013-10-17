@@ -37,8 +37,8 @@
 	</developers>
 
 	<properties>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
 
 		<morphia.version>1.2.2</morphia.version>
 		<proxytoys.version>1.0</proxytoys.version>
@@ -172,7 +172,7 @@
 			<!-- Oracle JDBC Dependencies -->
 			<dependency>
 				<groupId>com.oracle</groupId>
-				<artifactId>ojdbc5</artifactId>
+				<artifactId>ojdbc6</artifactId>
 				<version>${oracle.jdbc.version}</version>
 				<scope>compile</scope>
 			</dependency>
@@ -275,7 +275,7 @@
 		<!-- Oracle JDBC Dependencies -->
 		<dependency>
 			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc5</artifactId>
+			<artifactId>ojdbc6</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -330,8 +330,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.0</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 
@@ -580,7 +580,7 @@
 					<linkXRef>true</linkXRef>
 					<sourceEncoding>utf-8</sourceEncoding>
 					<minimumTokens>100</minimumTokens>
-					<targetJdk>1.6</targetJdk>
+					<targetJdk>1.7</targetJdk>
 				</configuration>
 			</plugin>
 

@@ -126,6 +126,7 @@ public class ServerStartUp
 
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
+        logger.info("Context destroued, stopping smart executor");
         smartExecutor.shutdown();
     }
 

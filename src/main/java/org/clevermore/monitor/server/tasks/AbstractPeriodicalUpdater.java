@@ -34,6 +34,7 @@ import org.clevermore.monitor.server.services.mail.IMailService;
 import org.clevermore.monitor.server.services.mail.MailService.MailItem;
 import org.clevermore.monitor.shared.alert.Alert;
 import org.clevermore.monitor.shared.config.Version;
+import org.clevermore.utils.ConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +61,9 @@ public abstract class AbstractPeriodicalUpdater<SS extends ServerStatus, SC exte
 
     private String updateTemplate;
 
-    public AbstractPeriodicalUpdater() {
+    public AbstractPeriodicalUpdater(final String templateName) {
         try {
-            InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("PeriodicalUpdateTemplate.html");
+            InputStream resourceAsStream = ConfigLoader.getResource(getClass(), templateName);
             byte[] bytes = new byte[resourceAsStream.available()];
             resourceAsStream.read(bytes);
             String temp = new String(bytes);

@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.clevermore.monitor.shared.certificate.Certificate;
-import org.mortbay.log.Log;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;

@@ -37,7 +37,13 @@ public class Certificate
     private String location;
     private boolean alertRaised;
 
-    Certificate() {}
+    
+    Certificate() {
+    }
+
+    public Certificate(String errorMessage) {
+        this.type = errorMessage;// will be printed in tostring
+    }
 
     public Certificate(String type, Date validFrom, Date validTo, String serialNumber) {
         super();

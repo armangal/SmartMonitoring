@@ -22,5 +22,10 @@ import org.clevermore.monitor.server.model.config.ServersConfig;
 public class StandardMailService
     extends MailService<ServersConfig, ServerStatus, DatabaseServer>
     implements IMailService<ServerStatus> {
+    
+    
+    public StandardMailService() {
+        super("org/clevermore/monitor/resources/AlertTemplate.html");
+    }
 
 }

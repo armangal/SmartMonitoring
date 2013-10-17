@@ -113,6 +113,7 @@ public class SslUtils {
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
+            result.add(new Certificate("Can't scan certificate from:" + host + ":" + port + ", err=" + e.getMessage()));
 
         } finally {
             try {

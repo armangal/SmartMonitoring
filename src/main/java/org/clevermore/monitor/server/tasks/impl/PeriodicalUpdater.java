@@ -25,6 +25,10 @@ public class PeriodicalUpdater
     extends AbstractPeriodicalUpdater<ServerStatus, ServersConfig, DatabaseServer>
     implements IPeriodicalUpdater {
 
+    public PeriodicalUpdater() {
+        super("org/clevermore/monitor/resources/PeriodicalUpdateTemplate.html");
+    }
+
     @Override
     public String getExtraInfo() {
         return "";
